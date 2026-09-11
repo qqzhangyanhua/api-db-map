@@ -1,0 +1,19 @@
+README.md
+  s_b8669fb8e2a2b8::t_a25b5da3d0c1b3 1-113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.6.23",
+  "base_commit_sha": "2d36b5acecd5248236530d21d25e6035013262ff",
+  "prompts": {},
+  "sessions": {
+    "s_b8669fb8e2a2b8": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "f66be23e-eeb6-4703-87b5-7913283b021a",
+        "model": "grok-4.6"
+      },
+      "human_author": "张艳华 <939593210@qq.com>"
+    }
+  }
+}
