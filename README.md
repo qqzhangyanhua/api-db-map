@@ -2,7 +2,33 @@
 
 从后端代码里追踪「接口查了哪些表、改了哪些表、字段怎么关联」，再画出架构图、字段关系图和时序图。
 
+> Trace backend APIs to the tables and fields they read or write, then render architecture, field-relation, and sequence diagrams.
+
 这是一个 **Agent Skill**（显式调用）：只有你直接说出 `api-db-map` / 「用 api-db-map」时，Agent 才会跑这套流程。提到表、接口或 schema 不会自动触发。
+
+## 安装
+
+不发 npm。把仓库推到公开 GitHub 后，用 [Skills CLI](https://github.com/vercel-labs/skills) 安装：
+
+```bash
+npx skills add qqzhangyanhua/api-db-map
+```
+
+```bash
+# 装到本机全局（所有项目都能用）
+npx skills add qqzhangyanhua/api-db-map -g -y
+
+# 只装到 Cursor
+npx skills add qqzhangyanhua/api-db-map -a cursor -g -y
+
+# 更新已安装版本
+npx skills update api-db-map
+```
+
+也可以手工拷到 Agent 的 skills 目录：
+
+- Cursor：`~/.cursor/skills/api-db-map/` 或项目内 `.cursor/skills/api-db-map/`
+- Claude Code：`~/.claude/skills/api-db-map/` 或项目内 `.claude/skills/api-db-map/`
 
 ## 能回答什么
 
@@ -33,10 +59,7 @@ HTML 必须用 `scripts/render_html.py` 生成，不要手写。
 
 ## 怎么用
 
-1. 把本目录装到 Agent 能读到的 skills 路径：
-   - Cursor：`~/.cursor/skills/api-db-map/` 或项目内 `.cursor/skills/api-db-map/`
-   - Claude Code：`~/.claude/skills/api-db-map/` 或项目内 `.claude/skills/api-db-map/`
-2. 在目标后端仓库里对 Agent 说：
+装好之后，在目标后端仓库里对 Agent 说：
 
 ```text
 用 api-db-map 分析这个项目
@@ -111,3 +134,7 @@ api-db-map/
 - 线上库只允许 `SELECT` 级 schema 探查，禁止 INSERT / UPDATE / DELETE / DDL
 - 拼接 SQL、MyBatis `${table}`、反射、动态数据源一律 `uncertain`
 - 大仓库先分析点名的模块，再问要不要扩范围
+
+## 许可
+
+[MIT](LICENSE)
