@@ -4,9 +4,23 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>API → DB Map</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
+<script>
+(function () {
+  try {
+    var theme = null;
+    try { theme = localStorage.getItem("api-db-map-theme"); } catch (e) {}
+    if (theme !== "light" && theme !== "dark") {
+      theme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    }
+    document.documentElement.setAttribute("data-theme", theme);
+  } catch (e) {}
+})();
+</script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</noscript>
 <style>
   :root, [data-theme="light"] {
     --bg: #f2eee5;
@@ -242,7 +256,8 @@
     overflow: hidden; box-shadow: var(--shadow);
   }
   .canvas-wrap {
-    position: relative; min-height: 540px; background: var(--canvas);
+    position: relative; height: 640px; background: var(--canvas);
+    overflow: hidden;
     background-image:
       linear-gradient(var(--grid) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid) 1px, transparent 1px);
@@ -295,8 +310,9 @@
   .field.fk { color: var(--fk); }
   .field.unused { opacity: .35; }
   .field .t { color: var(--muted); }
-  #view-t03 { padding: 32px 16px 20px; overflow-x: auto; }
-  .seq-participant { transition: transform .15s ease; }
+  #view-t03 { padding: 48px 12px 16px; box-sizing: border-box; overflow: visible; }
+  #view-t03 .seq { display: block; max-width: none; }
+  .seq-participant { transition: none; }
   .seq-participant:hover rect { filter: brightness(1.1); }
   .seq-msg { cursor: default; }
   .seq-msg:hover rect { filter: brightness(1.08); stroke-width: 1.2px; }
@@ -304,7 +320,40 @@
     * { transition: none !important; }
   }
 
-  #canvas-inner { position: relative; }
+  #canvas-scale { position: relative; overflow: auto; height: 100%; }
+  #canvas-inner { position: relative; min-height: 100%; }
+  .edge-label-bg { fill: var(--card); stroke: var(--panel-border); stroke-width: 0.7; }
+  .edge-label { font-size: 10px; fill: var(--ink); font-family: inherit; }
+  .field-more { font-size: 11px; color: var(--muted); padding: 6px 0 2px; cursor: pointer; }
+  .card.mod { border-style: dashed; }
+  .evidence-banner {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 8px 22px; border-top: 1px solid var(--panel-border);
+    background: var(--frontend-fill); font-size: 12px;
+  }
+  .evidence-banner[hidden] { display: none; }
+  .evidence-banner code {
+    background: color-mix(in srgb, var(--line) 40%, transparent);
+    border-radius: 4px; padding: 1px 5px;
+  }
+  .conclusion-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    padding: 0 0 16px;
+  }
+  .conclusion {
+    background: var(--card); border: 1px solid var(--panel-border); border-radius: 14px;
+    padding: 12px 14px;
+  }
+  .conclusion h3 { margin: 0 0 6px; font-size: 13px; }
+  .conclusion p, .conclusion li { margin: 0; color: var(--muted); font-size: 12px; }
+  .conclusion ul { margin: 0; padding-left: 16px; }
+  .summary-fold { margin-top: 4px; }
+  .summary-fold > summary {
+    cursor: pointer; color: var(--muted); font-size: 12px; padding: 8px 0;
+  }
+  @media (max-width: 860px) {
+    .conclusion-cards { grid-template-columns: 1fr; }
+  }
   .diagram-nav {
     position: absolute; bottom: 14px; right: 14px; z-index: 15; display: flex; gap: 4px;
   }
@@ -484,20 +533,27 @@
         <button id="zoom-reset" type="button" aria-label="重置缩放" title="重置缩放（0）"><span id="zoom-pct">100%</span></button>
         <button id="zoom-in" type="button" aria-label="放大" title="放大（+）">+</button>
       </div>
-      <div id="canvas-inner">
-        <svg class="wires" id="wires"></svg>
-        <div id="view-t01"></div>
-        <div id="view-t02" hidden></div>
-        <div id="view-t03" hidden></div>
+      <div id="canvas-scale">
+        <div id="canvas-inner">
+          <svg class="wires" id="wires"></svg>
+          <div id="view-t01"></div>
+          <div id="view-t02" hidden></div>
+          <div id="view-t03" hidden></div>
+        </div>
       </div>
     </div>
     <div class="legend" id="legend"></div>
+    <div class="evidence-banner" id="evidence-banner" hidden></div>
     <div class="caption">
       <h2 id="cap-title">影响架构图</h2>
       <p id="cap-desc">接口到数据表的读写边界——谁查谁、谁改谁，按模块铺开。</p>
     </div>
   </section>
-  <table class="grid" id="summary"></table>
+  <div class="conclusion-cards" id="cards"></div>
+  <details class="summary-fold" id="summary-fold">
+    <summary>接口明细表</summary>
+    <table class="grid" id="summary"></table>
+  </details>
 </div>
 
 <aside class="side-panel" id="detail-drawer" hidden aria-live="polite">
@@ -537,6 +593,9 @@ window.__IR__ = {"meta": {"project": "order-service", "root": ".", "stack": {"la
 </script>
 <script>
 const IR = window.__IR__ && window.__IR__.endpoints ? window.__IR__ : null;
+const T01_TABLE_GROUP_THRESHOLD = 12;
+const T02_FIELD_FOLD_THRESHOLD = 10;
+const CHANNEL_STEP = 10;
 const caps = {
   t01: ["T · 01", "影响架构图", "接口到数据表的读写边界——谁查谁、谁改谁，按模块铺开。"],
   t02: ["T · 02", "表与字段关系图", "主外键与字段级连线——选中接口后高亮实际读写字段，其余淡化。"],
@@ -737,6 +796,7 @@ function boot(){
   syncTabButtons();
   render();
   renderDetail();
+  renderEvidenceBanner();
   renderRoutePanel();
   if(routeState.path) $("route-panel").hidden = false;
 }
@@ -749,9 +809,16 @@ function render(){
   $("view-t03").hidden = tab!=="t03";
   if(tab==="t01") renderT01();
   if(tab==="t02") renderT02();
-  if(tab==="t03") renderT03();
+  if(tab==="t03"){
+    $("canvas-inner").style.zoom = "1";
+    renderT03();
+  } else {
+    $("canvas-inner").style.zoom = String(zoomLevel);
+  }
   renderLegend();
   renderSummary();
+  renderCards();
+  renderEvidenceBanner();
 }
 function renderLegend(){
   const items = [
@@ -765,23 +832,56 @@ function renderLegend(){
   $("legend").innerHTML = items.map(([c,l])=>`<span><i class="dot" style="background:${c}"></i>${l}</span>`).join("");
 }
 
+function tableModule(name){
+  const t = (IR.tables||[]).find(x=>x.name===name);
+  return t ? (t.module || t.schema || "default") : "default";
+}
+function sizeWires(){
+  const inner = $("canvas-inner");
+  const svg = $("wires");
+  if(!inner || !svg) return;
+  const w = Math.max(inner.scrollWidth, inner.clientWidth, 1);
+  const h = Math.max(inner.scrollHeight, inner.clientHeight, 1);
+  svg.setAttribute("width", String(w));
+  svg.setAttribute("height", String(h));
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+}
 function clearWires(){
   const svg = $("wires");
-  if(svg) svg.innerHTML = "";
+  if(!svg) return;
+  svg.innerHTML = "";
+  svg.removeAttribute("width");
+  svg.removeAttribute("height");
+  svg.removeAttribute("viewBox");
+}
+function offsetRel(el, ancestor){
+  let x = 0, y = 0, n = el;
+  while(n && n !== ancestor){
+    x += n.offsetLeft;
+    y += n.offsetTop;
+    n = n.offsetParent;
+  }
+  return {x, y, w: el.offsetWidth, h: el.offsetHeight};
 }
 function wrapPt(el, side){
-  const wrap = $("canvas").getBoundingClientRect();
-  const r = el.getBoundingClientRect();
-  const x = side==="right" ? r.right - wrap.left : side==="left" ? r.left - wrap.left : r.left + r.width/2 - wrap.left;
-  const y = r.top + r.height/2 - wrap.top;
-  return {x, y};
+  const o = offsetRel(el, $("canvas-inner"));
+  const x = side==="right" ? o.x + o.w : side==="left" ? o.x : o.x + o.w / 2;
+  return {x, y: o.y + o.h / 2};
 }
-function bezier(a, b, color, dash, label){
-  const dx = Math.max(40, Math.abs(b.x-a.x)/2);
-  const d = `M ${a.x} ${a.y} C ${a.x+dx} ${a.y}, ${b.x-dx} ${b.y}, ${b.x} ${b.y}`;
-  const midX = (a.x+b.x)/2, midY = (a.y+b.y)/2 - 6;
-  return `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.6" ${dash?'stroke-dasharray="6 4"':""} marker-end="url(#arr-${color.replace("#","")})" />` +
-    (label ? `<text class="edge-label" x="${midX}" y="${midY}" text-anchor="middle">${label}</text>` : "");
+function isSignalFlow(){ return document.documentElement.getAttribute("data-preset")==="signal-flow"; }
+function edgeStroke(writeLike){ return isSignalFlow() ? (writeLike ? 2.2 : 1.2) : 1.6; }
+function edgeOpacity(writeLike){ return isSignalFlow() && !writeLike ? 0.55 : 1; }
+function ortho(a, b, color, dash, label, channelX, writeLike){
+  const d = `M ${a.x.toFixed(1)} ${a.y.toFixed(1)} H ${channelX.toFixed(1)} V ${b.y.toFixed(1)} H ${b.x.toFixed(1)}`;
+  const midY = (a.y + b.y) / 2;
+  const text = label || "";
+  const tw = Math.max(28, text.length * 6.4 + 12);
+  const sw = edgeStroke(writeLike);
+  const op = edgeOpacity(writeLike);
+  const marker = "arr-"+color.replace("#","");
+  return `<path class="edge-path" d="${d}" fill="none" stroke="${color}" stroke-width="${sw}" opacity="${op}" ${dash?'stroke-dasharray="6 4"':""} marker-end="url(#${marker})" />` +
+    (text ? `<g class="edge-cap"><rect class="edge-label-bg" x="${channelX - tw/2}" y="${midY - 16}" rx="4" width="${tw}" height="16"/>` +
+      `<text class="edge-label" x="${channelX}" y="${midY - 4}" text-anchor="middle">${text}</text></g>` : "");
 }
 function ensureMarkers(svg, colors){
   let defs = `<defs>`;
@@ -798,6 +898,7 @@ function renderT01(){
   const eps = (IR.endpoints||[]).filter(visibleEp);
   const {tblSet, epSet, curKey} = routePathSets();
   const onRoute = !!routeState.path;
+  const collapse = (IR.tables||[]).length > T01_TABLE_GROUP_THRESHOLD && !selected && !onRoute;
   const modules = {};
   (IR.tables||[]).forEach(t => {
     const m = t.module || t.schema || "default";
@@ -813,7 +914,15 @@ function renderT01(){
     return `<div class="card api${dim}${extra}" data-ep="${escAttr(ep.id)}"><div class="kicker">${ep.method}</div><div class="title">${ep.path}</div><div class="meta">${ep.tables.length} 张表 · ${ep.handler.fn}</div></div>`;
   }).join("");
   const right = Object.entries(modules).map(([m, tables]) => {
-    const cards = tables.map(t => {
+    const visibleTables = selected
+      ? tables.filter(t => (IR.table_api_index[t.name]||[]).includes(selected))
+      : tables;
+    if(collapse){
+      const ops = new Set(tables.map(t => tableOps(t.name)).filter(Boolean));
+      const badge = ops.has("RW") || (ops.has("R") && ops.has("W")) ? "RW" : [...ops][0] || "";
+      return `<div class="group"><div class="card tbl mod" data-mod="${escAttr(m)}"><div class="kicker">${m}</div><div class="title">${tables.length} 张表</div><div class="badges">${badge?`<span class="badge ${badge}">${badge}</span>`:""}</div></div></div>`;
+    }
+    const cards = (selected ? visibleTables : tables).map(t => {
       const op = tableOps(t.name);
       let touched = !selected || (IR.table_api_index[t.name]||[]).includes(selected);
       let extra = "";
@@ -826,9 +935,10 @@ function renderT01(){
       }
       return `<div class="card tbl${touched?"":" dim"}${extra}" data-tbl="${escAttr(t.name)}"><div class="title">${t.name}</div><div class="meta">${(t.fields||[]).length} 字段</div><div class="badges">${op?`<span class="badge ${op}">${op}</span>`:""}</div></div>`;
     }).join("");
+    if(!cards) return "";
     return `<div class="group"><div class="kicker">${m}</div>${cards}</div>`;
   }).join("");
-  $("view-t01").innerHTML = `<div class="nodes"><div class="col"><h3>Interfaces</h3>${left||"<div class='meta'>无匹配接口</div>"}</div><div class="col" style="flex:1"><h3>Tables</h3>${right}</div></div>`;
+  $("view-t01").innerHTML = `<div class="nodes"><div class="col"><h3>接口</h3>${left||"<div class='meta'>无匹配接口</div>"}</div><div class="col" style="flex:1"><h3>数据表</h3>${right}</div></div>`;
   $("view-t01").querySelectorAll("[data-ep]").forEach(el => el.onclick = () => selectEndpoint(el.dataset.ep));
   $("view-t01").querySelectorAll("[data-tbl]").forEach(el => el.onclick = () => selectTable(el.dataset.tbl));
   requestAnimationFrame(drawT01Wires);
@@ -836,44 +946,62 @@ function renderT01(){
 function drawT01Wires(){
   const svg = $("wires");
   if(!svg) return;
+  sizeWires();
   svg.innerHTML = "";
   const cRead = css("--read") || "#1D4ED8";
   const cWrite = css("--write") || "#C2410C";
   const cBoth = css("--both") || "#B45309";
   const cUn = css("--uncert") || "#8A8378";
-  const colors = [cRead, cWrite, cBoth, cUn];
-  ensureMarkers(svg, colors);
+  ensureMarkers(svg, [cRead, cWrite, cBoth, cUn]);
   const srcs = {};
   $("view-t01").querySelectorAll("[data-ep]").forEach(el => srcs[el.dataset.ep] = el);
   const dsts = {};
   $("view-t01").querySelectorAll("[data-tbl]").forEach(el => dsts[el.dataset.tbl] = el);
+  const mods = {};
+  $("view-t01").querySelectorAll("[data-mod]").forEach(el => mods[el.dataset.mod] = el);
   const {tblSet: routeTbls, epSet: routeEps} = routePathSets();
   const onRoute = !!routeState.path;
-  let html = svg.innerHTML;
+  const planned = [];
   (IR.endpoints||[]).filter(visibleEp).forEach(ep => {
     if(onRoute){ if(!routeEps.has(ep.id)) return; } else if(selected && selected!==ep.id) return;
     const srcEl = srcs[ep.id];
     if(!srcEl) return;
     const merged = {};
     ep.tables.forEach(t => {
-      const cur = merged[t.name] || {ops:[]};
+      const key = mods[tableModule(t.name)] ? tableModule(t.name) : t.name;
+      const cur = merged[key] || {ops:[], conf:t.confidence, kind: mods[tableModule(t.name)] ? "mod" : "tbl"};
       cur.ops.push(t.op);
-      cur.conf = t.confidence;
-      merged[t.name] = cur;
+      if(t.confidence==="uncertain") cur.conf = "uncertain";
+      merged[key] = cur;
     });
     Object.entries(merged).forEach(([name, info]) => {
-      if(onRoute && !routeTbls.has(name)) return;
-      const dstEl = dsts[name];
+      if(onRoute && info.kind==="tbl" && !routeTbls.has(name)) return;
+      const dstEl = info.kind==="mod" ? mods[name] : dsts[name];
       if(!dstEl) return;
       const R = info.ops.some(isRead), W = info.ops.some(isWrite);
       const color = info.conf==="uncertain" ? cUn : (R&&W ? cBoth : W ? cWrite : cRead);
-      const label = [...new Set(info.ops)].join(" / ");
-      html += bezier(wrapPt(srcEl,"right"), wrapPt(dstEl,"left"), color, !W, label);
+      const label = info.conf==="uncertain" ? [...new Set(info.ops)].join(" / ")+" ?" : [...new Set(info.ops)].join(" / ");
+      planned.push({a: wrapPt(srcEl,"right"), b: wrapPt(dstEl,"left"), color, dash: !W, label, write: W});
     });
+  });
+  const xs = planned.map(e => [e.a.x, e.b.x]).flat();
+  const mid = xs.length ? (Math.min(...xs) + Math.max(...xs)) / 2 : 0;
+  let html = svg.innerHTML;
+  planned.forEach((e, i) => {
+    const channelX = mid + ((i % 7) - 3) * CHANNEL_STEP;
+    html += ortho(e.a, e.b, e.color, e.dash, e.label, channelX, e.write);
   });
   svg.innerHTML = html;
 }
 
+function fieldRowHtml(t, f, touched){
+  const key = t.name+"."+f.name;
+  const cls = [f.pk?"pk":"", f.fk?"fk":"", selected && !touched.has(key)?"unused":""].join(" ");
+  const markBase = f.pk?"PK":(f.fk?("→ "+f.fk.table+"."+f.fk.column):f.type);
+  const mark = f.desc ? markBase+" · "+f.desc : markBase;
+  const titleAttr = f.desc ? ` title="${escAttr(f.name+": "+markBase+" · "+f.desc)}"` : "";
+  return `<div class="field ${cls}" data-field="${key}"${titleAttr}><span>${f.name}</span><span class="t">${mark}</span></div>`;
+}
 function renderT02(){
   clearWires();
   const touched = new Set();
@@ -886,71 +1014,82 @@ function renderT02(){
   }
   const {tblSet, curKey} = routePathSets();
   const onRoute = !!routeState.path;
-  const html = (IR.tables||[]).map(t => {
-    const op = tableOps(t.name);
-    const fields = (t.fields||[]).map(f => {
-      const key = t.name+"."+f.name;
-      const cls = [f.pk?"pk":"", f.fk?"fk":"", selected && !touched.has(key)?"unused":""].join(" ");
-      const markBase = f.pk?"PK":(f.fk?("→ "+f.fk.table+"."+f.fk.column):f.type);
-      const mark = f.desc ? markBase+" · "+f.desc : markBase;
-      const titleAttr = f.desc ? ` title="${escAttr(f.name+": "+markBase+" · "+f.desc)}"` : "";
-      return `<div class="field ${cls}" data-field="${key}"${titleAttr}><span>${f.name}</span><span class="t">${mark}</span></div>`;
+  const modules = {};
+  (IR.tables||[]).forEach(t => {
+    const m = t.module || t.schema || "default";
+    (modules[m] = modules[m]||[]).push(t);
+  });
+  const cols = Object.entries(modules).map(([m, tables]) => {
+    const cards = tables.map(t => {
+      const op = tableOps(t.name);
+      const fields = t.fields || [];
+      const important = fields.filter(f => f.pk || f.fk || touched.has(t.name+"."+f.name));
+      const rest = fields.filter(f => !important.includes(f));
+      const fold = fields.length > T02_FIELD_FOLD_THRESHOLD;
+      const shown = fold ? (important.length ? important : fields.slice(0, T02_FIELD_FOLD_THRESHOLD)) : fields;
+      const hiddenCount = fold ? fields.length - shown.length : 0;
+      const fieldHtml = shown.map(f => fieldRowHtml(t, f, touched)).join("") +
+        (hiddenCount ? `<div class="field-more">+${hiddenCount} 更多</div>` : "");
+      let extra = (detailTarget && detailTarget.type==="tbl" && detailTarget.id===t.name) ? " path-step" : "";
+      if(onRoute){
+        extra = curKey==="tbl:"+t.name ? " path-step" : (tblSet.has(t.name) ? " path" : " dim");
+      }
+      return `<div class="card tbl${extra}" style="min-width:240px" data-tbl="${escAttr(t.name)}"><div class="title">${t.name}</div><div class="badges">${op?`<span class="badge ${op}">${op}</span>`:""}</div><div class="fields">${fieldHtml}</div></div>`;
     }).join("");
-    let extra = (detailTarget && detailTarget.type==="tbl" && detailTarget.id===t.name) ? " path-step" : "";
-    if(onRoute){
-      extra = curKey==="tbl:"+t.name ? " path-step" : (tblSet.has(t.name) ? " path" : " dim");
-    }
-    return `<div class="card tbl${extra}" style="min-width:240px" data-tbl="${escAttr(t.name)}"><div class="title">${t.name}</div><div class="badges">${op?`<span class="badge ${op}">${op}</span>`:""}</div><div class="fields">${fields}</div></div>`;
+    return `<div class="col" data-mod-col="${escAttr(m)}"><h3>${escAttr(m)}</h3>${cards}</div>`;
   }).join("");
-  $("view-t02").innerHTML = `<div class="nodes" style="flex-wrap:wrap;gap:28px">${html}</div>`;
+  $("view-t02").innerHTML = `<div class="nodes" style="flex-wrap:nowrap;overflow-x:auto">${cols}</div>`;
   $("view-t02").querySelectorAll("[data-tbl]").forEach(el => el.onclick = () => selectTable(el.dataset.tbl));
   requestAnimationFrame(drawT02Wires);
 }
 function drawT02Wires(){
   const svg = $("wires");
   if(!svg) return;
+  sizeWires();
   svg.innerHTML = "";
   const cFk = css("--fk") || "#BE185D";
   const cUn = css("--uncert") || "#8A8378";
   ensureMarkers(svg, [cFk, cUn]);
   const fields = {};
   $("view-t02").querySelectorAll("[data-field]").forEach(el => fields[el.dataset.field] = el);
-  let html = svg.innerHTML;
+  const planned = [];
   (IR.relations||[]).forEach(r => {
     const a = fields[r.from.table+"."+r.from.field];
     const b = fields[r.to.table+"."+r.to.field];
     if(!a || !b) return;
-    const color = r.source==="fk" ? cFk : cUn;
-    const dash = r.source!=="fk";
-    const pa = wrapPt(a, a.getBoundingClientRect().left < b.getBoundingClientRect().left ? "right" : "left");
-    const pb = wrapPt(b, a.getBoundingClientRect().left < b.getBoundingClientRect().left ? "left" : "right");
-    html += bezier(pa, pb, color, dash, r.card);
+    const ltr = a.getBoundingClientRect().left < b.getBoundingClientRect().left;
+    planned.push({
+      a: wrapPt(a, ltr ? "right" : "left"),
+      b: wrapPt(b, ltr ? "left" : "right"),
+      color: r.source==="fk" ? cFk : cUn,
+      dash: r.source!=="fk",
+      label: r.card
+    });
+  });
+  let html = svg.innerHTML;
+  planned.forEach((e, i) => {
+    const channelX = (e.a.x + e.b.x) / 2 + ((i % 5) - 2) * CHANNEL_STEP;
+    html += ortho(e.a, e.b, e.color, e.dash, e.label, channelX, false);
   });
   svg.innerHTML = html;
 }
 
 function formatSeqLabel(s){
   const raw = s.label || "";
-  let opBadge = "";
-  if(s.op === "W") opBadge = "[写] ";
-  else if(s.op === "R") opBadge = "[读] ";
-
+  const opBadge = s.op === "W" ? "[写] " : s.op === "R" ? "[读] " : "";
   let text = raw;
-  if(raw.startsWith("SELECT ") && raw.includes("FROM sys_user")) {
-    text = "SELECT sys_user (31列 · 状态/部门过滤)";
-  } else if(raw.startsWith("LEFT JOIN sys_dept")) {
-    text = "LEFT JOIN sys_dept (关联部门名与负责人)";
-  } else if(raw.startsWith("NOT EXISTS (SELECT 1 FROM ims_t_working_hours")) {
-    text = "NOT EXISTS 关联工时表 (排查当月有效工时)";
-  } else if(raw.startsWith("@DataScope")) {
-    text = "@DataScope 动态注入数据权限过滤";
-  } else if(raw.startsWith("parseWorkHourMonth")) {
-    text = "parseWorkHourMonth 校验月份并计算起止日期";
-  } else if(raw.startsWith("List<SysUser>")) {
-    text = "返回 List<SysUser>";
-  } else if(raw.startsWith("AjaxResult.success")) {
-    text = "响应 AjaxResult.success";
-  } else if(text.length > 44) {
+  const verb = raw.match(/^(SELECT|INSERT|UPDATE|DELETE|UPSERT|JOIN_READ)\b/i);
+  const tbl = raw.match(/\b(?:FROM|INTO|UPDATE)\s+([\w.]+)/i);
+  const list = raw.match(/^(?:SELECT|INSERT|UPDATE|DELETE|UPSERT)\s+(.+?)(?:\s+FROM\s|\s+INTO\s|\s+SET\s|\s+WHERE\s|$)/i);
+  if(verb){
+    let n = 0;
+    if(list && list[1] && list[1].trim() !== "*"){
+      n = list[1].split(",").map(x => x.trim()).filter(Boolean).length;
+    }
+    const table = tbl ? tbl[1].replace(/[`"'[\]]/g, "") : "";
+    text = verb[1].toUpperCase() + (table ? " " + table : "");
+    if(n) text += " (" + n + " 列)";
+  } else if(text.length > 44){
     if(text.includes(" — ")) text = text.split(" — ")[0];
     else if(text.includes(";")) text = text.split(";")[0];
     if(text.length > 44) text = text.slice(0, 42) + "…";
@@ -958,6 +1097,27 @@ function formatSeqLabel(s){
   return { display: opBadge + text, full: raw };
 }
 
+function partSub(p, ep){
+  if(p === "Client") return "";
+  if(p === "Controller") return ep.handler.file || "";
+  if(/Service$/i.test(p) || p === ep.handler.fn) return ep.handler.fn || "";
+  const t = (IR.tables||[]).find(x => x.name === p);
+  return t ? (t.module || t.schema || "") : "";
+}
+function activationRanges(parts, sequence){
+  const out = {};
+  parts.forEach(p => {
+    const hits = [];
+    sequence.forEach((s, i) => { if(s.from === p || s.to === p) hits.push(i); });
+    const segs = [];
+    hits.forEach(i => {
+      if(!segs.length || i > segs[segs.length-1].to + 1) segs.push({from:i, to:i});
+      else segs[segs.length-1].to = i;
+    });
+    out[p] = segs;
+  });
+  return out;
+}
 function renderT03(){
   clearWires();
   const ep = (IR.endpoints||[]).find(e=>e.id===selected) || (IR.endpoints||[])[0];
@@ -966,13 +1126,25 @@ function renderT03(){
   const add = (n)=>{ if(n && !parts.includes(n)) parts.push(n); };
   ep.sequence.forEach(s => { add(s.from); add(s.to); });
 
-  // Calculate dynamic widths for each participant box
-  const boxWidths = parts.map(p => Math.max(124, Math.round(p.length * 8.5 + 28)));
+  const wrap = $("canvas");
+  const availW = Math.max(720, (wrap ? wrap.clientWidth : 960) - 24);
+  const availH = Math.max(480, (wrap ? wrap.clientHeight : 640) - 72);
+  const boxWidths = parts.map((p) => {
+    const sub = partSub(p, ep);
+    return Math.max(108, Math.round(Math.max(String(p).length, sub.length) * 7.2 + 24));
+  });
+  const leftGutter = 56;
+  const rightPad = 28;
+  const minGap = 36;
+  const minSpan = boxWidths.reduce((s, w) => s + w, 0) + minGap * Math.max(0, parts.length - 1);
+  const totalW = Math.max(availW, leftGutter + minSpan + rightPad);
+  const extra = Math.max(0, totalW - leftGutter - rightPad - minSpan);
+  const gapX = minGap + extra / Math.max(1, parts.length);
   const colCenters = [];
-  let curX = 40;
-  boxWidths.forEach((w, i) => {
+  let curX = leftGutter;
+  boxWidths.forEach((w) => {
     colCenters.push(curX + w / 2);
-    curX += w + 48;
+    curX += w + gapX;
   });
   const xOf = i => colCenters[i];
   const isTbl = p => (IR.tables||[]).some(t=>t.name===p);
@@ -990,17 +1162,37 @@ function renderT03(){
   const cFrontendFill = css("--frontend-fill") || "rgba(14,116,144,.15)";
   const cCard = css("--card") || "#ffffff";
 
-  // Active table focus from detailTarget
   const focusedTbl = (detailTarget && detailTarget.type==="tbl") ? detailTarget.id : null;
-
-  const y0 = 42, gap = 48;
-  const bottomY = y0 + 16 + ep.sequence.length * gap + 16;
+  const y0 = 78;
+  const steps = Math.max(1, ep.sequence.length);
+  const gap = Math.max(44, Math.min(72, (availH - y0 - 40) / steps));
+  const yAt = i => y0 + 12 + (i + 0.5) * gap;
+  const bottomY = y0 + 12 + steps * gap + 20;
   let inner = "";
 
-  // Participant boxes & lifelines
+  const firstOp = ep.sequence.findIndex(s => s.op);
+  let lastOp = -1;
+  ep.sequence.forEach((s, i) => { if(s.op) lastOp = i; });
+  const entryIdx = [];
+  ep.sequence.forEach((s, i) => { if(s.from === "Client" && s.to === "Controller") entryIdx.push(i); });
+  const phases = [];
+  if(entryIdx.length) phases.push({id:"entry", label:"入口", from: Math.min(...entryIdx), to: Math.max(...entryIdx)});
+  const bizFrom = entryIdx.length ? Math.max(...entryIdx) + 1 : 0;
+  if(firstOp > bizFrom) phases.push({id:"biz", label:"业务", from: bizFrom, to: firstOp - 1});
+  if(firstOp >= 0) phases.push({id:"db", label:"落库", from: firstOp, to: lastOp});
+  phases.forEach(ph => {
+    const top = yAt(ph.from) - 18;
+    const h = yAt(ph.to) - yAt(ph.from) + 36;
+    inner += `<g class="seq-phase" data-phase="${ph.id}">`;
+    inner += `<rect x="8" y="${top}" width="${totalW - 16}" height="${h}" rx="10" fill="${cApiFill}" opacity="0.35"/>`;
+    inner += `<text x="16" y="${top + 14}" font-size="10" fill="${cMuted}" font-family="inherit">${ph.label}</text>`;
+    inner += `</g>`;
+  });
+
   parts.forEach((p, i) => {
     const x = xOf(i);
     const w = boxWidths[i];
+    const sub = partSub(p, ep);
     const isTargetTbl = focusedTbl && p === focusedTbl;
     const fill = isTargetTbl ? cFrontendFill : (isTbl(p) ? cTblFill : cApiFill);
     const stroke = isTargetTbl ? cFrontend : (isTbl(p) ? cTbl : cApi);
@@ -1008,108 +1200,73 @@ function renderT03(){
     const lineStroke = isTargetTbl ? cFrontend : cLine;
     const lineW = isTargetTbl ? 2 : 1;
     const cursor = isTbl(p) ? "pointer" : "default";
+    const boxH = sub ? 44 : 32;
 
-    // Participant card
     inner += `<g class="seq-participant" data-tbl="${isTbl(p) ? escAttr(p) : ""}" style="cursor:${cursor}">`;
     inner += `<title>${isTbl(p) ? '点击查看 ' + escAttr(p) + ' 表详情' : escAttr(p)}</title>`;
-    inner += `<rect x="${x - w/2}" y="6" rx="10" width="${w}" height="32" fill="${fill}" stroke="${stroke}" stroke-width="${strokeW}"/>`;
-    if(isTargetTbl) {
-      inner += `<circle cx="${x - w/2 + 12}" cy="22" r="3.5" fill="${cFrontend}"/>`;
-    }
-    inner += `<text x="${x + (isTargetTbl ? 5 : 0)}" y="26" text-anchor="middle" font-size="11" font-weight="${isTargetTbl ? 700 : 650}" fill="${cInk}" font-family="inherit">${escAttr(p)}</text>`;
+    inner += `<rect x="${x - w/2}" y="6" rx="10" width="${w}" height="${boxH}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeW}"/>`;
+    if(isTargetTbl) inner += `<circle cx="${x - w/2 + 12}" cy="18" r="3.5" fill="${cFrontend}"/>`;
+    inner += `<text x="${x}" y="${sub ? 22 : 26}" text-anchor="middle" font-size="11" font-weight="${isTargetTbl ? 700 : 650}" fill="${cInk}" font-family="inherit">${escAttr(p)}</text>`;
+    if(sub) inner += `<text x="${x}" y="38" text-anchor="middle" font-size="9" fill="${cMuted}" font-family="inherit">${escAttr(sub)}</text>`;
     inner += `</g>`;
-
-    // Lifeline
-    inner += `<line x1="${x}" y1="42" x2="${x}" y2="${bottomY}" stroke="${lineStroke}" stroke-width="${lineW}" stroke-dasharray="3 4"/>`;
+    inner += `<line x1="${x}" y1="${6 + boxH}" x2="${x}" y2="${bottomY}" stroke="${lineStroke}" stroke-width="${lineW}" stroke-dasharray="3 4"/>`;
   });
 
-  // Sequences
+  const acts = activationRanges(parts, ep.sequence);
+  parts.forEach((p, i) => {
+    const x = xOf(i);
+    const color = isTbl(p) ? cTbl : cApi;
+    (acts[p]||[]).forEach(seg => {
+      const y1 = yAt(seg.from) - 8;
+      const y2 = yAt(seg.to) + 8;
+      inner += `<rect class="seq-activation" data-part="${escAttr(p)}" x="${x - 3}" y="${y1}" width="6" height="${Math.max(8, y2 - y1)}" rx="2" fill="${color}"/>`;
+    });
+  });
+
   ep.sequence.forEach((s, i) => {
-    const y = y0 + 16 + (i + 0.5) * gap;
+    const y = yAt(i);
     const fromIdx = Math.max(0, parts.indexOf(s.from));
     const toIdx = Math.max(0, parts.indexOf(s.to));
     const a = xOf(fromIdx);
     const b = xOf(toIdx);
     const isSelf = s.from === s.to;
     const touchesTarget = focusedTbl && (s.from === focusedTbl || s.to === focusedTbl);
-
-    // Color & Marker
     let color = cMuted;
     let markerId = "arr-seq-muted";
-    if(touchesTarget) {
-      color = cFrontend;
-      markerId = "arr-seq-hl";
-    } else if(s.op === "W") {
-      color = cWrite;
-      markerId = "arr-seq-write";
-    } else if(s.op === "R") {
-      color = cRead;
-      markerId = "arr-seq-read";
-    } else if(fromIdx === 0 && toIdx === 1) {
-      color = cApi;
-      markerId = "arr-seq-api";
-    }
-
-    // Requests are solid; returns (b < a and not self) are dashed
+    if(touchesTarget) { color = cFrontend; markerId = "arr-seq-hl"; }
+    else if(s.op === "W") { color = cWrite; markerId = "arr-seq-write"; }
+    else if(s.op === "R") { color = cRead; markerId = "arr-seq-read"; }
+    else if(fromIdx === 0 && toIdx === 1) { color = cApi; markerId = "arr-seq-api"; }
     const isReturn = (!isSelf && b < a && !s.op);
     const dash = isReturn ? 'stroke-dasharray="4 4"' : '';
     const strokeW = touchesTarget ? 2.2 : 1.6;
-
     const labelInfo = formatSeqLabel(s);
     const estTextW = Math.min(380, Math.max(60, Math.round(labelInfo.display.length * 7.2 + 18)));
 
     if(isSelf) {
-      // Loopback arrow
       const loopW = 28, loopH = 22;
-      const pathD = `M ${a} ${y - 4} h ${loopW} v ${loopH} h -${loopW}`;
-      inner += `<path d="${pathD}" fill="none" stroke="${color}" stroke-width="${strokeW}" marker-end="url(#${markerId})"/>`;
-      // Text beside loop
+      inner += `<path d="M ${a} ${y - 4} h ${loopW} v ${loopH} h -${loopW}" fill="none" stroke="${color}" stroke-width="${strokeW}" marker-end="url(#${markerId})"/>`;
       const tx = a + loopW + 8;
-      inner += `<g class="seq-msg">`;
-      inner += `<title>${escAttr(labelInfo.full)}</title>`;
+      inner += `<g class="seq-msg${isReturn?" seq-msg-return":""}"><title>${escAttr(labelInfo.full)}</title>`;
       inner += `<rect x="${tx}" y="${y - 3}" rx="4" width="${estTextW}" height="18" fill="${cCard}" stroke="${color}" stroke-width="0.8" opacity="0.95"/>`;
-      inner += `<text x="${tx + 8}" y="${y + 10}" text-anchor="start" font-size="10" font-weight="${touchesTarget ? 650 : 500}" fill="${color}" font-family="inherit">${escAttr(labelInfo.display)}</text>`;
-      inner += `</g>`;
+      inner += `<text x="${tx + 8}" y="${y + 10}" text-anchor="start" font-size="10" fill="${color}" font-family="inherit">${escAttr(labelInfo.display)}</text></g>`;
     } else {
-      // Arrow line
-      inner += `<line x1="${a}" y1="${y}" x2="${b}" y2="${y}" stroke="${color}" stroke-width="${strokeW}" ${dash} marker-end="url(#${markerId})"/>`;
-      // Text centered on line with background badge to avoid line-text collision
+      inner += `<line class="${isReturn?"seq-return":""}" x1="${a}" y1="${y}" x2="${b}" y2="${y}" stroke="${color}" stroke-width="${strokeW}" ${dash} marker-end="url(#${markerId})"/>`;
       const midX = (a + b) / 2;
-      inner += `<g class="seq-msg">`;
-      inner += `<title>${escAttr(labelInfo.full)}</title>`;
+      inner += `<g class="seq-msg${isReturn?" seq-msg-return":""}"><title>${escAttr(labelInfo.full)}</title>`;
       inner += `<rect x="${midX - estTextW / 2}" y="${y - 15}" rx="4" width="${estTextW}" height="16" fill="${cCard}" stroke="${color}" stroke-width="0.7" opacity="0.95"/>`;
-      inner += `<text x="${midX}" y="${y - 3}" text-anchor="middle" font-size="10" font-weight="${touchesTarget ? 650 : 500}" fill="${color}" font-family="inherit">${escAttr(labelInfo.display)}</text>`;
-      inner += `</g>`;
+      inner += `<text x="${midX}" y="${y - 3}" text-anchor="middle" font-size="10" fill="${color}" font-family="inherit">${escAttr(labelInfo.display)}</text></g>`;
     }
   });
 
-  const totalW = Math.max(760, curX + 24);
   const totalH = bottomY + 28;
-
-  // Markers definition with matching colors
   let defs = `<defs>`;
-  const markerColors = [
-    ["arr-seq-muted", cMuted],
-    ["arr-seq-read", cRead],
-    ["arr-seq-write", cWrite],
-    ["arr-seq-api", cApi],
-    ["arr-seq-hl", cFrontend]
-  ];
-  markerColors.forEach(([mid, mc]) => {
-    defs += `<marker id="${mid}" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="${mc}"/></marker>`;
-  });
+  [["arr-seq-muted", cMuted],["arr-seq-read", cRead],["arr-seq-write", cWrite],["arr-seq-api", cApi],["arr-seq-hl", cFrontend]]
+    .forEach(([mid, mc]) => { defs += `<marker id="${mid}" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="${mc}"/></marker>`; });
   defs += `</defs>`;
 
-  const svg = `<svg class="seq" width="${totalW}" height="${totalH}" style="display:block">${defs}${inner}</svg>`;
-
-  const focusBanner = focusedTbl ?
-    `<div style="display:flex;align-items:center;gap:8px;padding:6px 16px;background:var(--frontend-fill);border-bottom:1px solid var(--panel-border);font-size:11px;">
-      <span style="color:var(--frontend);font-weight:650;">● 当前聚焦表：${escAttr(focusedTbl)}</span>
-      <span style="color:var(--muted)">已在时序图与汇总表中联动高亮</span>
-      <button onclick="closeDetail()" style="margin-left:auto;background:transparent;border:1px solid var(--panel-border);color:var(--ink);border-radius:6px;padding:2px 8px;cursor:pointer;font:inherit;font-size:10px">清除聚焦</button>
-    </div>` : "";
-
-  $("view-t03").innerHTML = focusBanner +
+  const svg = `<svg class="seq" data-vw="${totalW}" data-vh="${totalH}" width="${Math.round(totalW * zoomLevel)}" height="${Math.round(totalH * zoomLevel)}" viewBox="0 0 ${totalW} ${totalH}" preserveAspectRatio="xMidYMin meet">${defs}${inner}</svg>`;
+  $("view-t03").innerHTML =
     `<div style="padding:10px 16px 6px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
       <div><b>${ep.method} ${ep.path}</b> · <code>${ep.handler.file}:${ep.handler.line||"?"}</code></div>
       <div style="font-size:11px;color:var(--muted)">悬停消息查看完整 SQL，点击数据表卡片可查看字段与详情</div>
@@ -1134,6 +1291,56 @@ function renderSummary(){
   }).join("");
   $("summary").innerHTML = `<thead><tr><th>方法</th><th>路径</th><th>处理函数</th><th>表 / 操作</th><th>置信度</th></tr></thead><tbody>${rows}</tbody>`;
   $("summary").querySelectorAll("tr[data-ep]").forEach(tr => tr.onclick = () => selectEndpoint(tr.dataset.ep));
+}
+function renderCards(){
+  const host = $("cards");
+  if(!host || !IR) return;
+  const eps = IR.endpoints || [];
+  const writers = eps.filter(ep => ep.tables.some(t => isWrite(t.op))).length;
+  const readers = eps.length - writers;
+  const hot = Object.entries(IR.table_api_index || {})
+    .sort((a, b) => b[1].length - a[1].length)
+    .filter(([, ids]) => ids.length)
+    .slice(0, 3);
+  const uncertain = [];
+  eps.forEach(ep => ep.tables.forEach(t => { if(t.confidence === "uncertain") uncertain.push({ep: ep.id, ev: t.evidence, table: t.name}); }));
+  const hotItems = hot.length
+    ? hot.map(([name, ids]) => `<li>${escAttr(name)} · ${ids.length} 个接口</li>`).join("")
+    : "<li>没有表被接口引用</li>";
+  const uncItems = uncertain.slice(0, 2).map(u => `<li>${escAttr(u.table)} · <code>${escAttr(u.ev || "—")}</code></li>`).join("");
+  host.innerHTML = `
+    <article class="conclusion" data-card="rw">
+      <h3>读写接口</h3>
+      <p><b data-writers="${writers}">${writers}</b> 个有写 · <b data-readers="${readers}">${readers}</b> 个只读</p>
+    </article>
+    <article class="conclusion" data-card="hot">
+      <h3>热点表</h3>
+      <ul>${hotItems}</ul>
+    </article>
+    <article class="conclusion" data-card="uncertain">
+      <h3>不确定</h3>
+      <p><b data-uncertain="${uncertain.length}">${uncertain.length}</b> 条</p>
+      ${uncItems ? `<ul>${uncItems}</ul>` : ""}
+    </article>`;
+}
+function renderEvidenceBanner(){
+  const el = $("evidence-banner");
+  if(!el) return;
+  if(!detailTarget || !IR){ el.hidden = true; el.innerHTML = ""; return; }
+  if(detailTarget.type === "ep"){
+    const ep = (IR.endpoints||[]).find(e => e.id === detailTarget.id);
+    if(!ep){ el.hidden = true; return; }
+    const first = ep.tables[0];
+    el.innerHTML = `<b>${escAttr(ep.method)} ${escAttr(ep.path)}</b><span>${escAttr(ep.handler.file)}:${ep.handler.line||"?"}</span>${first ? `<code>${escAttr(first.evidence||"—")}</code>` : ""}`;
+    el.hidden = false;
+    return;
+  }
+  const t = (IR.tables||[]).find(x => x.name === detailTarget.id);
+  if(!t){ el.hidden = true; return; }
+  let ev = "";
+  (IR.endpoints||[]).some(ep => ep.tables.some(et => { if(et.name===t.name){ ev = et.evidence; return true; } return false; }));
+  el.innerHTML = `<b>${escAttr(t.name)}</b><span>${escAttr(t.module||t.schema||"")}</span>${ev ? `<code>${escAttr(ev)}</code>` : ""}`;
+  el.hidden = false;
 }
 
 // --- Selection / detail panel ---
@@ -1349,11 +1556,27 @@ function stopJourney(){
 }
 
 // --- Zoom ---
+function applySeqZoom(){
+  const svg = document.querySelector("#view-t03 svg.seq");
+  if(!svg) return;
+  const vw = Number(svg.getAttribute("data-vw") || 0);
+  const vh = Number(svg.getAttribute("data-vh") || 0);
+  if(!vw || !vh) return;
+  svg.setAttribute("width", String(Math.round(vw * zoomLevel)));
+  svg.setAttribute("height", String(Math.round(vh * zoomLevel)));
+}
 function setZoom(z){
   zoomLevel = Math.min(2, Math.max(0.5, Math.round(z*20)/20));
-  $("canvas-inner").style.zoom = zoomLevel;
+  const inner = $("canvas-inner");
+  inner.style.transform = "";
+  if(tab === "t03"){
+    inner.style.zoom = "1";
+    applySeqZoom();
+  } else {
+    inner.style.zoom = String(zoomLevel);
+    requestAnimationFrame(() => { if(tab==="t01") drawT01Wires(); if(tab==="t02") drawT02Wires(); });
+  }
   $("zoom-pct").textContent = Math.round(zoomLevel*100)+"%";
-  requestAnimationFrame(() => { if(tab==="t01") drawT01Wires(); if(tab==="t02") drawT02Wires(); });
 }
 
 document.querySelectorAll(".tab").forEach(b => b.onclick = () => switchTab(b.dataset.tab));
