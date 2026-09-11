@@ -1,0 +1,91 @@
+.scratch/archify-grade-diagram/issues/01-test-harness.md
+  s_b8669fb8e2a2b8::t_e513d99627dc4d 1-3,5-9
+  s_b8669fb8e2a2b8::t_58c452fe0721b1 4
+  s_b8669fb8e2a2b8::t_9349e471727122 10-13
+.gitignore
+  s_b8669fb8e2a2b8::t_d35f9ebf1a9ae5 2
+  s_b8669fb8e2a2b8::t_96f5e2534484da 1
+.scratch/archify-grade-diagram/issues/06-density-and-chrome.md
+  s_b8669fb8e2a2b8::t_614c0fa36b2c9a 1-3,5-9
+  s_b8669fb8e2a2b8::t_7679a0acb75ce2 4
+.scratch/archify-grade-diagram/map.md
+  s_b8669fb8e2a2b8::t_3991558c4e9d42 1-10,12-15
+  s_b8669fb8e2a2b8::t_3b3b9f1d72c78e 11
+.scratch/archify-grade-diagram/issues/02-strip-hardcoded-labels.md
+  s_b8669fb8e2a2b8::t_c6ab0b398f06f7 4
+  s_b8669fb8e2a2b8::t_3fe0e40ee20d59 1-3,5-9
+assets/diagram.template.html
+  s_b8669fb8e2a2b8::t_125f3b860c0504 259-260
+  s_b8669fb8e2a2b8::t_e4a131885928dc 835-848,871-884
+  s_b8669fb8e2a2b8::t_a653a824d63d11 315
+  s_b8669fb8e2a2b8::t_09e2968e07d379 323-324
+  s_b8669fb8e2a2b8::t_3c18081b147c83 799,820-821
+  s_b8669fb8e2a2b8::t_b3a3905206d718 1082
+  s_b8669fb8e2a2b8::t_22c3e40e52d798 1129-1132,1134,1136-1142,1144,1147
+  s_b8669fb8e2a2b8::t_9fb9237fbc1a43 313-314
+  s_b8669fb8e2a2b8::t_3ecd07030bc95c 7-18,20-23
+  s_b8669fb8e2a2b8::t_b8cb473369e638 536-542,546,552-556
+  s_b8669fb8e2a2b8::t_91f3b21ad22029 901,917-925,938,941
+  s_b8669fb8e2a2b8::t_e2bc4afa86adcd 1559-1567,1572-1578
+  s_b8669fb8e2a2b8::t_f8dc14eb959ade 1570
+  s_b8669fb8e2a2b8::t_6a19e825bc67c4 949,955,960-961,964,971-972,974-975,978-979,983-984,987-992
+  s_b8669fb8e2a2b8::t_6c73f3a1b9918a 1079,1081,1083-1092
+  s_b8669fb8e2a2b8::t_2a0866f3b63e36 325-356
+  s_b8669fb8e2a2b8::t_816d74b8a1b646 1268
+  s_b8669fb8e2a2b8::t_3e07afb9ca7f6e 812-817
+  s_b8669fb8e2a2b8::t_138e0d7e591fc7 1048,1055,1060-1072
+  s_b8669fb8e2a2b8::t_4755c8e691a44f 596-598
+  s_b8669fb8e2a2b8::t_8ade2e32a043ff 851-864,867-869
+  s_b8669fb8e2a2b8::t_012a129ec4dcb2 993,1100-1120,1133,1135,1145,1173-1191,1195,1203,1207-1210,1212-1213,1215-1223,1227,1236-1239,1248,1250,1252,1254,1256,1258,1264-1265,1269
+  s_b8669fb8e2a2b8::t_46ef6f480e7b89 1166-1170
+  s_b8669fb8e2a2b8::t_3d3759e712d011 997-1004,1017-1037,1039,1041
+  s_b8669fb8e2a2b8::t_739da0dee17936 1295-1344
+  s_b8669fb8e2a2b8::t_e6c4076fe345b9 1571
+.scratch/archify-grade-diagram/spec.md
+  s_b8669fb8e2a2b8::t_21475e1d90d412 1-93
+.scratch/archify-grade-diagram/issues/04-sequence-discipline.md
+  s_b8669fb8e2a2b8::t_fa0589c9a1af36 1-3,5-9
+  s_b8669fb8e2a2b8::t_14b671a4b6ead0 4
+.scratch/archify-grade-diagram/issues/05-composition.md
+  s_b8669fb8e2a2b8::t_198eff462d6b8b 4
+  s_b8669fb8e2a2b8::t_08dd3b054f2f53 1-3,5-9
+.scratch/archify-grade-diagram/issues/03-orthogonal-wires.md
+  s_b8669fb8e2a2b8::t_16a83b805c8cf4 4
+  s_b8669fb8e2a2b8::t_8fefc3b22cb8f4 1-3,5-9
+assets/sample-preview.html
+  s_b8669fb8e2a2b8::t_14889f8fbbf65f 259-260,313-314,323-324,812-817,1268,1344,1559-1567,1572-1578
+  s_b8669fb8e2a2b8::t_cf44b20216350b 7-18,20-23,325-356,536-542,546,552-556,596-598,799,820-821,835-848,871-884,901,917-925,938,941,949,955,960-961,964,971-972,974-975,978-979,983-984,987-993,997-1004,1017-1037,1039,1041,1048,1055,1060-1072,1079,1081-1092,1100-1120,1133,1135,1145,1173-1191,1195,1203,1207-1210,1212-1213,1215-1223,1227,1236-1239,1248,1250,1252,1254,1256,1258,1264-1265,1269,1295-1343,1570
+  s_b8669fb8e2a2b8::t_d858191937fa23 315,851-864,867-869,1129-1132,1134,1136-1142,1144,1147,1166-1170,1571
+references/visualization.md
+  s_b8669fb8e2a2b8::t_4b389c5714a1ab 19-20
+  s_b8669fb8e2a2b8::t_cd225840387c58 137-139
+  s_b8669fb8e2a2b8::t_59631696c74e6c 84,87,90
+  s_b8669fb8e2a2b8::t_e3c9d644b1829d 100-104
+  s_b8669fb8e2a2b8::t_afdbdc4c032699 118-122
+  s_b8669fb8e2a2b8::t_f78da531847073 71,74
+  s_b8669fb8e2a2b8::t_330b01bf2e1874 117
+AGENTS.md
+  s_b8669fb8e2a2b8::t_91a29b62d0d108 1-13
+docs/agents/domain.md
+  s_b8669fb8e2a2b8::t_02c7af59ed8845 1-51
+docs/agents/issue-tracker.md
+  s_b8669fb8e2a2b8::t_49eba62cc166ea 1-30
+docs/agents/triage-labels.md
+  s_b8669fb8e2a2b8::t_46a5b9827feb92 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.6.23",
+  "base_commit_sha": "1b7e0aa59a4bc9ebdc26ec6d5bb5bbe44a6fb677",
+  "prompts": {},
+  "sessions": {
+    "s_b8669fb8e2a2b8": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "f66be23e-eeb6-4703-87b5-7913283b021a",
+        "model": "grok-4.6"
+      },
+      "human_author": "张艳华 <939593210@qq.com>"
+    }
+  }
+}
