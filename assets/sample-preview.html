@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark" data-preset="classic">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>API → DB Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root, [data-theme="light"] {
+    --bg: #f2eee5;
+    --canvas: #fbf8f1;
+    --grid: #d8d0c2;
+    --card: #fbf8f1;
+    --ink: #242018;
+    --muted: #6f6658;
+    --line: #c4b9a6;
+    --panel-border: #c4b9a6;
+    --toolbar-bg: rgba(255,254,251,.92);
+    --shadow: 0 4px 14px rgba(28,25,21,.06);
+    --api: #397b53;
+    --api-fill: rgba(42,119,75,.09);
+    --table: #765d86;
+    --table-fill: rgba(105,75,130,.09);
+    --write: #ad4b25;
+    --write-fill: rgba(182,70,27,.09);
+    --read: #287e84;
+    --read-fill: rgba(31,117,126,.09);
+    --both: #9a671f;
+    --both-fill: rgba(180,83,9,.12);
+    --fk: #9e463f;
+    --fk-fill: rgba(190,24,93,.10);
+    --uncert: #8A8378;
+    --group: #ad4b25;
+    --external: #64748B;
+    --external-fill: rgba(100,116,139,.12);
+    --frontend: #0E7490;
+    --frontend-fill: rgba(14,116,144,.12);
+  }
+  [data-theme="dark"] {
+    --bg: #020617;
+    --canvas: #0f172a;
+    --grid: #1E293B;
+    --card: #111827;
+    --ink: #F1F5F9;
+    --muted: #94A3B8;
+    --line: #334155;
+    --panel-border: #334155;
+    --toolbar-bg: rgba(15,23,42,.88);
+    --shadow: 0 8px 24px rgba(0,0,0,.35);
+    --api: #34D399;
+    --api-fill: rgba(52,211,153,.16);
+    --table: #A78BFA;
+    --table-fill: rgba(167,139,250,.16);
+    --write: #FBBF24;
+    --write-fill: rgba(251,191,36,.14);
+    --read: #60A5FA;
+    --read-fill: rgba(96,165,250,.14);
+    --both: #FB923C;
+    --both-fill: rgba(251,146,60,.16);
+    --fk: #FB7185;
+    --fk-fill: rgba(251,113,133,.14);
+    --uncert: #64748B;
+    --group: #F59E0B;
+    --external: #94A3B8;
+    --external-fill: rgba(148,163,184,.14);
+    --frontend: #22D3EE;
+    --frontend-fill: rgba(34,211,238,.14);
+  }
+
+  [data-preset="editorial"][data-theme="light"] {
+    --bg: #F4EFE6; --canvas: #FFFAF3; --grid: #E4D9C8; --card: #FFFAF3;
+    --ink: #242018; --muted: #7A7268; --line: #E6DCCB; --panel-border: #E6DCCB;
+    --toolbar-bg: rgba(255,250,243,.92);
+    --api: #397b53; --api-fill: rgba(15,118,110,.10);
+    --table: #6D28D9; --table-fill: rgba(109,40,217,.10);
+    --write: #B45309; --write-fill: rgba(180,83,9,.10);
+    --read: #287e84; --read-fill: rgba(31,117,126,.09);
+    --both: #C2410C; --both-fill: rgba(194,65,12,.10);
+    --fk: #9e463f; --fk-fill: rgba(190,24,93,.10);
+    --group: #B45309;
+  }
+  [data-preset="classic"][data-theme="light"] {
+    --bg: #F8FAFC; --canvas: #FFFFFF; --grid: #E2E8F0; --card: #FFFFFF;
+    --ink: #0F172A; --muted: #64748B; --line: #E2E8F0; --panel-border: #E2E8F0;
+    --toolbar-bg: rgba(255,255,255,.92);
+    --api: #059669; --api-fill: rgba(52,211,153,.18);
+    --table: #765d86; --table-fill: rgba(167,139,250,.20);
+    --write: #D97706; --write-fill: rgba(251,191,36,.18);
+    --read: #287e84; --read-fill: rgba(96,165,250,.14);
+    --both: #EA580C; --both-fill: rgba(251,146,60,.15);
+    --fk: #E11D48; --fk-fill: rgba(251,113,133,.15);
+    --group: #D97706;
+  }
+  [data-preset="signal-flow"][data-theme="light"] {
+    --bg: #F4F9FC; --canvas: #F8FBFE; --grid: #D7E7F0; --card: #FFFFFF;
+    --ink: #102638; --muted: #4B6B7A; --line: #C9DCE6; --panel-border: #C9DCE6;
+    --toolbar-bg: rgba(244,249,252,.92);
+    --api: #087F69; --api-fill: rgba(8,127,105,.12);
+    --table: #7254C7; --table-fill: rgba(114,84,199,.12);
+    --write: #B9670B; --write-fill: rgba(185,103,11,.12);
+    --read: #0789A1; --read-fill: rgba(7,137,161,.12);
+    --both: #C2410C; --both-fill: rgba(194,65,12,.12);
+    --fk: #C53A59; --fk-fill: rgba(197,58,89,.12);
+    --group: #B9670B;
+  }
+  [data-preset="editorial"][data-theme="dark"] {
+    --bg: #181611; --canvas: #1C1914; --grid: #2A261F; --card: #1C1914;
+    --ink: #F4EDDF; --muted: #B3A894; --line: #3A342A; --panel-border: #3A342A;
+    --toolbar-bg: rgba(24,22,17,.9);
+    --api: #5EEAD4; --api-fill: rgba(94,234,212,.16);
+    --table: #C4B5FD; --table-fill: rgba(196,181,253,.16);
+    --write: #DD6B3D; --write-fill: rgba(221,107,61,.16);
+    --read: #93C5FD; --read-fill: rgba(147,197,253,.16);
+    --fk: #FDA4AF; --fk-fill: rgba(253,164,175,.16);
+    --group: #DD6B3D;
+  }
+  [data-preset="classic"][data-theme="dark"] {
+    --bg: #030711; --canvas: #0B1220; --grid: #1E293B; --card: #0F172A;
+    --ink: #F5FBFF; --muted: #94A3B8; --line: #334155; --panel-border: #334155;
+    --toolbar-bg: rgba(7,16,30,.86);
+    --api: #34D399; --api-fill: rgba(52,211,153,.16);
+    --table: #A78BFA; --table-fill: rgba(167,139,250,.16);
+    --write: #FBBF24; --write-fill: rgba(251,191,36,.14);
+    --read: #67E8F9; --read-fill: rgba(103,232,249,.14);
+    --fk: #FB7185; --fk-fill: rgba(251,113,133,.14);
+    --group: #FBBF24;
+  }
+  [data-preset="signal-flow"][data-theme="dark"] {
+    --bg: #041620; --canvas: #072433; --grid: #123246; --card: #0A2C3E;
+    --ink: #E9F7FF; --muted: #7FA8BC; --line: #1F5068; --panel-border: #1F5068;
+    --toolbar-bg: rgba(4,26,38,.88);
+    --api: #2DD4BF; --api-fill: rgba(45,212,191,.16);
+    --table: #9F8FEF; --table-fill: rgba(159,143,239,.16);
+    --write: #F0A94E; --write-fill: rgba(240,169,78,.14);
+    --read: #38BDF8; --read-fill: rgba(56,189,248,.16);
+    --fk: #F472B6; --fk-fill: rgba(244,114,182,.14);
+    --group: #F0A94E;
+  }
+  [data-preset="blueprint"][data-theme="light"] {
+    --bg: #EDF7FA; --canvas: #F9FDFF; --grid: #B5D5E1; --card: #F9FDFF;
+    --ink: #123344; --muted: #4E7486; --line: #9CC0D0; --panel-border: #78AABD;
+    --toolbar-bg: rgba(247,252,254,.94);
+    --api: #08755F; --api-fill: rgba(8,117,95,.08);
+    --table: #6757A8; --table-fill: rgba(103,87,168,.08);
+    --write: #A86609; --write-fill: rgba(168,102,9,.08);
+    --read: #087F9C; --read-fill: rgba(8,127,156,.08);
+    --both: #B65120; --both-fill: rgba(182,81,32,.08);
+    --fk: #B32F50; --fk-fill: rgba(179,47,80,.08);
+    --group: #5E90A6;
+  }
+  [data-preset="blueprint"][data-theme="dark"] {
+    --bg: #06131F; --canvas: #0A1E30; --grid: #17425A; --card: #0D2740;
+    --ink: #E3F6FF; --muted: #91B8CA; --line: #2C5B76; --panel-border: #27627F;
+    --toolbar-bg: rgba(7,28,45,.92);
+    --api: #69DFBD; --api-fill: rgba(105,223,189,.14);
+    --table: #B4A8FF; --table-fill: rgba(180,168,255,.16);
+    --write: #FFD166; --write-fill: rgba(255,209,102,.14);
+    --read: #66D9EF; --read-fill: rgba(102,217,239,.14);
+    --both: #FFAD66; --both-fill: rgba(255,173,102,.16);
+    --fk: #FF8DA1; --fk-fill: rgba(255,141,161,.14);
+    --group: #34799A;
+  }
+  /* Blueprint trades rounded, glowing chrome for squared, drafting-style precision. */
+  [data-preset="blueprint"] .card,
+  [data-preset="blueprint"] .panel,
+  [data-preset="blueprint"] .group,
+  [data-preset="blueprint"] .stat,
+  [data-preset="blueprint"] .pill,
+  [data-preset="blueprint"] .badge,
+  [data-preset="blueprint"] .chip,
+  [data-preset="blueprint"] .tab,
+  [data-preset="blueprint"] .tool,
+  [data-preset="blueprint"] .preset-menu,
+  [data-preset="blueprint"] table.grid { border-radius: 3px; }
+
+  .chrome { position:fixed; top:1rem; right:1rem; z-index:40; display:flex; gap:.5rem; }
+  .chrome button {
+    background: var(--toolbar-bg); color: var(--ink); border:1px solid var(--panel-border);
+    padding:.5rem .875rem; border-radius:.625rem; font:inherit; font-size:.75rem; cursor:pointer;
+    backdrop-filter:blur(10px); box-shadow:var(--shadow); min-height:2.5rem;
+  }
+  .chrome button:hover { filter:brightness(1.04); }
+  .chrome button:focus-visible { outline:2px solid var(--frontend); outline-offset:2px; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 13px/1.45 "JetBrains Mono","SFMono-Regular","PingFang SC","Noto Sans SC","Segoe UI",ui-monospace,system-ui,sans-serif;
+  }
+  .page { max-width: 1280px; margin: 0 auto; padding: 28px 22px 56px; }
+  header.app { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 14px; }
+  .brand { display: flex; gap: 10px; align-items: flex-start; }
+  .pulse { width: 10px; height: 10px; border-radius: 50%; background: var(--api); margin-top: 8px;
+    box-shadow: 0 0 0 4px var(--api-fill); }
+  header.app h1 { margin: 0; font-size: 22px; letter-spacing: -.025em; font-weight: 700; }
+  header.app .sub { color: var(--muted); margin-top: 4px; font-size: 12px; }
+  .stats { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .stat { background: var(--card); border: 1px solid var(--panel-border); border-radius: 999px; padding: 4px 10px; color: var(--muted); }
+  .stat b { color: var(--ink); font-weight: 650; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 10px 0 16px; position: relative; z-index: 30; }
+  .toolbar input {
+    border: 1px solid var(--panel-border); background: var(--toolbar-bg); color: var(--ink);
+    border-radius: 10px; padding: 7px 10px; min-width: 220px; outline: none;
+  }
+  .toolbar input:focus { border-color: var(--api); }
+  .chip, .tab, .tool {
+    border: 1px solid var(--panel-border); background: var(--toolbar-bg); color: var(--muted);
+    border-radius: 999px; padding: 6px 12px; cursor: pointer; font: inherit;
+  }
+  .tool { border-radius: 10px; box-shadow: var(--shadow); }
+  .chip.on, .tab.on { border-color: var(--ink); color: var(--ink); background: var(--card); }
+  .tabs { display: flex; gap: 8px; }
+  .spacer { flex: 1; }
+
+  .preset-wrap { position: relative; }
+  #btn-preset { display: flex; align-items: center; gap: 6px; }
+  #btn-preset .chev { font-size: 9px; color: var(--muted); transition: transform .15s ease; }
+  .preset-wrap.open #btn-preset .chev { transform: rotate(180deg); }
+  .preset-menu {
+    display: none; position: absolute; right: 0; top: calc(100% + 6px); min-width: 220px;
+    background: var(--toolbar-bg); border: 1px solid var(--panel-border); border-radius: 12px;
+    padding: 6px; box-shadow: 0 16px 40px rgba(0,0,0,.16); z-index: 100; backdrop-filter: blur(10px);
+  }
+  .preset-wrap.open .preset-menu { display: block; }
+  .preset-option {
+    width: 100%; display: flex; align-items: center; gap: 8px; text-align: left;
+    background: transparent; border: 0; color: var(--ink); padding: 7px 8px;
+    border-radius: 8px; cursor: pointer; font: inherit;
+  }
+  .preset-option:hover, .preset-option[aria-checked="true"] { background: var(--api-fill); }
+  .preset-swatch { width: 16px; height: 16px; border-radius: 4px; flex: none; border: 1.5px solid; }
+  .preset-swatch.classic { background: #E2E8F0; border-color: #059669; }
+  .preset-swatch.signal-flow { background: #D7E7F0; border-color: #0789A1; }
+  .preset-swatch.blueprint { background: #B5D5E1; border-color: #087F9C; }
+  .preset-swatch.editorial { background: #E4D9C8; border-color: #B45309; }
+  .preset-copy { display: flex; flex-direction: column; min-width: 0; }
+  .preset-copy strong { font-size: 12px; font-weight: 650; }
+  .preset-copy small { font-size: 10px; color: var(--muted); }
+  .panel {
+    background: var(--card); border: 1px solid var(--panel-border); border-radius: 18px;
+    overflow: hidden; box-shadow: var(--shadow);
+  }
+  .canvas-wrap {
+    position: relative; min-height: 540px; background: var(--canvas);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+  .edge-label { font-size: 10px; fill: var(--muted); font-family: inherit; }
+  .pill {
+    position: absolute; top: 14px; left: 14px; z-index: 3;
+    background: var(--toolbar-bg); border: 1px solid var(--panel-border);
+    border-radius: 8px; padding: 3px 8px; font-size: 12px; color: var(--muted);
+    backdrop-filter: blur(8px);
+  }
+  .nodes { position: relative; z-index: 2; padding: 52px 22px 28px; display: flex; gap: 56px; align-items: flex-start; }
+  .col { display: flex; flex-direction: column; gap: 10px; min-width: 220px; }
+  .col h3 { margin: 0 0 4px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .group {
+    border: 1.5px dashed var(--group); border-radius: 16px; padding: 12px;
+    display: flex; flex-direction: column; gap: 8px; background: transparent;
+  }
+  .card {
+    background: var(--card); border: 1.5px solid var(--line); border-radius: 12px;
+    padding: 8px 10px; cursor: pointer; min-width: 200px;
+  }
+  .card.api { border-color: var(--api); background: var(--api-fill); }
+  .card.tbl { border-color: var(--table); background: var(--table-fill); }
+  .card.dim { opacity: .28; }
+  .card .kicker { font-size: 10px; letter-spacing: .06em; color: var(--muted); }
+  .card .title { font-weight: 650; font-size: 13px; }
+  .card .meta { font-size: 11px; color: var(--muted); }
+  .badges { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+  .badge { font-size: 10px; border-radius: 999px; padding: 1px 6px; border: 1px solid transparent; }
+  .badge.R { background: var(--read-fill); color: var(--read); border-color: color-mix(in srgb, var(--read) 30%, transparent); }
+  .badge.W { background: var(--write-fill); color: var(--write); border-color: color-mix(in srgb, var(--write) 30%, transparent); }
+  .badge.RW { background: var(--both-fill); color: var(--both); border-color: color-mix(in srgb, var(--both) 30%, transparent); }
+  .badge.U { background: transparent; color: var(--uncert); border-color: var(--line); }
+  .caption { padding: 16px 22px 18px; border-top: 1px solid var(--panel-border); background: var(--card); }
+  .caption h2 { margin: 0 0 4px; font-size: 18px; letter-spacing: -.02em; }
+  .caption p { margin: 0; color: var(--muted); }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; padding: 10px 22px 12px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--panel-border); }
+  .dot { width: 16px; height: 10px; border-radius: 3px; display: inline-block; margin-right: 6px; vertical-align: middle; }
+  table.grid { width: 100%; border-collapse: collapse; margin-top: 16px; background: var(--card); border: 1px solid var(--panel-border); border-radius: 14px; overflow: hidden; }
+  table.grid th, table.grid td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--panel-border); vertical-align: top; }
+  table.grid th { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .04em; }
+  table.grid tr { cursor: pointer; }
+  table.grid tr:hover td { background: color-mix(in srgb, var(--api-fill) 70%, transparent); }
+  .fields { margin-top: 6px; }
+  .field { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; padding: 3px 0; border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent); }
+  .field.pk { font-weight: 650; }
+  .field.fk { color: var(--fk); }
+  .field.unused { opacity: .35; }
+  .field .t { color: var(--muted); }
+  #view-t03 { padding: 32px 16px 20px; overflow-x: auto; }
+  .seq-participant { transition: transform .15s ease; }
+  .seq-participant:hover rect { filter: brightness(1.1); }
+  .seq-msg { cursor: default; }
+  .seq-msg:hover rect { filter: brightness(1.08); stroke-width: 1.2px; }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  #canvas-inner { position: relative; }
+  .diagram-nav {
+    position: absolute; bottom: 14px; right: 14px; z-index: 15; display: flex; gap: 4px;
+  }
+  .diagram-nav button {
+    background: var(--toolbar-bg); color: var(--ink); border: 1px solid var(--panel-border);
+    border-radius: 8px; padding: 5px 10px; font: inherit; font-size: 11px; cursor: pointer;
+    backdrop-filter: blur(8px); min-width: 2.4rem; min-height: 1.9rem;
+  }
+  .diagram-nav button:hover { filter: brightness(1.06); }
+  .diagram-nav button:focus-visible { outline: 2px solid var(--frontend); outline-offset: 2px; }
+
+  .card.path { border-color: var(--frontend); box-shadow: 0 0 0 2px var(--frontend-fill); }
+  .card.path-step { border-color: var(--frontend); background: var(--frontend-fill); box-shadow: 0 0 0 2px var(--frontend); }
+
+  .side-panel {
+    position: fixed; top: 120px; right: 20px; width: min(340px, calc(100vw - 40px)); max-height: calc(100vh - 140px);
+    background: var(--toolbar-bg); border: 1px solid var(--panel-border); border-radius: 14px;
+    box-shadow: 0 20px 48px rgba(0,0,0,.22); backdrop-filter: blur(12px); z-index: 40;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .side-panel[hidden] { display: none; }
+  .side-panel-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 10px 12px; border-bottom: 1px solid var(--panel-border);
+  }
+  .side-panel-kicker { font-size: 11px; letter-spacing: .06em; color: var(--muted); text-transform: uppercase; font-weight: 650; }
+  .side-panel-close {
+    background: transparent; border: 0; color: var(--muted); font-size: 16px; line-height: 1; cursor: pointer; padding: 2px 4px;
+  }
+  .side-panel-close:hover { color: var(--ink); }
+  .side-panel-body { padding: 10px 12px; overflow-y: auto; flex: 1; }
+  .side-panel-actions { padding: 8px 12px; border-top: 1px solid var(--panel-border); display: flex; gap: 6px; flex-wrap: wrap; }
+  .side-panel-actions button, .route-actions button {
+    border: 1px solid var(--panel-border); background: var(--card); color: var(--ink);
+    border-radius: 8px; padding: 5px 10px; font: inherit; font-size: 11px; cursor: pointer;
+  }
+  .side-panel-actions button:hover, .route-actions button:hover { filter: brightness(1.06); }
+
+  .detail-title { font-size: 14px; font-weight: 650; margin-bottom: 2px; word-break: break-word; }
+  .detail-sub { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+  .detail-sub code { background: color-mix(in srgb, var(--line) 40%, transparent); border-radius: 4px; padding: 1px 4px; }
+  .detail-rows { display: flex; flex-direction: column; gap: 8px; }
+  .detail-row { border: 1px solid var(--panel-border); border-radius: 10px; padding: 8px; background: var(--card); }
+  .detail-row-head { display: flex; align-items: center; gap: 6px; font-size: 12px; flex-wrap: wrap; }
+  .detail-fields { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .detail-evidence { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .detail-evidence code {
+    background: color-mix(in srgb, var(--line) 40%, transparent); border-radius: 6px; padding: 6px 8px;
+    display: block; margin-top: 4px; font-size: 11px; line-height: 1.45; word-break: break-all; white-space: pre-wrap;
+  }
+  .conf { font-size: 9px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 1px 6px; margin-left: 2px; }
+  .conf-uncertain { color: var(--uncert); border-color: var(--uncert); }
+
+  .route-picks { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .route-pick {
+    border: 1px dashed var(--panel-border); background: var(--card); color: var(--ink);
+    border-radius: 8px; padding: 5px 9px; font: inherit; font-size: 11px; cursor: pointer; max-width: 100%;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .route-pick:hover { border-color: var(--frontend); }
+  .route-arrow { color: var(--muted); font-size: 11px; }
+  .route-chain { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin: 8px 0; }
+  .route-chip {
+    display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 999px;
+    border: 1px solid var(--panel-border); font-size: 11px; background: var(--card);
+  }
+  .route-chip[data-current="true"] { border-color: var(--frontend); background: var(--frontend-fill); font-weight: 650; }
+  .route-journey { display: flex; gap: 6px; margin: 8px 0; }
+  .route-journey button {
+    border: 1px solid var(--panel-border); background: var(--card); color: var(--ink);
+    border-radius: 8px; padding: 5px 10px; font: inherit; font-size: 11px; cursor: pointer;
+  }
+  .route-journey button:hover { filter: brightness(1.06); }
+  .route-actions { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+
+  .finder-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 100;
+    display: flex; justify-content: center; padding-top: 12vh;
+  }
+  .finder-overlay[hidden] { display: none; }
+  .finder-box {
+    width: min(480px, 92vw); max-height: 70vh; background: var(--card); border: 1px solid var(--panel-border);
+    border-radius: 14px; box-shadow: 0 24px 60px rgba(0,0,0,.35); overflow: hidden; display: flex; flex-direction: column;
+  }
+  .finder-head { display: flex; align-items: center; gap: 6px; padding: 10px; border-bottom: 1px solid var(--panel-border); }
+  .finder-head input {
+    flex: 1; border: 1px solid var(--panel-border); background: var(--toolbar-bg); color: var(--ink);
+    border-radius: 8px; padding: 7px 10px; outline: none; font: inherit;
+  }
+  .finder-head input:focus { border-color: var(--api); }
+  .finder-close { background: transparent; border: 0; color: var(--muted); font-size: 18px; cursor: pointer; padding: 2px 6px; }
+  .finder-close:hover { color: var(--ink); }
+  .finder-hint { padding: 6px 12px 0; font-size: 11px; color: var(--muted); }
+  .finder-results { overflow-y: auto; padding: 6px; display: flex; flex-direction: column; gap: 2px; }
+  .finder-result {
+    display: flex; align-items: center; gap: 8px; text-align: left; background: transparent; border: 0;
+    color: var(--ink); padding: 7px 8px; border-radius: 8px; cursor: pointer; font: inherit;
+  }
+  .finder-result:hover, .finder-result.active { background: var(--api-fill); }
+  .finder-tag {
+    font-size: 9px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px;
+    padding: 1px 6px; flex: none;
+  }
+  .finder-copy { display: flex; flex-direction: column; min-width: 0; }
+  .finder-copy strong { font-size: 12px; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .finder-copy small { font-size: 10px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .finder-empty { padding: 16px; text-align: center; color: var(--muted); font-size: 12px; }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--bg); padding: 8px 16px; border-radius: 999px;
+    font-size: 12px; z-index: 200; opacity: 0; transition: opacity .2s ease; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+  .toast[hidden] { display: none; }
+  @media (max-width: 720px) {
+    .side-panel { top: auto; bottom: 12px; right: 12px; left: 12px; width: auto; max-height: 60vh; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="app">
+    <div class="brand">
+      <span class="pulse" aria-hidden="true"></span>
+      <div>
+        <h1 id="proj">API → DB Map</h1>
+        <div class="sub" id="sub">接口读写了哪些表，表怎么关联，字段怎么连。</div>
+      </div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </header>
+  <div class="toolbar">
+    <div class="tabs">
+      <button class="tab on" data-tab="t01">T · 01 影响架构图</button>
+      <button class="tab" data-tab="t02">T · 02 表与字段关系</button>
+      <button class="tab" data-tab="t03">T · 03 接口时序图</button>
+    </div>
+    <input id="q" placeholder="搜索接口 / 表 / 字段" />
+    <button class="chip on" data-op="ALL">全部</button>
+    <button class="chip" data-op="R">只看读</button>
+    <button class="chip" data-op="W">只看写</button>
+    <button class="tool" id="btn-finder" type="button" title="查找接口 / 表（快捷键 /）">查找</button>
+    <button class="tool" id="btn-route" type="button" title="路径追踪（快捷键 R）">路径追踪</button>
+    <span class="spacer"></span>
+    <div class="preset-wrap" id="preset-wrap">
+      <button class="tool" id="btn-preset" type="button" aria-haspopup="menu" aria-expanded="false"
+              aria-controls="preset-menu" title="选择视觉风格（快捷键 S 循环切换）">
+        <span id="preset-label">经典</span><span class="chev" aria-hidden="true">▾</span>
+      </button>
+      <div class="preset-menu" id="preset-menu" role="menu" aria-label="视觉风格">
+        <button class="preset-option" data-preset="classic" role="menuitemradio" aria-checked="true" type="button">
+          <span class="preset-swatch classic" aria-hidden="true"></span>
+          <span class="preset-copy"><strong>经典</strong><small>稳定的技术默认风格</small></span>
+        </button>
+        <button class="preset-option" data-preset="signal-flow" role="menuitemradio" aria-checked="false" type="button">
+          <span class="preset-swatch signal-flow" aria-hidden="true"></span>
+          <span class="preset-copy"><strong>信号流</strong><small>突出动态流向</small></span>
+        </button>
+        <button class="preset-option" data-preset="blueprint" role="menuitemradio" aria-checked="false" type="button">
+          <span class="preset-swatch blueprint" aria-hidden="true"></span>
+          <span class="preset-copy"><strong>蓝图</strong><small>工程评审</small></span>
+        </button>
+        <button class="preset-option" data-preset="editorial" role="menuitemradio" aria-checked="false" type="button">
+          <span class="preset-swatch editorial" aria-hidden="true"></span>
+          <span class="preset-copy"><strong>编辑风格</strong><small>适合发布与上线说明</small></span>
+        </button>
+      </div>
+    </div>
+    <button class="tool" id="btn-theme" type="button" title="切换主题（快捷键 T）">深色</button>
+  </div>
+  <section class="panel">
+    <div class="canvas-wrap" id="canvas">
+      <div class="pill" id="pill">T · 01</div>
+      <div class="diagram-nav no-print" role="toolbar" aria-label="缩放控制">
+        <button id="zoom-out" type="button" aria-label="缩小" title="缩小（-）">&minus;</button>
+        <button id="zoom-reset" type="button" aria-label="重置缩放" title="重置缩放（0）"><span id="zoom-pct">100%</span></button>
+        <button id="zoom-in" type="button" aria-label="放大" title="放大（+）">+</button>
+      </div>
+      <div id="canvas-inner">
+        <svg class="wires" id="wires"></svg>
+        <div id="view-t01"></div>
+        <div id="view-t02" hidden></div>
+        <div id="view-t03" hidden></div>
+      </div>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="caption">
+      <h2 id="cap-title">影响架构图</h2>
+      <p id="cap-desc">接口到数据表的读写边界——谁查谁、谁改谁，按模块铺开。</p>
+    </div>
+  </section>
+  <table class="grid" id="summary"></table>
+</div>
+
+<aside class="side-panel" id="detail-drawer" hidden aria-live="polite">
+  <div class="side-panel-head">
+    <span class="side-panel-kicker" id="detail-kicker">详情</span>
+    <button class="side-panel-close" id="detail-close" type="button" aria-label="关闭详情">&times;</button>
+  </div>
+  <div class="side-panel-body" id="detail-body"></div>
+  <div class="side-panel-actions">
+    <button id="detail-copy" type="button">复制链接</button>
+  </div>
+</aside>
+
+<aside class="side-panel" id="route-panel" hidden aria-label="路径追踪">
+  <div class="side-panel-head">
+    <span class="side-panel-kicker">路径追踪</span>
+    <button class="side-panel-close" id="route-close" type="button" aria-label="关闭路径追踪">&times;</button>
+  </div>
+  <div class="side-panel-body" id="route-body"></div>
+</aside>
+
+<div class="finder-overlay" id="finder-overlay" hidden>
+  <div class="finder-box" role="dialog" aria-modal="true" aria-label="查找节点">
+    <div class="finder-head">
+      <input id="finder-input" type="search" placeholder="输入接口路径或表名…" autocomplete="off" spellcheck="false" aria-label="查找接口或表" />
+      <button class="finder-close" id="finder-close" type="button" aria-label="关闭查找">&times;</button>
+    </div>
+    <div class="finder-hint" id="finder-hint"></div>
+    <div class="finder-results" id="finder-results"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+window.__IR__ = {"meta": {"project": "order-service", "root": ".", "stack": {"lang": "java", "framework": "spring", "orm": "mybatis", "db": "postgresql"}, "generated_at": "2026-09-11T15:30:00+09:00", "confidence_tier": "T3_orm", "notes": ["schema from entity + mapper XML", "no live DB"]}, "tables": [{"name": "users", "schema": "public", "module": "account", "fields": [{"name": "id", "type": "bigint", "pk": true, "nullable": false}, {"name": "email", "type": "varchar", "uk": true, "nullable": false}, {"name": "status", "type": "varchar", "nullable": false, "desc": "账号状态（active/disabled）"}, {"name": "created_at", "type": "timestamptz", "nullable": false}]}, {"name": "orders", "schema": "public", "module": "commerce", "fields": [{"name": "id", "type": "bigint", "pk": true, "nullable": false}, {"name": "user_id", "type": "bigint", "nullable": false, "fk": {"table": "users", "column": "id", "onDelete": "RESTRICT", "card": "N:1"}}, {"name": "amount", "type": "numeric", "nullable": false}, {"name": "status", "type": "varchar", "nullable": false}, {"name": "updated_at", "type": "timestamptz", "nullable": false}]}, {"name": "order_items", "schema": "public", "module": "commerce", "fields": [{"name": "id", "type": "bigint", "pk": true, "nullable": false}, {"name": "order_id", "type": "bigint", "nullable": false, "fk": {"table": "orders", "column": "id", "onDelete": "CASCADE", "card": "N:1"}}, {"name": "sku_id", "type": "bigint", "nullable": false, "fk": {"table": "skus", "column": "id", "card": "N:1"}}, {"name": "qty", "type": "int", "nullable": false}, {"name": "price", "type": "numeric", "nullable": false}]}, {"name": "skus", "schema": "public", "module": "catalog", "fields": [{"name": "id", "type": "bigint", "pk": true, "nullable": false}, {"name": "name", "type": "varchar", "nullable": false}, {"name": "stock", "type": "int", "nullable": false}]}, {"name": "payments", "schema": "public", "module": "commerce", "fields": [{"name": "id", "type": "bigint", "pk": true, "nullable": false}, {"name": "order_id", "type": "bigint", "nullable": false, "fk": {"table": "orders", "column": "id", "card": "1:1"}}, {"name": "amount", "type": "numeric", "nullable": false}, {"name": "channel", "type": "varchar", "nullable": false}, {"name": "status", "type": "varchar", "nullable": false}]}], "relations": [{"from": {"table": "orders", "field": "user_id"}, "to": {"table": "users", "field": "id"}, "card": "N:1", "source": "fk"}, {"from": {"table": "order_items", "field": "order_id"}, "to": {"table": "orders", "field": "id"}, "card": "N:1", "source": "fk"}, {"from": {"table": "order_items", "field": "sku_id"}, "to": {"table": "skus", "field": "id"}, "card": "N:1", "source": "fk"}, {"from": {"table": "payments", "field": "order_id"}, "to": {"table": "orders", "field": "id"}, "card": "1:1", "source": "fk"}], "endpoints": [{"id": "POST /api/orders", "method": "POST", "path": "/api/orders", "handler": {"file": "OrderController.java", "fn": "create", "line": 48}, "tables": [{"name": "users", "op": "SELECT", "fields_read": ["id", "status"], "fields_written": [], "confidence": "high", "evidence": "UserMapper.xml:22"}, {"name": "skus", "op": "SELECT", "fields_read": ["id", "stock"], "fields_written": [], "confidence": "high", "evidence": "SkuMapper.xml:17"}, {"name": "skus", "op": "UPDATE", "fields_read": ["id", "stock"], "fields_written": ["stock"], "confidence": "high", "evidence": "SkuMapper.xml:41"}, {"name": "orders", "op": "INSERT", "fields_read": [], "fields_written": ["id", "user_id", "amount", "status"], "confidence": "high", "evidence": "OrderMapper.xml:10"}, {"name": "order_items", "op": "INSERT", "fields_read": [], "fields_written": ["order_id", "sku_id", "qty", "price"], "confidence": "high", "evidence": "OrderItemMapper.xml:8"}], "sequence": [{"from": "Client", "to": "Controller", "label": "POST /api/orders"}, {"from": "Controller", "to": "OrderService", "label": "create()"}, {"from": "OrderService", "to": "users", "label": "SELECT id,status", "op": "R"}, {"from": "OrderService", "to": "skus", "label": "SELECT id,stock", "op": "R"}, {"from": "OrderService", "to": "skus", "label": "UPDATE stock", "op": "W"}, {"from": "OrderService", "to": "orders", "label": "INSERT", "op": "W"}, {"from": "OrderService", "to": "order_items", "label": "INSERT", "op": "W"}]}, {"id": "GET /api/orders/{id}", "method": "GET", "path": "/api/orders/{id}", "handler": {"file": "OrderController.java", "fn": "get", "line": 61}, "tables": [{"name": "orders", "op": "SELECT", "fields_read": ["id", "user_id", "amount", "status"], "fields_written": [], "confidence": "high", "evidence": "OrderMapper.xml:28"}, {"name": "order_items", "op": "SELECT", "fields_read": ["order_id", "sku_id", "qty", "price"], "fields_written": [], "confidence": "high", "evidence": "OrderItemMapper.xml:19"}, {"name": "users", "op": "SELECT", "fields_read": ["id", "email"], "fields_written": [], "confidence": "med", "evidence": "OrderService.java:90"}], "sequence": [{"from": "Client", "to": "Controller", "label": "GET /api/orders/{id}"}, {"from": "Controller", "to": "OrderService", "label": "get()"}, {"from": "OrderService", "to": "orders", "label": "SELECT * WHERE id", "op": "R"}, {"from": "OrderService", "to": "order_items", "label": "SELECT WHERE order_id", "op": "R"}, {"from": "OrderService", "to": "users", "label": "SELECT id,email", "op": "R"}]}, {"id": "PUT /api/orders/{id}/pay", "method": "PUT", "path": "/api/orders/{id}/pay", "handler": {"file": "OrderController.java", "fn": "pay", "line": 77}, "tables": [{"name": "orders", "op": "UPDATE", "fields_read": ["id", "status", "amount"], "fields_written": ["status", "updated_at"], "confidence": "high", "evidence": "OrderMapper.xml:55"}, {"name": "payments", "op": "INSERT", "fields_read": [], "fields_written": ["order_id", "amount", "channel", "status"], "confidence": "high", "evidence": "PaymentMapper.xml:12"}], "sequence": [{"from": "Client", "to": "Controller", "label": "PUT /api/orders/{id}/pay"}, {"from": "Controller", "to": "OrderService", "label": "pay()"}, {"from": "OrderService", "to": "orders", "label": "SELECT id,status,amount", "op": "R"}, {"from": "OrderService", "to": "payments", "label": "INSERT", "op": "W"}, {"from": "OrderService", "to": "orders", "label": "UPDATE status", "op": "W"}]}], "table_api_index": {"users": ["POST /api/orders", "GET /api/orders/{id}"], "orders": ["POST /api/orders", "GET /api/orders/{id}", "PUT /api/orders/{id}/pay"], "order_items": ["POST /api/orders", "GET /api/orders/{id}"], "skus": ["POST /api/orders"], "payments": ["PUT /api/orders/{id}/pay"]}};
+</script>
+<script>
+const IR = window.__IR__ && window.__IR__.endpoints ? window.__IR__ : null;
+const caps = {
+  t01: ["T · 01", "影响架构图", "接口到数据表的读写边界——谁查谁、谁改谁，按模块铺开。"],
+  t02: ["T · 02", "表与字段关系图", "主外键与字段级连线——选中接口后高亮实际读写字段，其余淡化。"],
+  t03: ["T · 03", "接口时序图", "一次请求里谁调用谁、何时落库、读哪些列、写哪些列。"]
+};
+let tab = "t01", filterOp = "ALL", selected = null, query = "";
+let detailTarget = null;               // {type:"ep"|"tbl", id}
+let zoomLevel = 1;
+let finderMode = null;                 // null | "jump" | "route-start" | "route-end"
+let finderAll = null, finderCurrentItems = [], finderActiveIndex = 0;
+let graphAdj = null;
+const routeState = { startId: null, endId: null, path: null, stepIndex: -1, playing: false, timer: null };
+const THEME_KEY = "api-db-map-theme";
+
+function $(id){ return document.getElementById(id); }
+function css(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function escAttr(s){ return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;"); }
+function isWrite(op){ return /INSERT|UPDATE|DELETE|UPSERT/.test(op||""); }
+function isRead(op){ return /SELECT|JOIN_READ/.test(op||""); }
+function toast(msg){
+  const t = $("toast");
+  if(!t) return;
+  t.textContent = msg;
+  t.hidden = false;
+  requestAnimationFrame(() => t.classList.add("show"));
+  clearTimeout(t._hideTimer);
+  t._hideTimer = setTimeout(() => { t.classList.remove("show"); setTimeout(()=>{ t.hidden = true; }, 220); }, 1600);
+}
+function copyText(str){
+  const done = ok => toast(ok ? "已复制链接" : "复制失败，请手动复制地址栏");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(str).then(()=>done(true), ()=>fallbackCopy(str, done));
+  } else fallbackCopy(str, done);
+}
+function fallbackCopy(str, done){
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = str; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    done(ok);
+  } catch(e){ done(false); }
+}
+function tableOps(name){
+  const ops = new Set();
+  (IR.endpoints||[]).forEach(ep => ep.tables.forEach(t => { if(t.name===name) ops.add(t.op); }));
+  const R = [...ops].some(isRead), W = [...ops].some(isWrite);
+  return R && W ? "RW" : W ? "W" : R ? "R" : "";
+}
+function matchQ(s){ return !query || (s||"").toLowerCase().includes(query); }
+function visibleEp(ep){
+  if(!matchQ(ep.id+" "+ep.path+" "+ep.tables.map(t=>t.name).join(" "))) return false;
+  if(filterOp==="R") return ep.tables.some(t=>isRead(t.op));
+  if(filterOp==="W") return ep.tables.some(t=>isWrite(t.op));
+  return true;
+}
+
+// --- Route graph (bipartite: endpoints <-> tables they touch) ---
+function buildGraph(){
+  if(graphAdj) return graphAdj;
+  const adj = {};
+  const addEdge = (a,b) => { (adj[a]=adj[a]||[]).push(b); (adj[b]=adj[b]||[]).push(a); };
+  (IR.endpoints||[]).forEach(ep => {
+    const ek = "ep:"+ep.id, seen = new Set();
+    ep.tables.forEach(t => { if(!seen.has(t.name)){ seen.add(t.name); addEdge(ek, "tbl:"+t.name); } });
+  });
+  graphAdj = adj;
+  return adj;
+}
+function bfsPath(adj, startKey, endKey){
+  if(!adj[startKey] || !adj[endKey]) return null;
+  if(startKey===endKey) return [startKey];
+  const visited = new Set([startKey]);
+  const parent = {};
+  const queue = [startKey];
+  while(queue.length){
+    const cur = queue.shift();
+    for(const next of (adj[cur]||[])){
+      if(visited.has(next)) continue;
+      visited.add(next);
+      parent[next] = cur;
+      if(next===endKey){
+        const path = [endKey];
+        let p = endKey;
+        while(p!==startKey){ p = parent[p]; path.unshift(p); }
+        return path;
+      }
+      queue.push(next);
+    }
+  }
+  return null;
+}
+function isValidNodeKey(k){
+  if(!k) return false;
+  if(k.indexOf("ep:")===0) return (IR.endpoints||[]).some(e=>e.id===k.slice(3));
+  if(k.indexOf("tbl:")===0) return (IR.tables||[]).some(t=>t.name===k.slice(4));
+  return false;
+}
+function routeLabel(key){
+  if(!key) return "";
+  if(key.indexOf("ep:")===0){ const ep=(IR.endpoints||[]).find(e=>e.id===key.slice(3)); return ep ? ep.method+" "+ep.path : key.slice(3); }
+  if(key.indexOf("tbl:")===0) return key.slice(4);
+  return key;
+}
+function routePathSets(){
+  const tblSet = new Set(), epSet = new Set();
+  let curKey = null;
+  if(routeState.path){
+    routeState.path.forEach(k => { if(k.indexOf("tbl:")===0) tblSet.add(k.slice(4)); else if(k.indexOf("ep:")===0) epSet.add(k.slice(3)); });
+    if(routeState.stepIndex>=0) curKey = routeState.path[routeState.stepIndex];
+  }
+  return {tblSet, epSet, curKey};
+}
+
+// --- URL hash deep-linking (state -> #tab=..&ep=..&tbl=..&route=.. ; never pushState) ---
+function writeHash(){
+  const params = new URLSearchParams();
+  params.set("tab", tab);
+  if(selected) params.set("ep", selected);
+  if(detailTarget && detailTarget.type==="tbl") params.set("tbl", detailTarget.id);
+  if(routeState.path) params.set("route", routeState.path.join(">"));
+  const hash = params.toString();
+  history.replaceState(null, "", location.pathname + location.search + (hash ? ("#"+hash) : ""));
+}
+function readHash(){
+  const params = new URLSearchParams(location.hash.replace(/^#/, ""));
+  const t = params.get("tab");
+  if(t && caps[t]) tab = t;
+  const ep = params.get("ep");
+  if(ep && (IR.endpoints||[]).some(e=>e.id===ep)){ selected = ep; detailTarget = {type:"ep", id:ep}; }
+  const tblName = params.get("tbl");
+  if(tblName && (IR.tables||[]).some(x=>x.name===tblName)){ detailTarget = {type:"tbl", id:tblName}; }
+  const route = params.get("route");
+  if(route){
+    const keys = route.split(">");
+    const adj = buildGraph();
+    const linked = keys.length>=2 && keys.every(isValidNodeKey) &&
+      keys.every((k,i) => i===0 || (adj[keys[i-1]]||[]).includes(k));
+    if(linked){
+      routeState.path = keys;
+      routeState.startId = keys[0];
+      routeState.endId = keys[keys.length-1];
+      routeState.stepIndex = -1;
+    }
+  }
+}
+function syncTabButtons(){
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x.dataset.tab===tab));
+}
+function switchTab(id){
+  if(!caps[id]) return;
+  tab = id;
+  syncTabButtons();
+  render();
+  writeHash();
+}
+
+const PRESET_KEY = "api-db-map-preset";
+const PRESET_ORDER = ["classic", "signal-flow", "blueprint", "editorial"];
+const PRESET_LABEL = {classic:"经典", "signal-flow":"信号流", blueprint:"蓝图", editorial:"编辑风格"};
+function setTheme(theme){
+  document.documentElement.setAttribute("data-theme", theme);
+  try { localStorage.setItem(THEME_KEY, theme); } catch(e){}
+  const btn = $("btn-theme");
+  if(btn){ btn.textContent = theme === "dark" ? "深色" : "浅色"; btn.setAttribute("aria-pressed", theme === "dark"); }
+  if (typeof render === "function" && IR) requestAnimationFrame(render);
+}
+function setPreset(preset){
+  if (!PRESET_LABEL[preset]) preset = "classic";
+  document.documentElement.setAttribute("data-preset", preset);
+  try { localStorage.setItem(PRESET_KEY, preset); } catch(e){}
+  const label = $("preset-label");
+  if(label) label.textContent = PRESET_LABEL[preset];
+  document.querySelectorAll(".preset-option").forEach(b => b.setAttribute("aria-checked", b.dataset.preset===preset ? "true" : "false"));
+  const wrap = $("preset-wrap");
+  if(wrap) wrap.classList.remove("open");
+  const trigger = $("btn-preset");
+  if(trigger) trigger.setAttribute("aria-expanded", "false");
+  if (typeof render === "function" && IR) requestAnimationFrame(render);
+}
+
+function boot(){
+  const saved = (()=>{ try { return localStorage.getItem(THEME_KEY); } catch(e){ return null; }})();
+  const savedP = (()=>{ try { return localStorage.getItem(PRESET_KEY); } catch(e){ return null; }})();
+  setTheme(saved === "light" ? "light" : "dark");
+  setPreset(savedP || "classic");
+  if(!IR){ $("sub").textContent = "缺少 api-db-map.json，无法渲染。"; return; }
+  $("proj").textContent = (IR.meta && IR.meta.project || "API → DB Map") + "  ·  接口影响图";
+  const st = IR.meta && IR.meta.stack || {};
+  $("sub").textContent = [st.framework, st.orm, st.db, IR.meta.confidence_tier].filter(Boolean).join("  /  ");
+  $("stats").innerHTML = [
+    ["接口", (IR.endpoints||[]).length],
+    ["表", (IR.tables||[]).length],
+    ["关系", (IR.relations||[]).length]
+  ].map(([k,v])=>`<span class="stat"><b>${v}</b> ${k}</span>`).join("");
+  readHash();
+  syncTabButtons();
+  render();
+  renderDetail();
+  renderRoutePanel();
+  if(routeState.path) $("route-panel").hidden = false;
+}
+function render(){
+  $("pill").textContent = caps[tab][0];
+  $("cap-title").textContent = caps[tab][1];
+  $("cap-desc").textContent = caps[tab][2];
+  $("view-t01").hidden = tab!=="t01";
+  $("view-t02").hidden = tab!=="t02";
+  $("view-t03").hidden = tab!=="t03";
+  if(tab==="t01") renderT01();
+  if(tab==="t02") renderT02();
+  if(tab==="t03") renderT03();
+  renderLegend();
+  renderSummary();
+}
+function renderLegend(){
+  const items = [
+    [css("--api")||"#0F766E","接口"],
+    [css("--table")||"#7C3AED","数据表"],
+    [css("--read")||"#1D4ED8","读 SELECT"],
+    [css("--write")||"#C2410C","写 INSERT/UPDATE/DELETE"],
+    [css("--fk")||"#BE185D","字段外键"],
+    [css("--uncert")||"#8A8378","不确定"]
+  ];
+  $("legend").innerHTML = items.map(([c,l])=>`<span><i class="dot" style="background:${c}"></i>${l}</span>`).join("");
+}
+
+function clearWires(){
+  const svg = $("wires");
+  if(svg) svg.innerHTML = "";
+}
+function wrapPt(el, side){
+  const wrap = $("canvas").getBoundingClientRect();
+  const r = el.getBoundingClientRect();
+  const x = side==="right" ? r.right - wrap.left : side==="left" ? r.left - wrap.left : r.left + r.width/2 - wrap.left;
+  const y = r.top + r.height/2 - wrap.top;
+  return {x, y};
+}
+function bezier(a, b, color, dash, label){
+  const dx = Math.max(40, Math.abs(b.x-a.x)/2);
+  const d = `M ${a.x} ${a.y} C ${a.x+dx} ${a.y}, ${b.x-dx} ${b.y}, ${b.x} ${b.y}`;
+  const midX = (a.x+b.x)/2, midY = (a.y+b.y)/2 - 6;
+  return `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.6" ${dash?'stroke-dasharray="6 4"':""} marker-end="url(#arr-${color.replace("#","")})" />` +
+    (label ? `<text class="edge-label" x="${midX}" y="${midY}" text-anchor="middle">${label}</text>` : "");
+}
+function ensureMarkers(svg, colors){
+  let defs = `<defs>`;
+  colors.forEach(c => {
+    const id = "arr-"+c.replace("#","");
+    defs += `<marker id="${id}" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="${c}"/></marker>`;
+  });
+  defs += `</defs>`;
+  svg.insertAdjacentHTML("afterbegin", defs);
+}
+
+function renderT01(){
+  clearWires();
+  const eps = (IR.endpoints||[]).filter(visibleEp);
+  const {tblSet, epSet, curKey} = routePathSets();
+  const onRoute = !!routeState.path;
+  const modules = {};
+  (IR.tables||[]).forEach(t => {
+    const m = t.module || t.schema || "default";
+    (modules[m] = modules[m]||[]).push(t);
+  });
+  const left = eps.map(ep => {
+    let dim = selected && selected!==ep.id ? " dim" : "";
+    let extra = "";
+    if(onRoute){
+      dim = epSet.has(ep.id) ? "" : " dim";
+      extra = curKey==="ep:"+ep.id ? " path-step" : (epSet.has(ep.id) ? " path" : "");
+    }
+    return `<div class="card api${dim}${extra}" data-ep="${escAttr(ep.id)}"><div class="kicker">${ep.method}</div><div class="title">${ep.path}</div><div class="meta">${ep.tables.length} 张表 · ${ep.handler.fn}</div></div>`;
+  }).join("");
+  const right = Object.entries(modules).map(([m, tables]) => {
+    const cards = tables.map(t => {
+      const op = tableOps(t.name);
+      let touched = !selected || (IR.table_api_index[t.name]||[]).includes(selected);
+      let extra = "";
+      if(detailTarget && detailTarget.type==="tbl" && detailTarget.id===t.name){
+        extra += " path-step";
+      }
+      if(onRoute){
+        touched = tblSet.has(t.name);
+        extra = curKey==="tbl:"+t.name ? " path-step" : (tblSet.has(t.name) ? " path" : "");
+      }
+      return `<div class="card tbl${touched?"":" dim"}${extra}" data-tbl="${escAttr(t.name)}"><div class="title">${t.name}</div><div class="meta">${(t.fields||[]).length} 字段</div><div class="badges">${op?`<span class="badge ${op}">${op}</span>`:""}</div></div>`;
+    }).join("");
+    return `<div class="group"><div class="kicker">${m}</div>${cards}</div>`;
+  }).join("");
+  $("view-t01").innerHTML = `<div class="nodes"><div class="col"><h3>Interfaces</h3>${left||"<div class='meta'>无匹配接口</div>"}</div><div class="col" style="flex:1"><h3>Tables</h3>${right}</div></div>`;
+  $("view-t01").querySelectorAll("[data-ep]").forEach(el => el.onclick = () => selectEndpoint(el.dataset.ep));
+  $("view-t01").querySelectorAll("[data-tbl]").forEach(el => el.onclick = () => selectTable(el.dataset.tbl));
+  requestAnimationFrame(drawT01Wires);
+}
+function drawT01Wires(){
+  const svg = $("wires");
+  if(!svg) return;
+  svg.innerHTML = "";
+  const cRead = css("--read") || "#1D4ED8";
+  const cWrite = css("--write") || "#C2410C";
+  const cBoth = css("--both") || "#B45309";
+  const cUn = css("--uncert") || "#8A8378";
+  const colors = [cRead, cWrite, cBoth, cUn];
+  ensureMarkers(svg, colors);
+  const srcs = {};
+  $("view-t01").querySelectorAll("[data-ep]").forEach(el => srcs[el.dataset.ep] = el);
+  const dsts = {};
+  $("view-t01").querySelectorAll("[data-tbl]").forEach(el => dsts[el.dataset.tbl] = el);
+  const {tblSet: routeTbls, epSet: routeEps} = routePathSets();
+  const onRoute = !!routeState.path;
+  let html = svg.innerHTML;
+  (IR.endpoints||[]).filter(visibleEp).forEach(ep => {
+    if(onRoute){ if(!routeEps.has(ep.id)) return; } else if(selected && selected!==ep.id) return;
+    const srcEl = srcs[ep.id];
+    if(!srcEl) return;
+    const merged = {};
+    ep.tables.forEach(t => {
+      const cur = merged[t.name] || {ops:[]};
+      cur.ops.push(t.op);
+      cur.conf = t.confidence;
+      merged[t.name] = cur;
+    });
+    Object.entries(merged).forEach(([name, info]) => {
+      if(onRoute && !routeTbls.has(name)) return;
+      const dstEl = dsts[name];
+      if(!dstEl) return;
+      const R = info.ops.some(isRead), W = info.ops.some(isWrite);
+      const color = info.conf==="uncertain" ? cUn : (R&&W ? cBoth : W ? cWrite : cRead);
+      const label = [...new Set(info.ops)].join(" / ");
+      html += bezier(wrapPt(srcEl,"right"), wrapPt(dstEl,"left"), color, !W, label);
+    });
+  });
+  svg.innerHTML = html;
+}
+
+function renderT02(){
+  clearWires();
+  const touched = new Set();
+  if(selected){
+    const ep = IR.endpoints.find(e=>e.id===selected);
+    (ep?ep.tables:[]).forEach(t => {
+      (t.fields_read||[]).forEach(f => touched.add(t.name+"."+f));
+      (t.fields_written||[]).forEach(f => touched.add(t.name+"."+f));
+    });
+  }
+  const {tblSet, curKey} = routePathSets();
+  const onRoute = !!routeState.path;
+  const html = (IR.tables||[]).map(t => {
+    const op = tableOps(t.name);
+    const fields = (t.fields||[]).map(f => {
+      const key = t.name+"."+f.name;
+      const cls = [f.pk?"pk":"", f.fk?"fk":"", selected && !touched.has(key)?"unused":""].join(" ");
+      const markBase = f.pk?"PK":(f.fk?("→ "+f.fk.table+"."+f.fk.column):f.type);
+      const mark = f.desc ? markBase+" · "+f.desc : markBase;
+      const titleAttr = f.desc ? ` title="${escAttr(f.name+": "+markBase+" · "+f.desc)}"` : "";
+      return `<div class="field ${cls}" data-field="${key}"${titleAttr}><span>${f.name}</span><span class="t">${mark}</span></div>`;
+    }).join("");
+    let extra = (detailTarget && detailTarget.type==="tbl" && detailTarget.id===t.name) ? " path-step" : "";
+    if(onRoute){
+      extra = curKey==="tbl:"+t.name ? " path-step" : (tblSet.has(t.name) ? " path" : " dim");
+    }
+    return `<div class="card tbl${extra}" style="min-width:240px" data-tbl="${escAttr(t.name)}"><div class="title">${t.name}</div><div class="badges">${op?`<span class="badge ${op}">${op}</span>`:""}</div><div class="fields">${fields}</div></div>`;
+  }).join("");
+  $("view-t02").innerHTML = `<div class="nodes" style="flex-wrap:wrap;gap:28px">${html}</div>`;
+  $("view-t02").querySelectorAll("[data-tbl]").forEach(el => el.onclick = () => selectTable(el.dataset.tbl));
+  requestAnimationFrame(drawT02Wires);
+}
+function drawT02Wires(){
+  const svg = $("wires");
+  if(!svg) return;
+  svg.innerHTML = "";
+  const cFk = css("--fk") || "#BE185D";
+  const cUn = css("--uncert") || "#8A8378";
+  ensureMarkers(svg, [cFk, cUn]);
+  const fields = {};
+  $("view-t02").querySelectorAll("[data-field]").forEach(el => fields[el.dataset.field] = el);
+  let html = svg.innerHTML;
+  (IR.relations||[]).forEach(r => {
+    const a = fields[r.from.table+"."+r.from.field];
+    const b = fields[r.to.table+"."+r.to.field];
+    if(!a || !b) return;
+    const color = r.source==="fk" ? cFk : cUn;
+    const dash = r.source!=="fk";
+    const pa = wrapPt(a, a.getBoundingClientRect().left < b.getBoundingClientRect().left ? "right" : "left");
+    const pb = wrapPt(b, a.getBoundingClientRect().left < b.getBoundingClientRect().left ? "left" : "right");
+    html += bezier(pa, pb, color, dash, r.card);
+  });
+  svg.innerHTML = html;
+}
+
+function formatSeqLabel(s){
+  const raw = s.label || "";
+  let opBadge = "";
+  if(s.op === "W") opBadge = "[写] ";
+  else if(s.op === "R") opBadge = "[读] ";
+
+  let text = raw;
+  if(raw.startsWith("SELECT ") && raw.includes("FROM sys_user")) {
+    text = "SELECT sys_user (31列 · 状态/部门过滤)";
+  } else if(raw.startsWith("LEFT JOIN sys_dept")) {
+    text = "LEFT JOIN sys_dept (关联部门名与负责人)";
+  } else if(raw.startsWith("NOT EXISTS (SELECT 1 FROM ims_t_working_hours")) {
+    text = "NOT EXISTS 关联工时表 (排查当月有效工时)";
+  } else if(raw.startsWith("@DataScope")) {
+    text = "@DataScope 动态注入数据权限过滤";
+  } else if(raw.startsWith("parseWorkHourMonth")) {
+    text = "parseWorkHourMonth 校验月份并计算起止日期";
+  } else if(raw.startsWith("List<SysUser>")) {
+    text = "返回 List<SysUser>";
+  } else if(raw.startsWith("AjaxResult.success")) {
+    text = "响应 AjaxResult.success";
+  } else if(text.length > 44) {
+    if(text.includes(" — ")) text = text.split(" — ")[0];
+    else if(text.includes(";")) text = text.split(";")[0];
+    if(text.length > 44) text = text.slice(0, 42) + "…";
+  }
+  return { display: opBadge + text, full: raw };
+}
+
+function renderT03(){
+  clearWires();
+  const ep = (IR.endpoints||[]).find(e=>e.id===selected) || (IR.endpoints||[])[0];
+  if(!ep){ $("view-t03").innerHTML = ""; return; }
+  const parts = [];
+  const add = (n)=>{ if(n && !parts.includes(n)) parts.push(n); };
+  ep.sequence.forEach(s => { add(s.from); add(s.to); });
+
+  // Calculate dynamic widths for each participant box
+  const boxWidths = parts.map(p => Math.max(124, Math.round(p.length * 8.5 + 28)));
+  const colCenters = [];
+  let curX = 40;
+  boxWidths.forEach((w, i) => {
+    colCenters.push(curX + w / 2);
+    curX += w + 48;
+  });
+  const xOf = i => colCenters[i];
+  const isTbl = p => (IR.tables||[]).some(t=>t.name===p);
+
+  const cApi = css("--api") || "#0F766E";
+  const cTbl = css("--table") || "#7C3AED";
+  const cApiFill = css("--api-fill") || "rgba(15,118,110,.12)";
+  const cTblFill = css("--table-fill") || "rgba(124,58,237,.12)";
+  const cRead = css("--read") || "#1D4ED8";
+  const cWrite = css("--write") || "#C2410C";
+  const cMuted = css("--muted") || "#6B645A";
+  const cLine = css("--line") || "#DDD6C8";
+  const cInk = css("--ink") || "#1C1915";
+  const cFrontend = css("--frontend") || "#0E7490";
+  const cFrontendFill = css("--frontend-fill") || "rgba(14,116,144,.15)";
+  const cCard = css("--card") || "#ffffff";
+
+  // Active table focus from detailTarget
+  const focusedTbl = (detailTarget && detailTarget.type==="tbl") ? detailTarget.id : null;
+
+  const y0 = 42, gap = 48;
+  const bottomY = y0 + 16 + ep.sequence.length * gap + 16;
+  let inner = "";
+
+  // Participant boxes & lifelines
+  parts.forEach((p, i) => {
+    const x = xOf(i);
+    const w = boxWidths[i];
+    const isTargetTbl = focusedTbl && p === focusedTbl;
+    const fill = isTargetTbl ? cFrontendFill : (isTbl(p) ? cTblFill : cApiFill);
+    const stroke = isTargetTbl ? cFrontend : (isTbl(p) ? cTbl : cApi);
+    const strokeW = isTargetTbl ? 2.5 : 1.5;
+    const lineStroke = isTargetTbl ? cFrontend : cLine;
+    const lineW = isTargetTbl ? 2 : 1;
+    const cursor = isTbl(p) ? "pointer" : "default";
+
+    // Participant card
+    inner += `<g class="seq-participant" data-tbl="${isTbl(p) ? escAttr(p) : ""}" style="cursor:${cursor}">`;
+    inner += `<title>${isTbl(p) ? '点击查看 ' + escAttr(p) + ' 表详情' : escAttr(p)}</title>`;
+    inner += `<rect x="${x - w/2}" y="6" rx="10" width="${w}" height="32" fill="${fill}" stroke="${stroke}" stroke-width="${strokeW}"/>`;
+    if(isTargetTbl) {
+      inner += `<circle cx="${x - w/2 + 12}" cy="22" r="3.5" fill="${cFrontend}"/>`;
+    }
+    inner += `<text x="${x + (isTargetTbl ? 5 : 0)}" y="26" text-anchor="middle" font-size="11" font-weight="${isTargetTbl ? 700 : 650}" fill="${cInk}" font-family="inherit">${escAttr(p)}</text>`;
+    inner += `</g>`;
+
+    // Lifeline
+    inner += `<line x1="${x}" y1="42" x2="${x}" y2="${bottomY}" stroke="${lineStroke}" stroke-width="${lineW}" stroke-dasharray="3 4"/>`;
+  });
+
+  // Sequences
+  ep.sequence.forEach((s, i) => {
+    const y = y0 + 16 + (i + 0.5) * gap;
+    const fromIdx = Math.max(0, parts.indexOf(s.from));
+    const toIdx = Math.max(0, parts.indexOf(s.to));
+    const a = xOf(fromIdx);
+    const b = xOf(toIdx);
+    const isSelf = s.from === s.to;
+    const touchesTarget = focusedTbl && (s.from === focusedTbl || s.to === focusedTbl);
+
+    // Color & Marker
+    let color = cMuted;
+    let markerId = "arr-seq-muted";
+    if(touchesTarget) {
+      color = cFrontend;
+      markerId = "arr-seq-hl";
+    } else if(s.op === "W") {
+      color = cWrite;
+      markerId = "arr-seq-write";
+    } else if(s.op === "R") {
+      color = cRead;
+      markerId = "arr-seq-read";
+    } else if(fromIdx === 0 && toIdx === 1) {
+      color = cApi;
+      markerId = "arr-seq-api";
+    }
+
+    // Requests are solid; returns (b < a and not self) are dashed
+    const isReturn = (!isSelf && b < a && !s.op);
+    const dash = isReturn ? 'stroke-dasharray="4 4"' : '';
+    const strokeW = touchesTarget ? 2.2 : 1.6;
+
+    const labelInfo = formatSeqLabel(s);
+    const estTextW = Math.min(380, Math.max(60, Math.round(labelInfo.display.length * 7.2 + 18)));
+
+    if(isSelf) {
+      // Loopback arrow
+      const loopW = 28, loopH = 22;
+      const pathD = `M ${a} ${y - 4} h ${loopW} v ${loopH} h -${loopW}`;
+      inner += `<path d="${pathD}" fill="none" stroke="${color}" stroke-width="${strokeW}" marker-end="url(#${markerId})"/>`;
+      // Text beside loop
+      const tx = a + loopW + 8;
+      inner += `<g class="seq-msg">`;
+      inner += `<title>${escAttr(labelInfo.full)}</title>`;
+      inner += `<rect x="${tx}" y="${y - 3}" rx="4" width="${estTextW}" height="18" fill="${cCard}" stroke="${color}" stroke-width="0.8" opacity="0.95"/>`;
+      inner += `<text x="${tx + 8}" y="${y + 10}" text-anchor="start" font-size="10" font-weight="${touchesTarget ? 650 : 500}" fill="${color}" font-family="inherit">${escAttr(labelInfo.display)}</text>`;
+      inner += `</g>`;
+    } else {
+      // Arrow line
+      inner += `<line x1="${a}" y1="${y}" x2="${b}" y2="${y}" stroke="${color}" stroke-width="${strokeW}" ${dash} marker-end="url(#${markerId})"/>`;
+      // Text centered on line with background badge to avoid line-text collision
+      const midX = (a + b) / 2;
+      inner += `<g class="seq-msg">`;
+      inner += `<title>${escAttr(labelInfo.full)}</title>`;
+      inner += `<rect x="${midX - estTextW / 2}" y="${y - 15}" rx="4" width="${estTextW}" height="16" fill="${cCard}" stroke="${color}" stroke-width="0.7" opacity="0.95"/>`;
+      inner += `<text x="${midX}" y="${y - 3}" text-anchor="middle" font-size="10" font-weight="${touchesTarget ? 650 : 500}" fill="${color}" font-family="inherit">${escAttr(labelInfo.display)}</text>`;
+      inner += `</g>`;
+    }
+  });
+
+  const totalW = Math.max(760, curX + 24);
+  const totalH = bottomY + 28;
+
+  // Markers definition with matching colors
+  let defs = `<defs>`;
+  const markerColors = [
+    ["arr-seq-muted", cMuted],
+    ["arr-seq-read", cRead],
+    ["arr-seq-write", cWrite],
+    ["arr-seq-api", cApi],
+    ["arr-seq-hl", cFrontend]
+  ];
+  markerColors.forEach(([mid, mc]) => {
+    defs += `<marker id="${mid}" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="${mc}"/></marker>`;
+  });
+  defs += `</defs>`;
+
+  const svg = `<svg class="seq" width="${totalW}" height="${totalH}" style="display:block">${defs}${inner}</svg>`;
+
+  const focusBanner = focusedTbl ?
+    `<div style="display:flex;align-items:center;gap:8px;padding:6px 16px;background:var(--frontend-fill);border-bottom:1px solid var(--panel-border);font-size:11px;">
+      <span style="color:var(--frontend);font-weight:650;">● 当前聚焦表：${escAttr(focusedTbl)}</span>
+      <span style="color:var(--muted)">已在时序图与汇总表中联动高亮</span>
+      <button onclick="closeDetail()" style="margin-left:auto;background:transparent;border:1px solid var(--panel-border);color:var(--ink);border-radius:6px;padding:2px 8px;cursor:pointer;font:inherit;font-size:10px">清除聚焦</button>
+    </div>` : "";
+
+  $("view-t03").innerHTML = focusBanner +
+    `<div style="padding:10px 16px 6px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <div><b>${ep.method} ${ep.path}</b> · <code>${ep.handler.file}:${ep.handler.line||"?"}</code></div>
+      <div style="font-size:11px;color:var(--muted)">悬停消息查看完整 SQL，点击数据表卡片可查看字段与详情</div>
+    </div>` + svg;
+
+  $("view-t03").querySelectorAll(".seq-participant[data-tbl]").forEach(el => {
+    const tblName = el.dataset.tbl;
+    if(tblName) el.onclick = () => selectTable(tblName);
+  });
+}
+
+function renderSummary(){
+  const rows = (IR.endpoints||[]).filter(visibleEp).map(ep => {
+    const ts = ep.tables.map(t => {
+      const isTarget = detailTarget && detailTarget.type==="tbl" && detailTarget.id===t.name;
+      const hlStyle = isTarget ? "outline:1.5px solid var(--frontend);background:var(--frontend-fill);border-radius:4px;padding:1px 4px;font-weight:650;" : "";
+      return `<span style="${hlStyle}">${escAttr(t.name)}</span> <span class="badge ${isWrite(t.op)&&isRead(t.op)?"RW":isWrite(t.op)?"W":"R"}">${t.op}</span>`;
+    }).join("<br>");
+    const conf = [...new Set(ep.tables.map(t=>t.confidence))].join(", ");
+    const hl = selected===ep.id ? "font-weight:650" : "";
+    return `<tr data-ep="${ep.id}" style="${hl}"><td>${ep.method}</td><td>${ep.path}</td><td>${ep.handler.fn}</td><td>${ts}</td><td>${conf}</td></tr>`;
+  }).join("");
+  $("summary").innerHTML = `<thead><tr><th>方法</th><th>路径</th><th>处理函数</th><th>表 / 操作</th><th>置信度</th></tr></thead><tbody>${rows}</tbody>`;
+  $("summary").querySelectorAll("tr[data-ep]").forEach(tr => tr.onclick = () => selectEndpoint(tr.dataset.ep));
+}
+
+// --- Selection / detail panel ---
+function selectEndpoint(id){
+  if(selected===id){ selected = null; detailTarget = null; }
+  else { selected = id; detailTarget = {type:"ep", id}; }
+  renderDetail();
+  render();
+  writeHash();
+}
+function selectTable(name){
+  if(detailTarget && detailTarget.type==="tbl" && detailTarget.id===name){ detailTarget = null; }
+  else { detailTarget = {type:"tbl", id:name}; }
+  renderDetail();
+  render();
+  writeHash();
+}
+function closeDetail(){
+  detailTarget = null;
+  renderDetail();
+  render();
+  writeHash();
+}
+function renderDetail(){
+  const drawer = $("detail-drawer");
+  if(!drawer) return;
+  if(!detailTarget){ drawer.hidden = true; return; }
+  if(detailTarget.type==="ep"){
+    const ep = (IR.endpoints||[]).find(e=>e.id===detailTarget.id);
+    if(!ep){ detailTarget = null; drawer.hidden = true; return; }
+    drawer.hidden = false;
+    $("detail-kicker").textContent = "接口详情";
+    const rows = ep.tables.map(t => {
+      const badge = isWrite(t.op)&&isRead(t.op) ? "RW" : isWrite(t.op) ? "W" : "R";
+      return `<div class="detail-row">
+        <div class="detail-row-head"><b>${escAttr(t.name)}</b><span class="badge ${badge}">${t.op}</span><span class="conf conf-${t.confidence}">${t.confidence}</span></div>
+        ${t.fields_read&&t.fields_read.length?`<div class="detail-fields">读: ${t.fields_read.map(escAttr).join(", ")}</div>`:""}
+        ${t.fields_written&&t.fields_written.length?`<div class="detail-fields">写: ${t.fields_written.map(escAttr).join(", ")}</div>`:""}
+        <div class="detail-evidence">依据：<code>${escAttr(t.evidence||"—")}</code></div>
+      </div>`;
+    }).join("");
+    $("detail-body").innerHTML = `
+      <div class="detail-title">${escAttr(ep.method)} ${escAttr(ep.path)}</div>
+      <div class="detail-sub">处理函数 <code>${escAttr(ep.handler.fn)}</code> · <code>${escAttr(ep.handler.file)}:${ep.handler.line||"?"}</code></div>
+      <div class="detail-rows">${rows}</div>`;
+  } else if(detailTarget.type==="tbl"){
+    const t = (IR.tables||[]).find(x=>x.name===detailTarget.id);
+    if(!t){ detailTarget = null; drawer.hidden = true; return; }
+    drawer.hidden = false;
+    $("detail-kicker").textContent = "表详情";
+    const touches = [];
+    (IR.endpoints||[]).forEach(ep => ep.tables.forEach(et => { if(et.name===t.name) touches.push({ep, et}); }));
+    const rows = touches.map(({ep, et}) => {
+      const badge = isWrite(et.op)&&isRead(et.op) ? "RW" : isWrite(et.op) ? "W" : "R";
+      return `<div class="detail-row">
+        <div class="detail-row-head"><b>${escAttr(ep.method)} ${escAttr(ep.path)}</b><span class="badge ${badge}">${et.op}</span></div>
+        <div class="detail-evidence">依据：<code>${escAttr(et.evidence||"—")}</code></div>
+      </div>`;
+    }).join("");
+    $("detail-body").innerHTML = `
+      <div class="detail-title">${escAttr(t.name)}</div>
+      <div class="detail-sub">${escAttr(t.module||t.schema||"")} · ${(t.fields||[]).length} 字段</div>
+      <div class="detail-rows">${rows || "<div class='meta'>没有接口引用此表</div>"}</div>`;
+  }
+}
+
+// --- Node finder (jump-to, also reused to pick route endpoints) ---
+function finderItems(){
+  const eps = (IR.endpoints||[]).map(ep => ({
+    kind:"ep", id:ep.id, label:`${ep.method} ${ep.path}`, meta:`${ep.tables.length} 张表 · ${ep.handler.fn}`,
+    search:(ep.id+" "+ep.path+" "+ep.handler.fn).toLowerCase()
+  }));
+  const tbls = (IR.tables||[]).map(t => ({
+    kind:"tbl", id:t.name, label:t.name, meta:`${(t.fields||[]).length} 字段` + (t.module||t.schema?(" · "+(t.module||t.schema)):""),
+    search:(t.name+" "+(t.module||"")+" "+(t.schema||"")).toLowerCase()
+  }));
+  return eps.concat(tbls);
+}
+function openFinder(mode){
+  finderMode = mode || "jump";
+  if(!finderAll) finderAll = finderItems();
+  $("finder-overlay").hidden = false;
+  const input = $("finder-input");
+  input.value = "";
+  $("finder-hint").textContent = mode==="route-start" ? "选择路径追踪的起点" : mode==="route-end" ? "选择路径追踪的终点" : "输入以查找接口或表，↑↓选择，Enter 跳转，Esc 关闭";
+  renderFinderResults("");
+  requestAnimationFrame(() => input.focus());
+}
+function closeFinder(){
+  finderMode = null;
+  $("finder-overlay").hidden = true;
+}
+function renderFinderResults(q){
+  const ql = q.trim().toLowerCase();
+  const items = finderAll.filter(it => !ql || it.search.includes(ql)).slice(0, 30);
+  finderCurrentItems = items;
+  finderActiveIndex = 0;
+  $("finder-results").innerHTML = items.map((it,i) => `
+    <button class="finder-result${i===0?" active":""}" data-idx="${i}" type="button">
+      <span class="finder-tag">${it.kind==="ep"?"接口":"表"}</span>
+      <span class="finder-copy"><strong>${escAttr(it.label)}</strong><small>${escAttr(it.meta)}</small></span>
+    </button>`).join("") || `<div class="finder-empty">没有匹配结果</div>`;
+  $("finder-results").querySelectorAll(".finder-result").forEach((b,i) => {
+    b.onclick = () => chooseFinderResult(items[i]);
+  });
+}
+function moveFinderActive(delta){
+  if(!finderCurrentItems.length) return;
+  finderActiveIndex = (finderActiveIndex + delta + finderCurrentItems.length) % finderCurrentItems.length;
+  $("finder-results").querySelectorAll(".finder-result").forEach((b,i) => b.classList.toggle("active", i===finderActiveIndex));
+  const activeEl = $("finder-results").querySelector(".finder-result.active");
+  if(activeEl) activeEl.scrollIntoView({block:"nearest"});
+}
+function chooseFinderResult(item){
+  if(!item) return;
+  const key = (item.kind==="ep"?"ep:":"tbl:") + item.id;
+  if(finderMode==="route-start"){ routeState.startId = key; closeFinder(); maybeComputeRoute(); return; }
+  if(finderMode==="route-end"){ routeState.endId = key; closeFinder(); maybeComputeRoute(); return; }
+  if(item.kind==="ep"){ if(tab==="t02") switchTab("t01"); selectEndpoint(item.id); }
+  else { selectTable(item.id); }
+  closeFinder();
+}
+
+// --- Route probe (BFS shortest path over the endpoint<->table graph + step playback) ---
+function openRoutePanel(){
+  $("route-panel").hidden = false;
+  renderRoutePanel();
+}
+function closeRoutePanel(){
+  $("route-panel").hidden = true;
+}
+function maybeComputeRoute(){
+  if(routeState.startId && routeState.endId){
+    const path = bfsPath(buildGraph(), routeState.startId, routeState.endId);
+    routeState.path = path;
+    routeState.stepIndex = -1;
+    stopJourney();
+    render();
+    writeHash();
+  }
+  openRoutePanel();
+}
+function clearRoute(){
+  routeState.startId = null; routeState.endId = null; routeState.path = null; routeState.stepIndex = -1;
+  stopJourney();
+  render();
+  writeHash();
+  renderRoutePanel();
+}
+function renderRoutePanel(){
+  const body = $("route-body");
+  if(!body) return;
+  const startLabel = routeState.startId ? routeLabel(routeState.startId) : null;
+  const endLabel = routeState.endId ? routeLabel(routeState.endId) : null;
+  let html = `<div class="route-picks">
+    <button class="route-pick" id="route-pick-start" type="button">${startLabel ? escAttr(startLabel) : "选择起点…"}</button>
+    <span class="route-arrow">&rarr;</span>
+    <button class="route-pick" id="route-pick-end" type="button">${endLabel ? escAttr(endLabel) : "选择终点…"}</button>
+  </div>`;
+  if(routeState.path){
+    html += `<div class="route-chain">` + routeState.path.map((k,i) => {
+      const cur = i===routeState.stepIndex;
+      return (i>0 ? '<span class="route-arrow">&rarr;</span>' : "") + `<span class="route-chip" data-current="${cur}">${escAttr(routeLabel(k))}</span>`;
+    }).join("") + `</div>`;
+    html += `<div class="route-journey">
+      <button id="route-prev" type="button" title="上一步">&larr;</button>
+      <button id="route-play" type="button" title="播放/暂停步进">${routeState.playing ? "暂停" : "播放"}</button>
+      <button id="route-next" type="button" title="下一步">&rarr;</button>
+      <button id="route-all" type="button" title="显示整条路径">总览</button>
+    </div>`;
+  } else if(routeState.startId && routeState.endId){
+    html += `<div class="meta">两点之间没有可达路径</div>`;
+  }
+  html += `<div class="route-actions">
+    ${routeState.path ? '<button id="route-copy" type="button">复制链接</button>' : ""}
+    <button id="route-clear" type="button">清除</button>
+  </div>`;
+  body.innerHTML = html;
+  $("route-pick-start").onclick = () => openFinder("route-start");
+  $("route-pick-end").onclick = () => openFinder("route-end");
+  $("route-clear").onclick = clearRoute;
+  if(routeState.path){
+    $("route-prev").onclick = () => stepRoute(-1);
+    $("route-next").onclick = () => stepRoute(1);
+    $("route-all").onclick = () => { routeState.stepIndex = -1; stopJourney(); renderRoutePanel(); render(); };
+    $("route-play").onclick = toggleJourney;
+    const copyBtn = $("route-copy");
+    if(copyBtn) copyBtn.onclick = () => { writeHash(); copyText(location.href); };
+  }
+}
+function stepRoute(delta){
+  if(!routeState.path) return;
+  if(routeState.stepIndex<0){ routeState.stepIndex = delta>0 ? 0 : routeState.path.length-1; }
+  else { routeState.stepIndex = Math.max(0, Math.min(routeState.path.length-1, routeState.stepIndex+delta)); }
+  renderRoutePanel();
+  render();
+}
+function toggleJourney(){ routeState.playing ? stopJourney() : startJourney(); }
+function startJourney(){
+  if(!routeState.path) return;
+  routeState.playing = true;
+  if(routeState.stepIndex<0 || routeState.stepIndex>=routeState.path.length-1) routeState.stepIndex = 0;
+  renderRoutePanel(); render();
+  routeState.timer = setInterval(() => {
+    if(routeState.stepIndex>=routeState.path.length-1){ stopJourney(); renderRoutePanel(); return; }
+    routeState.stepIndex++;
+    renderRoutePanel(); render();
+  }, 1100);
+}
+function stopJourney(){
+  routeState.playing = false;
+  if(routeState.timer){ clearInterval(routeState.timer); routeState.timer = null; }
+}
+
+// --- Zoom ---
+function setZoom(z){
+  zoomLevel = Math.min(2, Math.max(0.5, Math.round(z*20)/20));
+  $("canvas-inner").style.zoom = zoomLevel;
+  $("zoom-pct").textContent = Math.round(zoomLevel*100)+"%";
+  requestAnimationFrame(() => { if(tab==="t01") drawT01Wires(); if(tab==="t02") drawT02Wires(); });
+}
+
+document.querySelectorAll(".tab").forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+document.querySelectorAll(".chip").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); filterOp = b.dataset.op; render();
+});
+$("q").oninput = e => { query = e.target.value.trim().toLowerCase(); render(); };
+$("btn-theme").onclick = () => {
+  const next = document.documentElement.getAttribute("data-theme")==="dark" ? "light" : "dark";
+  setTheme(next);
+  render();
+};
+$("btn-preset").onclick = () => {
+  const wrap = $("preset-wrap");
+  const open = wrap.classList.toggle("open");
+  $("btn-preset").setAttribute("aria-expanded", String(open));
+};
+document.querySelectorAll(".preset-option").forEach(b => {
+  b.onclick = () => setPreset(b.dataset.preset);
+});
+
+// Zoom controls
+$("zoom-in").onclick = () => setZoom(zoomLevel+0.1);
+$("zoom-out").onclick = () => setZoom(zoomLevel-0.1);
+$("zoom-reset").onclick = () => setZoom(1);
+
+// Detail drawer
+$("detail-close").onclick = closeDetail;
+$("detail-copy").onclick = () => { writeHash(); copyText(location.href); };
+
+// Route panel
+$("btn-route").onclick = () => { const p = $("route-panel"); p.hidden ? openRoutePanel() : closeRoutePanel(); };
+$("route-close").onclick = closeRoutePanel;
+
+// Node finder
+$("btn-finder").onclick = () => openFinder("jump");
+$("finder-close").onclick = closeFinder;
+$("finder-input").addEventListener("input", e => renderFinderResults(e.target.value));
+$("finder-input").addEventListener("keydown", e => {
+  if (e.key==="ArrowDown") { e.preventDefault(); moveFinderActive(1); }
+  else if (e.key==="ArrowUp") { e.preventDefault(); moveFinderActive(-1); }
+  else if (e.key==="Enter") { e.preventDefault(); chooseFinderResult(finderCurrentItems[finderActiveIndex]); }
+  else if (e.key==="Escape") { e.preventDefault(); closeFinder(); }
+});
+$("finder-overlay").addEventListener("click", e => { if (e.target.id==="finder-overlay") closeFinder(); });
+
+window.addEventListener("hashchange", () => {
+  readHash();
+  syncTabButtons();
+  render();
+  renderDetail();
+  renderRoutePanel();
+  if (routeState.path) $("route-panel").hidden = false;
+});
+
+document.addEventListener("click", e => {
+  const wrap = $("preset-wrap");
+  if (wrap && wrap.classList.contains("open") && !wrap.contains(e.target)) {
+    wrap.classList.remove("open");
+    $("btn-preset").setAttribute("aria-expanded", "false");
+  }
+});
+document.addEventListener("keydown", e => {
+  if (e.target && ["INPUT","TEXTAREA"].includes(e.target.tagName)) return;
+  if (e.key==="Escape") {
+    const wrap = $("preset-wrap");
+    if (wrap) { wrap.classList.remove("open"); $("btn-preset").setAttribute("aria-expanded", "false"); }
+    if (!$("finder-overlay").hidden) closeFinder();
+    else if (!$("detail-drawer").hidden) closeDetail();
+    else if (!$("route-panel").hidden) closeRoutePanel();
+  }
+  if (e.key==="t" || e.key==="T") setTheme(document.documentElement.getAttribute("data-theme")==="dark" ? "light" : "dark");
+  if (e.key==="s" || e.key==="S") {
+    const cur=document.documentElement.getAttribute("data-preset")||"classic";
+    setPreset(PRESET_ORDER[(PRESET_ORDER.indexOf(cur)+1)%PRESET_ORDER.length]);
+  }
+  if (e.key==="/") { e.preventDefault(); openFinder("jump"); }
+  if (e.key==="r" || e.key==="R") { const p = $("route-panel"); p.hidden ? openRoutePanel() : closeRoutePanel(); }
+  if (e.key==="+" || e.key==="=") { e.preventDefault(); setZoom(zoomLevel+0.1); }
+  if (e.key==="-") { e.preventDefault(); setZoom(zoomLevel-0.1); }
+  if (e.key==="0") { e.preventDefault(); setZoom(1); }
+});
+
+boot();
+</script>
+</body>
+</html>

@@ -1,0 +1,531 @@
+{
+  "meta": {
+    "project": "order-service",
+    "root": ".",
+    "stack": {
+      "lang": "java",
+      "framework": "spring",
+      "orm": "mybatis",
+      "db": "postgresql"
+    },
+    "generated_at": "2026-09-11T15:30:00+09:00",
+    "confidence_tier": "T3_orm",
+    "notes": [
+      "schema from entity + mapper XML",
+      "no live DB"
+    ]
+  },
+  "tables": [
+    {
+      "name": "users",
+      "schema": "public",
+      "module": "account",
+      "fields": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pk": true,
+          "nullable": false
+        },
+        {
+          "name": "email",
+          "type": "varchar",
+          "uk": true,
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "varchar",
+          "nullable": false,
+          "desc": "账号状态（active/disabled）"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "orders",
+      "schema": "public",
+      "module": "commerce",
+      "fields": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pk": true,
+          "nullable": false
+        },
+        {
+          "name": "user_id",
+          "type": "bigint",
+          "nullable": false,
+          "fk": {
+            "table": "users",
+            "column": "id",
+            "onDelete": "RESTRICT",
+            "card": "N:1"
+          }
+        },
+        {
+          "name": "amount",
+          "type": "numeric",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "varchar",
+          "nullable": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "order_items",
+      "schema": "public",
+      "module": "commerce",
+      "fields": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pk": true,
+          "nullable": false
+        },
+        {
+          "name": "order_id",
+          "type": "bigint",
+          "nullable": false,
+          "fk": {
+            "table": "orders",
+            "column": "id",
+            "onDelete": "CASCADE",
+            "card": "N:1"
+          }
+        },
+        {
+          "name": "sku_id",
+          "type": "bigint",
+          "nullable": false,
+          "fk": {
+            "table": "skus",
+            "column": "id",
+            "card": "N:1"
+          }
+        },
+        {
+          "name": "qty",
+          "type": "int",
+          "nullable": false
+        },
+        {
+          "name": "price",
+          "type": "numeric",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "skus",
+      "schema": "public",
+      "module": "catalog",
+      "fields": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pk": true,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "nullable": false
+        },
+        {
+          "name": "stock",
+          "type": "int",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "name": "payments",
+      "schema": "public",
+      "module": "commerce",
+      "fields": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "pk": true,
+          "nullable": false
+        },
+        {
+          "name": "order_id",
+          "type": "bigint",
+          "nullable": false,
+          "fk": {
+            "table": "orders",
+            "column": "id",
+            "card": "1:1"
+          }
+        },
+        {
+          "name": "amount",
+          "type": "numeric",
+          "nullable": false
+        },
+        {
+          "name": "channel",
+          "type": "varchar",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "varchar",
+          "nullable": false
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "from": {
+        "table": "orders",
+        "field": "user_id"
+      },
+      "to": {
+        "table": "users",
+        "field": "id"
+      },
+      "card": "N:1",
+      "source": "fk"
+    },
+    {
+      "from": {
+        "table": "order_items",
+        "field": "order_id"
+      },
+      "to": {
+        "table": "orders",
+        "field": "id"
+      },
+      "card": "N:1",
+      "source": "fk"
+    },
+    {
+      "from": {
+        "table": "order_items",
+        "field": "sku_id"
+      },
+      "to": {
+        "table": "skus",
+        "field": "id"
+      },
+      "card": "N:1",
+      "source": "fk"
+    },
+    {
+      "from": {
+        "table": "payments",
+        "field": "order_id"
+      },
+      "to": {
+        "table": "orders",
+        "field": "id"
+      },
+      "card": "1:1",
+      "source": "fk"
+    }
+  ],
+  "endpoints": [
+    {
+      "id": "POST /api/orders",
+      "method": "POST",
+      "path": "/api/orders",
+      "handler": {
+        "file": "OrderController.java",
+        "fn": "create",
+        "line": 48
+      },
+      "tables": [
+        {
+          "name": "users",
+          "op": "SELECT",
+          "fields_read": [
+            "id",
+            "status"
+          ],
+          "fields_written": [],
+          "confidence": "high",
+          "evidence": "UserMapper.xml:22"
+        },
+        {
+          "name": "skus",
+          "op": "SELECT",
+          "fields_read": [
+            "id",
+            "stock"
+          ],
+          "fields_written": [],
+          "confidence": "high",
+          "evidence": "SkuMapper.xml:17"
+        },
+        {
+          "name": "skus",
+          "op": "UPDATE",
+          "fields_read": [
+            "id",
+            "stock"
+          ],
+          "fields_written": [
+            "stock"
+          ],
+          "confidence": "high",
+          "evidence": "SkuMapper.xml:41"
+        },
+        {
+          "name": "orders",
+          "op": "INSERT",
+          "fields_read": [],
+          "fields_written": [
+            "id",
+            "user_id",
+            "amount",
+            "status"
+          ],
+          "confidence": "high",
+          "evidence": "OrderMapper.xml:10"
+        },
+        {
+          "name": "order_items",
+          "op": "INSERT",
+          "fields_read": [],
+          "fields_written": [
+            "order_id",
+            "sku_id",
+            "qty",
+            "price"
+          ],
+          "confidence": "high",
+          "evidence": "OrderItemMapper.xml:8"
+        }
+      ],
+      "sequence": [
+        {
+          "from": "Client",
+          "to": "Controller",
+          "label": "POST /api/orders"
+        },
+        {
+          "from": "Controller",
+          "to": "OrderService",
+          "label": "create()"
+        },
+        {
+          "from": "OrderService",
+          "to": "users",
+          "label": "SELECT id,status",
+          "op": "R"
+        },
+        {
+          "from": "OrderService",
+          "to": "skus",
+          "label": "SELECT id,stock",
+          "op": "R"
+        },
+        {
+          "from": "OrderService",
+          "to": "skus",
+          "label": "UPDATE stock",
+          "op": "W"
+        },
+        {
+          "from": "OrderService",
+          "to": "orders",
+          "label": "INSERT",
+          "op": "W"
+        },
+        {
+          "from": "OrderService",
+          "to": "order_items",
+          "label": "INSERT",
+          "op": "W"
+        }
+      ]
+    },
+    {
+      "id": "GET /api/orders/{id}",
+      "method": "GET",
+      "path": "/api/orders/{id}",
+      "handler": {
+        "file": "OrderController.java",
+        "fn": "get",
+        "line": 61
+      },
+      "tables": [
+        {
+          "name": "orders",
+          "op": "SELECT",
+          "fields_read": [
+            "id",
+            "user_id",
+            "amount",
+            "status"
+          ],
+          "fields_written": [],
+          "confidence": "high",
+          "evidence": "OrderMapper.xml:28"
+        },
+        {
+          "name": "order_items",
+          "op": "SELECT",
+          "fields_read": [
+            "order_id",
+            "sku_id",
+            "qty",
+            "price"
+          ],
+          "fields_written": [],
+          "confidence": "high",
+          "evidence": "OrderItemMapper.xml:19"
+        },
+        {
+          "name": "users",
+          "op": "SELECT",
+          "fields_read": [
+            "id",
+            "email"
+          ],
+          "fields_written": [],
+          "confidence": "med",
+          "evidence": "OrderService.java:90"
+        }
+      ],
+      "sequence": [
+        {
+          "from": "Client",
+          "to": "Controller",
+          "label": "GET /api/orders/{id}"
+        },
+        {
+          "from": "Controller",
+          "to": "OrderService",
+          "label": "get()"
+        },
+        {
+          "from": "OrderService",
+          "to": "orders",
+          "label": "SELECT * WHERE id",
+          "op": "R"
+        },
+        {
+          "from": "OrderService",
+          "to": "order_items",
+          "label": "SELECT WHERE order_id",
+          "op": "R"
+        },
+        {
+          "from": "OrderService",
+          "to": "users",
+          "label": "SELECT id,email",
+          "op": "R"
+        }
+      ]
+    },
+    {
+      "id": "PUT /api/orders/{id}/pay",
+      "method": "PUT",
+      "path": "/api/orders/{id}/pay",
+      "handler": {
+        "file": "OrderController.java",
+        "fn": "pay",
+        "line": 77
+      },
+      "tables": [
+        {
+          "name": "orders",
+          "op": "UPDATE",
+          "fields_read": [
+            "id",
+            "status",
+            "amount"
+          ],
+          "fields_written": [
+            "status",
+            "updated_at"
+          ],
+          "confidence": "high",
+          "evidence": "OrderMapper.xml:55"
+        },
+        {
+          "name": "payments",
+          "op": "INSERT",
+          "fields_read": [],
+          "fields_written": [
+            "order_id",
+            "amount",
+            "channel",
+            "status"
+          ],
+          "confidence": "high",
+          "evidence": "PaymentMapper.xml:12"
+        }
+      ],
+      "sequence": [
+        {
+          "from": "Client",
+          "to": "Controller",
+          "label": "PUT /api/orders/{id}/pay"
+        },
+        {
+          "from": "Controller",
+          "to": "OrderService",
+          "label": "pay()"
+        },
+        {
+          "from": "OrderService",
+          "to": "orders",
+          "label": "SELECT id,status,amount",
+          "op": "R"
+        },
+        {
+          "from": "OrderService",
+          "to": "payments",
+          "label": "INSERT",
+          "op": "W"
+        },
+        {
+          "from": "OrderService",
+          "to": "orders",
+          "label": "UPDATE status",
+          "op": "W"
+        }
+      ]
+    }
+  ],
+  "table_api_index": {
+    "users": [
+      "POST /api/orders",
+      "GET /api/orders/{id}"
+    ],
+    "orders": [
+      "POST /api/orders",
+      "GET /api/orders/{id}",
+      "PUT /api/orders/{id}/pay"
+    ],
+    "order_items": [
+      "POST /api/orders",
+      "GET /api/orders/{id}"
+    ],
+    "skus": [
+      "POST /api/orders"
+    ],
+    "payments": [
+      "PUT /api/orders/{id}/pay"
+    ]
+  }
+}
