@@ -1,0 +1,21 @@
+.gitignore
+  s_e341c8b4419e8e::t_3561f429f1c78b 2
+docs/agents/issue-tracker.md
+  s_e341c8b4419e8e::t_b58863c6bc5ed2 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.6.23",
+  "base_commit_sha": "c7610490c79694ea0334837874bd181314561317",
+  "prompts": {},
+  "sessions": {
+    "s_e341c8b4419e8e": {
+      "agent_id": {
+        "tool": "grok",
+        "id": "01a095b0-8821-7060-8e6a-ecfec4f78e66",
+        "model": "grok-4.6"
+      },
+      "human_author": "张艳华 <939593210@qq.com>"
+    }
+  }
+}
