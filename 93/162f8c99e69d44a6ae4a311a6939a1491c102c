@@ -1,0 +1,20 @@
+README.md
+  s_3b8da7a38499d2::t_531739161b791c 56,87,153
+  s_3b8da7a38499d2::t_8a7be40e6ba40a 37,102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.6.23",
+  "base_commit_sha": "93162f8c99e69d44a6ae4a311a6939a1491c102c",
+  "prompts": {},
+  "sessions": {
+    "s_3b8da7a38499d2": {
+      "agent_id": {
+        "tool": "grok",
+        "id": "01a09a59-071b-7d73-b36c-60e0d791337e",
+        "model": "grok-4.6"
+      },
+      "human_author": "张艳华 <939593210@qq.com>"
+    }
+  }
+}
