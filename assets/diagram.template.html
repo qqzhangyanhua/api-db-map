@@ -612,7 +612,9 @@ const THEME_KEY = "api-db-map-theme";
 
 function $(id){ return document.getElementById(id); }
 function css(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-function escAttr(s){ return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;"); }
+// Every string that comes out of the IR goes through this, in text and attribute positions alike:
+// table/column names and `desc` are copied from the analyzed repo, so they can contain anything.
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
 function isWrite(op){ return /INSERT|UPDATE|DELETE|UPSERT/.test(op||""); }
 function isRead(op){ return /SELECT|JOIN_READ/.test(op||""); }
 function toast(msg){
@@ -911,7 +913,7 @@ function renderT01(){
       dim = epSet.has(ep.id) ? "" : " dim";
       extra = curKey==="ep:"+ep.id ? " path-step" : (epSet.has(ep.id) ? " path" : "");
     }
-    return `<div class="card api${dim}${extra}" data-ep="${escAttr(ep.id)}"><div class="kicker">${ep.method}</div><div class="title">${ep.path}</div><div class="meta">${ep.tables.length} 张表 · ${ep.handler.fn}</div></div>`;
+    return `<div class="card api${dim}${extra}" data-ep="${esc(ep.id)}"><div class="kicker">${esc(ep.method)}</div><div class="title">${esc(ep.path)}</div><div class="meta">${ep.tables.length} 张表 · ${esc(ep.handler.fn)}</div></div>`;
   }).join("");
   const right = Object.entries(modules).map(([m, tables]) => {
     const visibleTables = selected
@@ -920,7 +922,7 @@ function renderT01(){
     if(collapse){
       const ops = new Set(tables.map(t => tableOps(t.name)).filter(Boolean));
       const badge = ops.has("RW") || (ops.has("R") && ops.has("W")) ? "RW" : [...ops][0] || "";
-      return `<div class="group"><div class="card tbl mod" data-mod="${escAttr(m)}"><div class="kicker">${m}</div><div class="title">${tables.length} 张表</div><div class="badges">${badge?`<span class="badge ${badge}">${badge}</span>`:""}</div></div></div>`;
+      return `<div class="group"><div class="card tbl mod" data-mod="${esc(m)}"><div class="kicker">${esc(m)}</div><div class="title">${tables.length} 张表</div><div class="badges">${badge?`<span class="badge ${badge}">${badge}</span>`:""}</div></div></div>`;
     }
     const cards = (selected ? visibleTables : tables).map(t => {
       const op = tableOps(t.name);
@@ -933,10 +935,10 @@ function renderT01(){
         touched = tblSet.has(t.name);
         extra = curKey==="tbl:"+t.name ? " path-step" : (tblSet.has(t.name) ? " path" : "");
       }
-      return `<div class="card tbl${touched?"":" dim"}${extra}" data-tbl="${escAttr(t.name)}"><div class="title">${t.name}</div><div class="meta">${(t.fields||[]).length} 字段</div><div class="badges">${op?`<span class="badge ${op}">${op}</span>`:""}</div></div>`;
+      return `<div class="card tbl${touched?"":" dim"}${extra}" data-tbl="${esc(t.name)}"><div class="title">${esc(t.name)}</div><div class="meta">${(t.fields||[]).length} 字段</div><div class="badges">${op?`<span class="badge ${op}">${op}</span>`:""}</div></div>`;
     }).join("");
     if(!cards) return "";
-    return `<div class="group"><div class="kicker">${m}</div>${cards}</div>`;
+    return `<div class="group"><div class="kicker">${esc(m)}</div>${cards}</div>`;
   }).join("");
   $("view-t01").innerHTML = `<div class="nodes"><div class="col"><h3>接口</h3>${left||"<div class='meta'>无匹配接口</div>"}</div><div class="col" style="flex:1"><h3>数据表</h3>${right}</div></div>`;
   $("view-t01").querySelectorAll("[data-ep]").forEach(el => el.onclick = () => selectEndpoint(el.dataset.ep));
@@ -999,8 +1001,8 @@ function fieldRowHtml(t, f, touched){
   const cls = [f.pk?"pk":"", f.fk?"fk":"", selected && !touched.has(key)?"unused":""].join(" ");
   const markBase = f.pk?"PK":(f.fk?("→ "+f.fk.table+"."+f.fk.column):f.type);
   const mark = f.desc ? markBase+" · "+f.desc : markBase;
-  const titleAttr = f.desc ? ` title="${escAttr(f.name+": "+markBase+" · "+f.desc)}"` : "";
-  return `<div class="field ${cls}" data-field="${key}"${titleAttr}><span>${f.name}</span><span class="t">${mark}</span></div>`;
+  const titleAttr = f.desc ? ` title="${esc(f.name+": "+markBase+" · "+f.desc)}"` : "";
+  return `<div class="field ${cls}" data-field="${esc(key)}"${titleAttr}><span>${esc(f.name)}</span><span class="t">${esc(mark)}</span></div>`;
 }
 function renderT02(){
   clearWires();
@@ -1034,9 +1036,9 @@ function renderT02(){
       if(onRoute){
         extra = curKey==="tbl:"+t.name ? " path-step" : (tblSet.has(t.name) ? " path" : " dim");
       }
-      return `<div class="card tbl${extra}" style="min-width:240px" data-tbl="${escAttr(t.name)}"><div class="title">${t.name}</div><div class="badges">${op?`<span class="badge ${op}">${op}</span>`:""}</div><div class="fields">${fieldHtml}</div></div>`;
+      return `<div class="card tbl${extra}" style="min-width:240px" data-tbl="${esc(t.name)}"><div class="title">${t.name}</div><div class="badges">${op?`<span class="badge ${op}">${op}</span>`:""}</div><div class="fields">${fieldHtml}</div></div>`;
     }).join("");
-    return `<div class="col" data-mod-col="${escAttr(m)}"><h3>${escAttr(m)}</h3>${cards}</div>`;
+    return `<div class="col" data-mod-col="${esc(m)}"><h3>${esc(m)}</h3>${cards}</div>`;
   }).join("");
   $("view-t02").innerHTML = `<div class="nodes" style="flex-wrap:nowrap;overflow-x:auto">${cols}</div>`;
   $("view-t02").querySelectorAll("[data-tbl]").forEach(el => el.onclick = () => selectTable(el.dataset.tbl));
@@ -1202,12 +1204,12 @@ function renderT03(){
     const cursor = isTbl(p) ? "pointer" : "default";
     const boxH = sub ? 44 : 32;
 
-    inner += `<g class="seq-participant" data-tbl="${isTbl(p) ? escAttr(p) : ""}" style="cursor:${cursor}">`;
-    inner += `<title>${isTbl(p) ? '点击查看 ' + escAttr(p) + ' 表详情' : escAttr(p)}</title>`;
+    inner += `<g class="seq-participant" data-tbl="${isTbl(p) ? esc(p) : ""}" style="cursor:${cursor}">`;
+    inner += `<title>${isTbl(p) ? '点击查看 ' + esc(p) + ' 表详情' : esc(p)}</title>`;
     inner += `<rect x="${x - w/2}" y="6" rx="10" width="${w}" height="${boxH}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeW}"/>`;
     if(isTargetTbl) inner += `<circle cx="${x - w/2 + 12}" cy="18" r="3.5" fill="${cFrontend}"/>`;
-    inner += `<text x="${x}" y="${sub ? 22 : 26}" text-anchor="middle" font-size="11" font-weight="${isTargetTbl ? 700 : 650}" fill="${cInk}" font-family="inherit">${escAttr(p)}</text>`;
-    if(sub) inner += `<text x="${x}" y="38" text-anchor="middle" font-size="9" fill="${cMuted}" font-family="inherit">${escAttr(sub)}</text>`;
+    inner += `<text x="${x}" y="${sub ? 22 : 26}" text-anchor="middle" font-size="11" font-weight="${isTargetTbl ? 700 : 650}" fill="${cInk}" font-family="inherit">${esc(p)}</text>`;
+    if(sub) inner += `<text x="${x}" y="38" text-anchor="middle" font-size="9" fill="${cMuted}" font-family="inherit">${esc(sub)}</text>`;
     inner += `</g>`;
     inner += `<line x1="${x}" y1="${6 + boxH}" x2="${x}" y2="${bottomY}" stroke="${lineStroke}" stroke-width="${lineW}" stroke-dasharray="3 4"/>`;
   });
@@ -1219,7 +1221,7 @@ function renderT03(){
     (acts[p]||[]).forEach(seg => {
       const y1 = yAt(seg.from) - 8;
       const y2 = yAt(seg.to) + 8;
-      inner += `<rect class="seq-activation" data-part="${escAttr(p)}" x="${x - 3}" y="${y1}" width="6" height="${Math.max(8, y2 - y1)}" rx="2" fill="${color}"/>`;
+      inner += `<rect class="seq-activation" data-part="${esc(p)}" x="${x - 3}" y="${y1}" width="6" height="${Math.max(8, y2 - y1)}" rx="2" fill="${color}"/>`;
     });
   });
 
@@ -1247,15 +1249,15 @@ function renderT03(){
       const loopW = 28, loopH = 22;
       inner += `<path d="M ${a} ${y - 4} h ${loopW} v ${loopH} h -${loopW}" fill="none" stroke="${color}" stroke-width="${strokeW}" marker-end="url(#${markerId})"/>`;
       const tx = a + loopW + 8;
-      inner += `<g class="seq-msg${isReturn?" seq-msg-return":""}"><title>${escAttr(labelInfo.full)}</title>`;
+      inner += `<g class="seq-msg${isReturn?" seq-msg-return":""}"><title>${esc(labelInfo.full)}</title>`;
       inner += `<rect x="${tx}" y="${y - 3}" rx="4" width="${estTextW}" height="18" fill="${cCard}" stroke="${color}" stroke-width="0.8" opacity="0.95"/>`;
-      inner += `<text x="${tx + 8}" y="${y + 10}" text-anchor="start" font-size="10" fill="${color}" font-family="inherit">${escAttr(labelInfo.display)}</text></g>`;
+      inner += `<text x="${tx + 8}" y="${y + 10}" text-anchor="start" font-size="10" fill="${color}" font-family="inherit">${esc(labelInfo.display)}</text></g>`;
     } else {
       inner += `<line class="${isReturn?"seq-return":""}" x1="${a}" y1="${y}" x2="${b}" y2="${y}" stroke="${color}" stroke-width="${strokeW}" ${dash} marker-end="url(#${markerId})"/>`;
       const midX = (a + b) / 2;
-      inner += `<g class="seq-msg${isReturn?" seq-msg-return":""}"><title>${escAttr(labelInfo.full)}</title>`;
+      inner += `<g class="seq-msg${isReturn?" seq-msg-return":""}"><title>${esc(labelInfo.full)}</title>`;
       inner += `<rect x="${midX - estTextW / 2}" y="${y - 15}" rx="4" width="${estTextW}" height="16" fill="${cCard}" stroke="${color}" stroke-width="0.7" opacity="0.95"/>`;
-      inner += `<text x="${midX}" y="${y - 3}" text-anchor="middle" font-size="10" fill="${color}" font-family="inherit">${escAttr(labelInfo.display)}</text></g>`;
+      inner += `<text x="${midX}" y="${y - 3}" text-anchor="middle" font-size="10" fill="${color}" font-family="inherit">${esc(labelInfo.display)}</text></g>`;
     }
   });
 
@@ -1268,7 +1270,7 @@ function renderT03(){
   const svg = `<svg class="seq" data-vw="${totalW}" data-vh="${totalH}" width="${Math.round(totalW * zoomLevel)}" height="${Math.round(totalH * zoomLevel)}" viewBox="0 0 ${totalW} ${totalH}" preserveAspectRatio="xMidYMin meet">${defs}${inner}</svg>`;
   $("view-t03").innerHTML =
     `<div style="padding:10px 16px 6px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-      <div><b>${ep.method} ${ep.path}</b> · <code>${ep.handler.file}:${ep.handler.line||"?"}</code></div>
+      <div><b>${esc(ep.method)} ${esc(ep.path)}</b> · <code>${esc(ep.handler.file)}:${ep.handler.line||"?"}</code></div>
       <div style="font-size:11px;color:var(--muted)">悬停消息查看完整 SQL，点击数据表卡片可查看字段与详情</div>
     </div>` + svg;
 
@@ -1283,11 +1285,11 @@ function renderSummary(){
     const ts = ep.tables.map(t => {
       const isTarget = detailTarget && detailTarget.type==="tbl" && detailTarget.id===t.name;
       const hlStyle = isTarget ? "outline:1.5px solid var(--frontend);background:var(--frontend-fill);border-radius:4px;padding:1px 4px;font-weight:650;" : "";
-      return `<span style="${hlStyle}">${escAttr(t.name)}</span> <span class="badge ${isWrite(t.op)&&isRead(t.op)?"RW":isWrite(t.op)?"W":"R"}">${t.op}</span>`;
+      return `<span style="${hlStyle}">${esc(t.name)}</span> <span class="badge ${isWrite(t.op)&&isRead(t.op)?"RW":isWrite(t.op)?"W":"R"}">${esc(t.op)}</span>`;
     }).join("<br>");
-    const conf = [...new Set(ep.tables.map(t=>t.confidence))].join(", ");
+    const conf = [...new Set(ep.tables.map(t=>t.confidence))].map(esc).join(", ");
     const hl = selected===ep.id ? "font-weight:650" : "";
-    return `<tr data-ep="${ep.id}" style="${hl}"><td>${ep.method}</td><td>${ep.path}</td><td>${ep.handler.fn}</td><td>${ts}</td><td>${conf}</td></tr>`;
+    return `<tr data-ep="${esc(ep.id)}" style="${hl}"><td>${esc(ep.method)}</td><td>${esc(ep.path)}</td><td>${esc(ep.handler.fn)}</td><td>${ts}</td><td>${conf}</td></tr>`;
   }).join("");
   $("summary").innerHTML = `<thead><tr><th>方法</th><th>路径</th><th>处理函数</th><th>表 / 操作</th><th>置信度</th></tr></thead><tbody>${rows}</tbody>`;
   $("summary").querySelectorAll("tr[data-ep]").forEach(tr => tr.onclick = () => selectEndpoint(tr.dataset.ep));
@@ -1305,9 +1307,9 @@ function renderCards(){
   const uncertain = [];
   eps.forEach(ep => ep.tables.forEach(t => { if(t.confidence === "uncertain") uncertain.push({ep: ep.id, ev: t.evidence, table: t.name}); }));
   const hotItems = hot.length
-    ? hot.map(([name, ids]) => `<li>${escAttr(name)} · ${ids.length} 个接口</li>`).join("")
+    ? hot.map(([name, ids]) => `<li>${esc(name)} · ${ids.length} 个接口</li>`).join("")
     : "<li>没有表被接口引用</li>";
-  const uncItems = uncertain.slice(0, 2).map(u => `<li>${escAttr(u.table)} · <code>${escAttr(u.ev || "—")}</code></li>`).join("");
+  const uncItems = uncertain.slice(0, 2).map(u => `<li>${esc(u.table)} · <code>${esc(u.ev || "—")}</code></li>`).join("");
   host.innerHTML = `
     <article class="conclusion" data-card="rw">
       <h3>读写接口</h3>
@@ -1331,7 +1333,7 @@ function renderEvidenceBanner(){
     const ep = (IR.endpoints||[]).find(e => e.id === detailTarget.id);
     if(!ep){ el.hidden = true; return; }
     const first = ep.tables[0];
-    el.innerHTML = `<b>${escAttr(ep.method)} ${escAttr(ep.path)}</b><span>${escAttr(ep.handler.file)}:${ep.handler.line||"?"}</span>${first ? `<code>${escAttr(first.evidence||"—")}</code>` : ""}`;
+    el.innerHTML = `<b>${esc(ep.method)} ${esc(ep.path)}</b><span>${esc(ep.handler.file)}:${ep.handler.line||"?"}</span>${first ? `<code>${esc(first.evidence||"—")}</code>` : ""}`;
     el.hidden = false;
     return;
   }
@@ -1339,7 +1341,7 @@ function renderEvidenceBanner(){
   if(!t){ el.hidden = true; return; }
   let ev = "";
   (IR.endpoints||[]).some(ep => ep.tables.some(et => { if(et.name===t.name){ ev = et.evidence; return true; } return false; }));
-  el.innerHTML = `<b>${escAttr(t.name)}</b><span>${escAttr(t.module||t.schema||"")}</span>${ev ? `<code>${escAttr(ev)}</code>` : ""}`;
+  el.innerHTML = `<b>${esc(t.name)}</b><span>${esc(t.module||t.schema||"")}</span>${ev ? `<code>${esc(ev)}</code>` : ""}`;
   el.hidden = false;
 }
 
@@ -1376,15 +1378,15 @@ function renderDetail(){
     const rows = ep.tables.map(t => {
       const badge = isWrite(t.op)&&isRead(t.op) ? "RW" : isWrite(t.op) ? "W" : "R";
       return `<div class="detail-row">
-        <div class="detail-row-head"><b>${escAttr(t.name)}</b><span class="badge ${badge}">${t.op}</span><span class="conf conf-${t.confidence}">${t.confidence}</span></div>
-        ${t.fields_read&&t.fields_read.length?`<div class="detail-fields">读: ${t.fields_read.map(escAttr).join(", ")}</div>`:""}
-        ${t.fields_written&&t.fields_written.length?`<div class="detail-fields">写: ${t.fields_written.map(escAttr).join(", ")}</div>`:""}
-        <div class="detail-evidence">依据：<code>${escAttr(t.evidence||"—")}</code></div>
+        <div class="detail-row-head"><b>${esc(t.name)}</b><span class="badge ${badge}">${esc(t.op)}</span><span class="conf conf-${esc(t.confidence)}">${esc(t.confidence)}</span></div>
+        ${t.fields_read&&t.fields_read.length?`<div class="detail-fields">读: ${t.fields_read.map(esc).join(", ")}</div>`:""}
+        ${t.fields_written&&t.fields_written.length?`<div class="detail-fields">写: ${t.fields_written.map(esc).join(", ")}</div>`:""}
+        <div class="detail-evidence">依据：<code>${esc(t.evidence||"—")}</code></div>
       </div>`;
     }).join("");
     $("detail-body").innerHTML = `
-      <div class="detail-title">${escAttr(ep.method)} ${escAttr(ep.path)}</div>
-      <div class="detail-sub">处理函数 <code>${escAttr(ep.handler.fn)}</code> · <code>${escAttr(ep.handler.file)}:${ep.handler.line||"?"}</code></div>
+      <div class="detail-title">${esc(ep.method)} ${esc(ep.path)}</div>
+      <div class="detail-sub">处理函数 <code>${esc(ep.handler.fn)}</code> · <code>${esc(ep.handler.file)}:${ep.handler.line||"?"}</code></div>
       <div class="detail-rows">${rows}</div>`;
   } else if(detailTarget.type==="tbl"){
     const t = (IR.tables||[]).find(x=>x.name===detailTarget.id);
@@ -1396,13 +1398,13 @@ function renderDetail(){
     const rows = touches.map(({ep, et}) => {
       const badge = isWrite(et.op)&&isRead(et.op) ? "RW" : isWrite(et.op) ? "W" : "R";
       return `<div class="detail-row">
-        <div class="detail-row-head"><b>${escAttr(ep.method)} ${escAttr(ep.path)}</b><span class="badge ${badge}">${et.op}</span></div>
-        <div class="detail-evidence">依据：<code>${escAttr(et.evidence||"—")}</code></div>
+        <div class="detail-row-head"><b>${esc(ep.method)} ${esc(ep.path)}</b><span class="badge ${badge}">${esc(et.op)}</span></div>
+        <div class="detail-evidence">依据：<code>${esc(et.evidence||"—")}</code></div>
       </div>`;
     }).join("");
     $("detail-body").innerHTML = `
-      <div class="detail-title">${escAttr(t.name)}</div>
-      <div class="detail-sub">${escAttr(t.module||t.schema||"")} · ${(t.fields||[]).length} 字段</div>
+      <div class="detail-title">${esc(t.name)}</div>
+      <div class="detail-sub">${esc(t.module||t.schema||"")} · ${(t.fields||[]).length} 字段</div>
       <div class="detail-rows">${rows || "<div class='meta'>没有接口引用此表</div>"}</div>`;
   }
 }
@@ -1441,7 +1443,7 @@ function renderFinderResults(q){
   $("finder-results").innerHTML = items.map((it,i) => `
     <button class="finder-result${i===0?" active":""}" data-idx="${i}" type="button">
       <span class="finder-tag">${it.kind==="ep"?"接口":"表"}</span>
-      <span class="finder-copy"><strong>${escAttr(it.label)}</strong><small>${escAttr(it.meta)}</small></span>
+      <span class="finder-copy"><strong>${esc(it.label)}</strong><small>${esc(it.meta)}</small></span>
     </button>`).join("") || `<div class="finder-empty">没有匹配结果</div>`;
   $("finder-results").querySelectorAll(".finder-result").forEach((b,i) => {
     b.onclick = () => chooseFinderResult(items[i]);
@@ -1496,14 +1498,14 @@ function renderRoutePanel(){
   const startLabel = routeState.startId ? routeLabel(routeState.startId) : null;
   const endLabel = routeState.endId ? routeLabel(routeState.endId) : null;
   let html = `<div class="route-picks">
-    <button class="route-pick" id="route-pick-start" type="button">${startLabel ? escAttr(startLabel) : "选择起点…"}</button>
+    <button class="route-pick" id="route-pick-start" type="button">${startLabel ? esc(startLabel) : "选择起点…"}</button>
     <span class="route-arrow">&rarr;</span>
-    <button class="route-pick" id="route-pick-end" type="button">${endLabel ? escAttr(endLabel) : "选择终点…"}</button>
+    <button class="route-pick" id="route-pick-end" type="button">${endLabel ? esc(endLabel) : "选择终点…"}</button>
   </div>`;
   if(routeState.path){
     html += `<div class="route-chain">` + routeState.path.map((k,i) => {
       const cur = i===routeState.stepIndex;
-      return (i>0 ? '<span class="route-arrow">&rarr;</span>' : "") + `<span class="route-chip" data-current="${cur}">${escAttr(routeLabel(k))}</span>`;
+      return (i>0 ? '<span class="route-arrow">&rarr;</span>' : "") + `<span class="route-chip" data-current="${cur}">${esc(routeLabel(k))}</span>`;
     }).join("") + `</div>`;
     html += `<div class="route-journey">
       <button id="route-prev" type="button" title="上一步">&larr;</button>

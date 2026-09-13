@@ -17,10 +17,12 @@ Prefer `sqlglot` (see `scripts/extract_sql.py`). Fall back to regex if the scrip
 
 Extract:
 
-- tables: FROM / JOIN / INTO / UPDATE / DELETE FROM / USING
-- fields_read: SELECT list (ignore `*`, keep `table.col` and aliases that map to a real col)
+- tables: FROM / JOIN / INTO / UPDATE / DELETE FROM / USING, each with its own `op`
+- fields_read: SELECT list (ignore `*`, keep `table.col` and aliases that map to a real col) plus any column compared in a join predicate
 - fields_written: INSERT column list, UPDATE SET targets
-- op: SELECT→SELECT, INSERT→INSERT, UPDATE→UPDATE, DELETE→DELETE, INSERT..ON CONFLICT/ON DUPLICATE→UPSERT, JOIN-only side table→JOIN_READ
+- op (statement): SELECT→SELECT, INSERT→INSERT, UPDATE→UPDATE, DELETE→DELETE, INSERT..ON CONFLICT/ON DUPLICATE→UPSERT
+- op (per table): the statement's op for the target table; `JOIN_READ` for every JOINed side, even when the statement writes
+- joins: equi-predicates from `ON` and `WHERE`, resolved to `{left:{table,column}, right:{table,column}}` — hand these straight to step 6 as `source: "join"` relations
 
 Aliases: `FROM orders o` → table `orders`. Resolve `o.status` to `orders.status`.
 

@@ -185,6 +185,13 @@ const methodsOn = new Set();
 let onlyUncertain = false;
 let onlyWeek = false;
 
+// Paths, table names, and stamps in registry.json come from the analyzed repo, so escape
+// everything before it reaches innerHTML, in text and attribute positions alike.
+function esc(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
 function latest(entry) {
   const vs = (entry.versions || []).slice().sort(function (a, b) {
     return String(a.timestamp).localeCompare(String(b.timestamp));
@@ -248,29 +255,29 @@ function render() {
     if (versions.length > 1) {
       verHtml = '<select class="versions" data-idx="' + idx + '" aria-label="历史版本">';
       versions.forEach(function (ver) {
-        verHtml += '<option value="' + ver.html + '"' + (ver.html === v.html ? " selected" : "") + ">"
-          + stampLabel(ver) + "</option>";
+        verHtml += '<option value="' + esc(ver.html) + '"' + (ver.html === v.html ? " selected" : "") + ">"
+          + esc(stampLabel(ver)) + "</option>";
       });
       verHtml += "</select>";
     }
     article.innerHTML =
       '<div class="card-head">'
-      + '<span class="method ' + (entry.method || "") + '">' + (entry.method || "") + "</span>"
-      + '<a class="path" href="' + (v.html || "#") + '">' + (entry.path || "") + "</a>"
+      + '<span class="method ' + esc(entry.method || "") + '">' + esc(entry.method || "") + "</span>"
+      + '<a class="path" href="' + esc(v.html || "#") + '">' + esc(entry.path || "") + "</a>"
       + "</div>"
       + '<div class="meta">'
       + '<span class="pill">' + (v.table_count || tables.length) + " 张表</span>"
-      + '<span class="pill rw-' + rw + '">' + (RW[rw] || rw) + "</span>"
+      + '<span class="pill rw-' + esc(rw) + '">' + esc(RW[rw] || rw) + "</span>"
       + '<span class="pill">已分析 ' + n + " 次</span>"
       + "</div>"
-      + '<div class="tables"><span>表 </span>' + (tables.length ? tables.join(", ") : "—") + "</div>"
+      + '<div class="tables"><span>表 </span>' + (tables.length ? esc(tables.join(", ")) : "—") + "</div>"
       + '<div class="conf">'
       + "<span>high <b class='high'>" + conf.high + "</b></span>"
       + "<span>med <b class='med'>" + conf.med + "</b></span>"
       + "<span>low <b class='low'>" + conf.low + "</b></span>"
       + "<span>uncertain <b class='uncertain'>" + conf.uncertain + "</b></span>"
       + "</div>"
-      + '<div class="foot"><span class="time">' + fmtTime(v.timestamp) + "</span>" + verHtml + "</div>";
+      + '<div class="foot"><span class="time">' + esc(fmtTime(v.timestamp)) + "</span>" + verHtml + "</div>";
     cards.appendChild(article);
   });
   if (shown === 0) {

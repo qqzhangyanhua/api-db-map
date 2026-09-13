@@ -19,6 +19,21 @@ TABLE_RE = re.compile(
     )""",
     re.I | re.X,
 )
+JOIN_GROUP = 2  # which TABLE_RE alternative means "this table was JOINed"
+# `FROM orders o` / `JOIN users AS u` → alias map, so o.status resolves to orders.status
+ALIAS_RE = re.compile(
+    r"\b(?:FROM|JOIN|INTO|UPDATE)\s+([`\"\[]?[\w.]+[`\"\]]?)(?:\s+(?:AS\s+)?([A-Za-z]\w*))?",
+    re.I,
+)
+NOT_ALIAS = {
+    "WHERE", "ON", "SET", "LEFT", "RIGHT", "INNER", "OUTER", "FULL", "CROSS", "JOIN",
+    "GROUP", "ORDER", "LIMIT", "OFFSET", "VALUES", "SELECT", "AND", "OR", "USING",
+    "HAVING", "UNION", "AS", "STRAIGHT_JOIN", "NATURAL", "RETURNING",
+}
+# equi-predicates with a qualifier on both sides: `ON u.id = o.user_id`, `WHERE a.x = b.y`
+QUALIFIED_EQ_RE = re.compile(
+    r"([`\"\[]?\w+[`\"\]]?)\.([`\"\[]?\w+[`\"\]]?)\s*=\s*([`\"\[]?\w+[`\"\]]?)\.([`\"\[]?\w+[`\"\]]?)"
+)
 INSERT_COLS_RE = re.compile(r"INSERT\s+INTO\s+[^\s(]+\s*\(([^)]+)\)", re.I | re.S)
 UPDATE_SET_RE = re.compile(r"\bSET\s+(.+?)(?:\bWHERE\b|\bRETURNING\b|$)", re.I | re.S)
 SELECT_LIST_RE = re.compile(r"\bSELECT\s+(DISTINCT\s+)?(.+?)\bFROM\b", re.I | re.S)
@@ -35,6 +50,35 @@ def strip_ident(name: str) -> tuple[str | None, str]:
         schema, tbl = name.split(".", 1)
         return schema, tbl
     return None, name
+
+
+def alias_map(sql: str) -> dict[str, str]:
+    """{alias_or_table_lowercased: table} for every table named in the statement."""
+    out: dict[str, str] = {}
+    for m in ALIAS_RE.finditer(sql):
+        _schema, table = strip_ident(m.group(1))
+        if not table:
+            continue
+        out[table.lower()] = table
+        alias = m.group(2)
+        if alias and alias.upper() not in NOT_ALIAS:
+            out[alias.lower()] = table
+    return out
+
+
+def join_pairs(sql: str, aliases: dict[str, str]) -> list[dict]:
+    """Equi-join predicates as resolved table.column pairs — feeds `source: "join"` relations."""
+    pairs, seen = [], set()
+    for m in QUALIFIED_EQ_RE.finditer(sql):
+        lq, lc, rq, rc = (strip_ident(g)[1] for g in m.groups())
+        left = {"table": aliases.get(lq.lower(), lq), "column": lc}
+        right = {"table": aliases.get(rq.lower(), rq), "column": rc}
+        key = (left["table"], left["column"], right["table"], right["column"])
+        if key in seen:
+            continue
+        seen.add(key)
+        pairs.append({"left": left, "right": right})
+    return pairs
 
 
 def classify(sql: str) -> str:
@@ -89,11 +133,16 @@ def parse_with_sqlglot(sql: str) -> dict | None:
         return None
     if tree is None:
         return None
+    joined = set()
+    for j in tree.find_all(exp.Join):
+        side = j.this
+        if isinstance(side, exp.Table) and side.name:
+            joined.add(side.name.lower())
     tables = []
     for t in tree.find_all(exp.Table):
         schema, name = t.db, t.name
         if name:
-            tables.append({"schema": schema, "name": name})
+            tables.append({"schema": schema, "name": name, "joined": name.lower() in joined})
     fields_read, fields_written = [], []
     for c in tree.find_all(exp.Column):
         if c.name:
@@ -128,16 +177,18 @@ def _uniq(xs: list[str]) -> list[str]:
 def parse_regex(sql: str) -> dict:
     tables = []
     for m in TABLE_RE.finditer(sql):
-        raw = next(g for g in m.groups() if g)
+        idx, raw = next((i, g) for i, g in enumerate(m.groups(), start=1) if g)
         schema, name = strip_ident(raw)
-        tables.append({"schema": schema, "name": name})
-    # dedupe tables
-    seen, uniq_t = set(), []
+        tables.append({"schema": schema, "name": name, "joined": idx == JOIN_GROUP})
+    # dedupe tables; a table reached both directly and via JOIN counts as direct
+    seen, uniq_t = {}, []
     for t in tables:
         k = (t["schema"], t["name"].lower())
         if k not in seen:
-            seen.add(k)
+            seen[k] = t
             uniq_t.append(t)
+        elif not t["joined"]:
+            seen[k]["joined"] = False
     fields_read, fields_written = [], []
     sm = SELECT_LIST_RE.search(sql)
     if sm:
@@ -172,13 +223,26 @@ def analyze_sql(sql: str, source: str = "") -> dict:
     if DYN_TABLE_RE.search(sql):
         conf = "uncertain"
         if not parsed["tables"]:
-            parsed["tables"] = [{"schema": None, "name": "<dynamic>"}]
+            parsed["tables"] = [{"schema": None, "name": "<dynamic>", "joined": False}]
     elif parsed["engine"] == "sqlglot" and parsed["tables"]:
         conf = "high"
+    joins = join_pairs(flattened, alias_map(flattened))
+    # a column compared in a join predicate is read, even when it is not in the SELECT list
+    predicate_cols = [side["column"] for j in joins for side in (j["left"], j["right"])]
+    tables = [
+        {
+            "schema": t["schema"],
+            "name": t["name"],
+            # the JOINed side of a statement is read-only, whatever the statement does to its target
+            "op": "JOIN_READ" if t.get("joined") else op,
+        }
+        for t in parsed["tables"]
+    ]
     return {
         "op": op,
-        "tables": parsed["tables"],
-        "fields_read": parsed["fields_read"],
+        "tables": tables,
+        "joins": joins,
+        "fields_read": _uniq(parsed["fields_read"] + predicate_cols),
         "fields_written": parsed["fields_written"] if op != "SELECT" else [],
         "confidence": conf,
         "evidence": source,
@@ -197,9 +261,12 @@ def analyze_file(path: Path) -> list[dict]:
             stmt_id = id_m.group(1) if id_m else kind
             line = text[: m.start()].count("\n") + 1
             rec = analyze_sql(body, f"{path}:{line}#{stmt_id}")
-            # XML tag is a stronger op signal
+            # XML tag is a stronger op signal than the statement body
             tag_op = {"select": "SELECT", "insert": "INSERT", "update": "UPDATE", "delete": "DELETE"}[kind.lower()]
             rec["op"] = tag_op
+            for t in rec["tables"]:
+                if t["op"] != "JOIN_READ":
+                    t["op"] = tag_op
             results.append(rec)
         return results
     rec = analyze_sql(text, f"{path}:1")

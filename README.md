@@ -103,24 +103,31 @@ Schema 来源按可信度取第一份能给出表、列、主键的结果：线�
 
 ## 本地脚本
 
-Python 3，无强制第三方依赖。解析复杂 SQL 时可选装 `sqlglot`。
+Python 3（命令用 `python3`，别用 `python`），无强制第三方依赖。装了 `sqlglot` 解析复杂 SQL 更准，没装则退化到正则，脚本自报的 `confidence` 不会给到 `high`。
+
+脚本要按 skill 自己所在的目录调用，不是被分析的项目目录：
 
 ```bash
+cd /path/to/api-db-map        # 或用绝对路径，见 SKILL.md「Running the scripts」
+
 # 识别语言 / 框架 / ORM
-python scripts/detect_stack.py /path/to/backend
+python3 scripts/detect_stack.py /path/to/backend
 
 # 从 SQL 字符串或 MyBatis XML 抽出表、操作、字段
-python scripts/extract_sql.py --file mapper/OrderMapper.xml
-python scripts/extract_sql.py --sql "SELECT id, status FROM orders WHERE id = 1"
+python3 scripts/extract_sql.py --file mapper/OrderMapper.xml
+python3 scripts/extract_sql.py --sql "SELECT id, status FROM orders WHERE id = 1"
 
 # 把 IR 渲染成 HTML（默认用仓库里的样例数据）
-python scripts/render_html.py assets/sample-ir.json -o /tmp/api-db-map.html --no-index
+python3 scripts/render_html.py assets/sample-ir.json -o /tmp/api-db-map.html --no-index
 
 # 从 registry.json 重建入口页
-python scripts/render_index.py api-db-map-out/
+python3 scripts/render_index.py api-db-map-out/
+
+# 冒烟测试：渲染样例 IR 并检查产物结构
+python3 scripts/smoke_test.py
 ```
 
-也可以直接打开 `assets/sample-preview.html` 看样例图。
+想先看看图长什么样，用上面第三条命令渲染 `assets/sample-ir.json` 然后打开产物即可。
 
 ## 目录
 
@@ -131,7 +138,8 @@ api-db-map/
 │   ├── detect_stack.py
 │   ├── extract_sql.py
 │   ├── render_html.py
-│   └── render_index.py           # registry → index.html
+│   ├── render_index.py           # registry → index.html
+│   └── smoke_test.py             # 渲染冒烟测试
 ├── references/
 │   ├── ir-schema.md              # api-db-map.json 结构
 │   ├── stack-patterns.md         # 各栈抽取配方
@@ -140,8 +148,7 @@ api-db-map/
 └── assets/
     ├── diagram.template.html     # 三视图模板
     ├── index.template.html       # 入口页模板
-    ├── sample-ir.json
-    └── sample-preview.html
+    └── sample-ir.json            # 样例 IR，配合 render_html.py 预览
 ```
 
 ## 原则

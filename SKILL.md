@@ -37,6 +37,19 @@ Stamp: `YYYY-MM-DD`; if that `.html` already exists, `YYYY-MM-DDTHH-MM`.
 
 Reply in the user's language. If they wrote Chinese, diagram chrome is Chinese (影响架构图 / 表与字段关系 / 接口时序图).
 
+## Running the scripts
+
+The scripts ship next to this file, **not** in the project you are analyzing, and your working directory is normally the project. So resolve the skill root once, before step 2, and use absolute paths from then on:
+
+```bash
+SKILL_DIR="<absolute path of the directory holding this SKILL.md>"
+python3 "$SKILL_DIR/scripts/detect_stack.py" <project-root>
+```
+
+- Use `python3`, never bare `python` — on macOS and many Linux images `python` does not exist.
+- Never name a shell variable `PATH`, `HOME`, or `IFS`. Assigning an API path to `PATH` breaks every later command in that shell.
+- `scripts/extract_sql.py` runs with no third-party packages, but parses better with `sqlglot`. Without it the parser falls back to regex and its own `confidence` never reaches `high`. That is a parser limit, not a finding — the Confidence rules in [references/ir-schema.md](references/ir-schema.md) are still what decides. Offer `pip install sqlglot` once if the project has a lot of raw SQL; never block on it.
+
 ## Workflow
 
 ### 1. Scope
@@ -60,7 +73,7 @@ Done when the deep-trace set is an explicit list of ≤12 `METHOD path` values (
 
 ### 2. Detect stack
 
-Run `python scripts/detect_stack.py <project-root>`.
+Run `python3 "$SKILL_DIR/scripts/detect_stack.py" <project-root>`.
 
 Load **only** the path in the script's `playbook` field (file plus `#` anchor, if any). Also load [references/raw-sql.md](references/raw-sql.md).
 
@@ -98,7 +111,7 @@ For every table touch, record:
 - `confidence` — apply **Confidence rules** in [references/ir-schema.md](references/ir-schema.md)
 - `evidence` — `file:line`
 
-Use `python scripts/extract_sql.py` on raw SQL strings and mapper XML. It is a parser, not the confidence authority: after it returns, apply Confidence rules (`confidence` on a static SQL string stays `med` even if the script said `high`). On MyBatis XML, expand `<include refid>` into the statement body before parsing.
+Use `python3 "$SKILL_DIR/scripts/extract_sql.py"` on raw SQL strings and mapper XML. It is a parser, not the confidence authority: after it returns, apply Confidence rules (`confidence` on a static SQL string stays `med` even if the script said `high`). On MyBatis XML, expand `<include refid>` into the statement body before parsing.
 
 Handler clearly has no DB access (no repo / mapper / SQL / ORM call in the walk): `tables: []` and a one-line note in `meta.notes`.
 
@@ -121,7 +134,7 @@ Done when every deep-traced endpoint has:
 Merge three sources, tagged by `source`:
 
 - `fk` — schema / ORM foreign keys
-- `join` — JOIN ON and WHERE a.x = b.y in code
+- `join` — JOIN ON and WHERE a.x = b.y in code; `extract_sql.py` already returns these as `joins[]`, resolved through table aliases
 - `inferred` — shared key names used together, low confidence, say so
 
 Cardinality defaults: FK child to parent is `N:1`. Only mark `N:M` when a join table is proven.
@@ -137,11 +150,11 @@ Read [references/visualization.md](references/visualization.md) before rendering
 For **each** deep-traced endpoint:
 
 ```bash
-dir="$root/$(python scripts/render_index.py --dir-name "$METHOD" "$PATH")"
-stamp=$(python scripts/render_index.py --next-stamp "$dir")
-# write sliced IR to $dir/$stamp.json  (that endpoint + its tables + relations among them)
-python scripts/render_html.py "$dir/$stamp.json" -o "$dir/$stamp.html"
-# write $dir/$stamp.md
+ep_dir="$root/$(python3 "$SKILL_DIR/scripts/render_index.py" --dir-name "$method" "$ep_path")"
+stamp=$(python3 "$SKILL_DIR/scripts/render_index.py" --next-stamp "$ep_dir")
+# write sliced IR to $ep_dir/$stamp.json  (that endpoint + its tables + relations among them)
+python3 "$SKILL_DIR/scripts/render_html.py" "$ep_dir/$stamp.json" -o "$ep_dir/$stamp.html"
+# write $ep_dir/$stamp.md
 ```
 
 `render_html.py` appends a version onto `registry.json` and regenerates `index.html`.
@@ -182,12 +195,14 @@ If the user asked about one endpoint, zoom T·01 / T·03 to that endpoint and st
 
 ## Scripts
 
+Call every one as `python3 "$SKILL_DIR/scripts/<name>.py"` — see "Running the scripts".
+
 | Script | When |
 |--------|------|
-| `scripts/detect_stack.py <root>` | Step 2; then load the returned `playbook` |
-| `scripts/extract_sql.py --file <path>` or `--sql "<stmt>"` | Step 5, raw SQL / mapper XML; re-apply Confidence rules after |
-| `scripts/render_index.py --dir-name METHOD '/path'` / `--next-stamp DIR` | Step 7, directory + stamp |
-| `scripts/render_html.py <ir.json> -o <out.html>` | Step 7 (also updates registry + index.html) |
+| `detect_stack.py <root>` | Step 2; then load the returned `playbook` |
+| `extract_sql.py --file <path>` or `--sql "<stmt>"` | Step 5, raw SQL / mapper XML; re-apply Confidence rules after |
+| `render_index.py --dir-name METHOD '/path'` / `--next-stamp DIR` | Step 7, directory + stamp |
+| `render_html.py <ir.json> -o <out.html>` | Step 7 (also updates registry + index.html) |
 
 ## Quality bar
 
