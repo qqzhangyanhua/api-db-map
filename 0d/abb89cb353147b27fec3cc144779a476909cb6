@@ -1,0 +1,44 @@
+references/visualization.md
+  s_c4e26d0ad815bf::t_9296e868db772d 28
+assets/index.template.html
+  s_c4e26d0ad815bf::t_4b22f2cf68a298 193,200-325,334
+  s_c4e26d0ad815bf::t_d28a10b5928461 190-192
+  s_c4e26d0ad815bf::t_87adb78595430f 194-199
+  s_c4e26d0ad815bf::t_0bf2ca4f8989c9 326-328,331-333
+  s_c4e26d0ad815bf::t_b153b7b37098ef 335-337
+SKILL.md
+  s_c4e26d0ad815bf::t_a4de2ca7595f71 113
+  s_c4e26d0ad815bf::t_7d4c9cb3c5f36c 17,19-29,31-34,108-110,114-117,120-124,165-166
+  s_c4e26d0ad815bf::t_75919df185900c 132,141
+  s_c4e26d0ad815bf::t_15d1d1d6368c3a 125
+scripts/render_index.py
+  s_c4e26d0ad815bf::t_c2fef6fa32b552 89,91,118-122
+  s_c4e26d0ad815bf::t_6957f3c15b4bb5 166,207-212,215
+  s_c4e26d0ad815bf::t_7fb2361b0091a2 86-88
+  s_c4e26d0ad815bf::t_67a0640905b694 90
+  s_c4e26d0ad815bf::t_be471b398c17dc 92-94,115-117
+  s_c4e26d0ad815bf::t_777f5c38931ef1 123-125,163-165
+  s_c4e26d0ad815bf::t_f22986c67f3d03 167-169,204-206
+  s_c4e26d0ad815bf::t_2e39a5fea84266 213-214
+  s_c4e26d0ad815bf::t_16065d059e00c6 216-218
+README.md
+  s_c4e26d0ad815bf::t_b00fa6cd3c9a8a 44,46-60,62-64,117-120,133-134,141-142
+scripts/render_html.py
+  s_c4e26d0ad815bf::t_7ad38fcf9452f0 27-28,36-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.6.23",
+  "base_commit_sha": "0dabb89cb353147b27fec3cc144779a476909cb6",
+  "prompts": {},
+  "sessions": {
+    "s_c4e26d0ad815bf": {
+      "agent_id": {
+        "tool": "grok",
+        "id": "01a0993b-b75f-7513-ac45-dcb57b8e27f5",
+        "model": "grok-4.6"
+      },
+      "human_author": "张艳华 <939593210@qq.com>"
+    }
+  }
+}
