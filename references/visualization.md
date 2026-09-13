@@ -84,8 +84,8 @@ Question: how tables and fields connect, and which fields this API actually uses
 - PK row: bold + `PK`. FK row: tinted rose + `→ table.col`.
 - Draw orthogonal edges from FK field to referenced PK field (field grain, not table grain).
 - Edge label = cardinality `1:1` / `1:N` / `N:1` / `N:M`. Color = FK rose. `source=join|inferred` uses dashed stroke.
-- When an endpoint is selected: fields in `fields_read` or `fields_written` stay full opacity; unused fields go to 0.35. Written fields get an orange tick; read fields a blue tick.
-- If a table has more than 10 fields, show PK / FK / touched fields first and fold the rest behind `+N 更多`.
+- When an endpoint is selected (or the page has only one): fields in `fields_read` or `fields_written` stay full opacity; unused fields go to 0.35. Written fields get an orange `W` tick; read fields a blue `R` tick.
+- If a table has more than 10 fields, show PK / FK / touched fields first and fold the rest behind `+N 更多`. Click `+N 更多` or the table card to unfold the leftover rows; `收起` folds them again. Unfolding a table also redraws any FK wires that were hidden with those rows.
 
 Caption:
 - 标题：表与字段关系图

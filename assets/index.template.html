@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN" data-theme="dark">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,7 +9,7 @@
   try {
     var theme = null;
     try { theme = localStorage.getItem("api-db-map-index-theme"); } catch (e) {}
-    if (theme !== "light" && theme !== "dark") theme = "light";
+    if (theme !== "light" && theme !== "dark") theme = "dark";
     document.documentElement.setAttribute("data-theme", theme);
   } catch (e) {}
 })();
@@ -155,7 +155,7 @@
     <div class="stats">
       <span class="stat"><b id="stat-n">0</b> 个接口</span>
       <span class="stat">更新 <b id="stat-at">—</b></span>
-      <button type="button" class="tool" id="btn-theme" aria-label="切换浅色或深色">浅色</button>
+      <button type="button" class="tool" id="btn-theme" aria-label="切换浅色或深色">深色</button>
     </div>
   </header>
   <div class="overview" id="overview">

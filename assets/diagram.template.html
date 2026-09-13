@@ -310,6 +310,9 @@
   .field.fk { color: var(--fk); }
   .field.unused { opacity: .35; }
   .field .t { color: var(--muted); }
+  .field .tick { font-size: 9px; font-weight: 700; letter-spacing: .04em; margin-left: 6px; }
+  .field .tick.r { color: var(--read); }
+  .field .tick.w { color: var(--write); }
   #view-t03 { padding: 48px 12px 16px; box-sizing: border-box; overflow: visible; }
   #view-t03 .seq { display: block; max-width: none; }
   .seq-participant { transition: none; }
@@ -324,7 +327,8 @@
   #canvas-inner { position: relative; min-height: 100%; }
   .edge-label-bg { fill: var(--card); stroke: var(--panel-border); stroke-width: 0.7; }
   .edge-label { font-size: 10px; fill: var(--ink); font-family: inherit; }
-  .field-more { font-size: 11px; color: var(--muted); padding: 6px 0 2px; cursor: pointer; }
+  .field-more { font-size: 11px; color: var(--muted); padding: 6px 0 2px; cursor: pointer; user-select: none; }
+  .field-more:hover { color: var(--ink); }
   .card.mod { border-style: dashed; }
   .evidence-banner {
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
@@ -603,6 +607,7 @@ const caps = {
 };
 let tab = "t01", filterOp = "ALL", selected = null, query = "";
 let detailTarget = null;               // {type:"ep"|"tbl", id}
+const expandedTables = new Set();      // T·02 cards whose leftover fields are unfolded
 let zoomLevel = 1;
 let finderMode = null;                 // null | "jump" | "route-start" | "route-end"
 let finderAll = null, finderCurrentItems = [], finderActiveIndex = 0;
@@ -996,24 +1001,40 @@ function drawT01Wires(){
   svg.innerHTML = html;
 }
 
-function fieldRowHtml(t, f, touched){
+function activeEndpoint(){
+  // T·02 highlights the selected endpoint; a single-endpoint page has no T·01
+  // click, so treat that one as selected. Unused fields stay folded until expand.
+  if(selected) return (IR.endpoints||[]).find(e => e.id===selected) || null;
+  const eps = IR.endpoints || [];
+  return eps.length === 1 ? eps[0] : null;
+}
+function toggleTableFields(name){
+  if(expandedTables.has(name)) expandedTables.delete(name);
+  else expandedTables.add(name);
+  render();
+}
+function fieldRowHtml(t, f, touchedRead, touchedWrite){
   const key = t.name+"."+f.name;
-  const cls = [f.pk?"pk":"", f.fk?"fk":"", selected && !touched.has(key)?"unused":""].join(" ");
+  const used = touchedRead.has(key) || touchedWrite.has(key);
+  const dim = (touchedRead.size + touchedWrite.size) > 0 && !used;
+  const cls = [f.pk?"pk":"", f.fk?"fk":"", dim?"unused":""].join(" ");
   const markBase = f.pk?"PK":(f.fk?("→ "+f.fk.table+"."+f.fk.column):f.type);
   const mark = f.desc ? markBase+" · "+f.desc : markBase;
   const titleAttr = f.desc ? ` title="${esc(f.name+": "+markBase+" · "+f.desc)}"` : "";
-  return `<div class="field ${cls}" data-field="${esc(key)}"${titleAttr}><span>${esc(f.name)}</span><span class="t">${esc(mark)}</span></div>`;
+  const ticks = (touchedRead.has(key) ? `<span class="tick r">R</span>` : "") +
+    (touchedWrite.has(key) ? `<span class="tick w">W</span>` : "");
+  return `<div class="field ${cls}" data-field="${esc(key)}"${titleAttr}><span>${esc(f.name)}${ticks}</span><span class="t">${esc(mark)}</span></div>`;
 }
 function renderT02(){
   clearWires();
-  const touched = new Set();
-  if(selected){
-    const ep = IR.endpoints.find(e=>e.id===selected);
-    (ep?ep.tables:[]).forEach(t => {
-      (t.fields_read||[]).forEach(f => touched.add(t.name+"."+f));
-      (t.fields_written||[]).forEach(f => touched.add(t.name+"."+f));
-    });
-  }
+  const touchedRead = new Set();
+  const touchedWrite = new Set();
+  const ep = activeEndpoint();
+  (ep?ep.tables:[]).forEach(t => {
+    (t.fields_read||[]).forEach(f => touchedRead.add(t.name+"."+f));
+    (t.fields_written||[]).forEach(f => touchedWrite.add(t.name+"."+f));
+  });
+  const touched = new Set([...touchedRead, ...touchedWrite]);
   const {tblSet, curKey} = routePathSets();
   const onRoute = !!routeState.path;
   const modules = {};
@@ -1026,22 +1047,34 @@ function renderT02(){
       const op = tableOps(t.name);
       const fields = t.fields || [];
       const important = fields.filter(f => f.pk || f.fk || touched.has(t.name+"."+f.name));
-      const rest = fields.filter(f => !important.includes(f));
-      const fold = fields.length > T02_FIELD_FOLD_THRESHOLD;
+      const expanded = expandedTables.has(t.name);
+      const fold = fields.length > T02_FIELD_FOLD_THRESHOLD && !expanded;
       const shown = fold ? (important.length ? important : fields.slice(0, T02_FIELD_FOLD_THRESHOLD)) : fields;
       const hiddenCount = fold ? fields.length - shown.length : 0;
-      const fieldHtml = shown.map(f => fieldRowHtml(t, f, touched)).join("") +
-        (hiddenCount ? `<div class="field-more">+${hiddenCount} 更多</div>` : "");
+      let more = "";
+      if(hiddenCount) more = `<div class="field-more" data-more="${esc(t.name)}">+${hiddenCount} 更多</div>`;
+      else if(expanded && fields.length > T02_FIELD_FOLD_THRESHOLD)
+        more = `<div class="field-more" data-more="${esc(t.name)}">收起</div>`;
+      const fieldHtml = shown.map(f => fieldRowHtml(t, f, touchedRead, touchedWrite)).join("") + more;
       let extra = (detailTarget && detailTarget.type==="tbl" && detailTarget.id===t.name) ? " path-step" : "";
       if(onRoute){
         extra = curKey==="tbl:"+t.name ? " path-step" : (tblSet.has(t.name) ? " path" : " dim");
       }
-      return `<div class="card tbl${extra}" style="min-width:240px" data-tbl="${esc(t.name)}"><div class="title">${t.name}</div><div class="badges">${op?`<span class="badge ${op}">${op}</span>`:""}</div><div class="fields">${fieldHtml}</div></div>`;
+      return `<div class="card tbl${extra}" style="min-width:240px" data-tbl="${esc(t.name)}"><div class="title">${esc(t.name)}</div><div class="badges">${op?`<span class="badge ${op}">${op}</span>`:""}</div><div class="fields">${fieldHtml}</div></div>`;
     }).join("");
     return `<div class="col" data-mod-col="${esc(m)}"><h3>${esc(m)}</h3>${cards}</div>`;
   }).join("");
   $("view-t02").innerHTML = `<div class="nodes" style="flex-wrap:nowrap;overflow-x:auto">${cols}</div>`;
-  $("view-t02").querySelectorAll("[data-tbl]").forEach(el => el.onclick = () => selectTable(el.dataset.tbl));
+  $("view-t02").querySelectorAll("[data-tbl]").forEach(el => el.onclick = () => {
+    const name = el.dataset.tbl;
+    const fields = ((IR.tables||[]).find(x => x.name===name)||{}).fields || [];
+    if(fields.length > T02_FIELD_FOLD_THRESHOLD && !expandedTables.has(name)) expandedTables.add(name);
+    selectTable(name);
+  });
+  $("view-t02").querySelectorAll("[data-more]").forEach(el => el.onclick = ev => {
+    ev.stopPropagation();
+    toggleTableFields(el.dataset.more);
+  });
   requestAnimationFrame(drawT02Wires);
 }
 function drawT02Wires(){

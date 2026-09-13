@@ -43,6 +43,7 @@ def test_render_html(out_dir: Path) -> None:
         return
     html = html_path.read_text(encoding="utf-8")
     check("IR is injected", "/*__IR__*/{}" not in html and ir["endpoints"][0]["path"] in html)
+    check("T02 field fold can expand", "expandedTables" in html and "data-more" in html)
     for view in ("view-t01", "view-t02", "view-t03"):
         check(f"{view} is in the page", f'id="{view}"' in html)
     check("no unreplaced placeholder", "__REGISTRY__" not in html)
