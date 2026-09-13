@@ -25,9 +25,7 @@ Load after impact IR is written. Do not invent layout rules that contradict this
 
 ## Output files
 
-- `api-db-map.html` — interactive, screenshot-style
-- `api-db-map.md` — summary table + mermaid fallback
-- Keep `api-db-map.json` next to them
+Layout and filenames live in `SKILL.md` Step 7 (`api-db-map-out/<METHOD__path>/<stamp>.{html,json,md}`, plus `index.html`). This file is the visual spec for each diagram HTML.
 
 Use `scripts/render_html.py` when present. Otherwise copy `assets/diagram.template.html`, replace `/*__IR__*/{}` with the JSON.
 

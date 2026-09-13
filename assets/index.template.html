@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>API → DB Map</title>
+<script>
+(function () {
+  try {
+    var theme = null;
+    try { theme = localStorage.getItem("api-db-map-index-theme"); } catch (e) {}
+    if (theme !== "light" && theme !== "dark") theme = "light";
+    document.documentElement.setAttribute("data-theme", theme);
+  } catch (e) {}
+})();
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</noscript>
+<style>
+  :root, [data-theme="light"] {
+    --bg: #F6F3EC; --canvas: #FFFEFB; --grid: #E6E1D6; --card: #FFFEFB;
+    --ink: #242018; --muted: #6f6658; --line: #d8d0c2; --panel-border: #c4b9a6;
+    --toolbar-bg: rgba(255,254,251,.92); --shadow: 0 4px 14px rgba(28,25,21,.06);
+    --get: #047857; --get-fill: #ecfdf5; --get-line: #6ee7b7;
+    --post: #1d4ed8; --post-fill: #eff6ff; --post-line: #93c5fd;
+    --put: #c2410c; --put-fill: #fff7ed; --put-line: #fdba74;
+    --patch: #6d28d9; --patch-fill: #f5f3ff; --patch-line: #c4b5fd;
+    --del: #b91c1c; --del-fill: #fef2f2; --del-line: #fca5a5;
+    --read: #287e84; --write: #ad4b25; --both: #9a671f; --uncert: #8A8378;
+    --high: #047857; --med: #b45309; --low: #6f6658;
+  }
+  [data-theme="dark"] {
+    --bg: #020617; --canvas: #0f172a; --grid: #1E293B; --card: #111827;
+    --ink: #F1F5F9; --muted: #94A3B8; --line: #334155; --panel-border: #334155;
+    --toolbar-bg: rgba(15,23,42,.88); --shadow: 0 8px 24px rgba(0,0,0,.35);
+    --get: #34D399; --get-fill: rgba(52,211,153,.16); --get-line: #34D399;
+    --post: #60A5FA; --post-fill: rgba(96,165,250,.16); --post-line: #60A5FA;
+    --put: #FB923C; --put-fill: rgba(251,146,60,.16); --put-line: #FB923C;
+    --patch: #A78BFA; --patch-fill: rgba(167,139,250,.16); --patch-line: #A78BFA;
+    --del: #FB7185; --del-fill: rgba(251,113,133,.16); --del-line: #FB7185;
+    --read: #67E8F9; --write: #FBBF24; --both: #FB923C; --uncert: #94A3B8;
+    --high: #34D399; --med: #FBBF24; --low: #94A3B8;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 13px/1.45 "JetBrains Mono","SFMono-Regular","PingFang SC","Noto Sans SC","Segoe UI",ui-monospace,system-ui,sans-serif;
+  }
+  body {
+    min-height: 100vh;
+    background-image:
+      radial-gradient(var(--grid) 1.1px, transparent 1.1px);
+    background-size: 24px 24px;
+  }
+  .page { max-width: 1120px; margin: 0 auto; padding: 28px 22px 64px; }
+  header.app { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 18px; }
+  .brand { display: flex; gap: 10px; align-items: flex-start; }
+  .pulse { width: 10px; height: 10px; border-radius: 50%; background: var(--get); margin-top: 8px; box-shadow: 0 0 0 4px var(--get-fill); }
+  header.app h1 { margin: 0; font-size: 22px; letter-spacing: -.025em; font-weight: 700; }
+  header.app .sub { color: var(--muted); margin-top: 4px; font-size: 12px; }
+  .stats { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
+  .stat { background: var(--card); border: 1px solid var(--panel-border); border-radius: 999px; padding: 4px 10px; color: var(--muted); box-shadow: var(--shadow); }
+  .stat b { color: var(--ink); font-weight: 650; }
+  .tool {
+    border: 1px solid var(--panel-border); background: var(--toolbar-bg); color: var(--ink);
+    border-radius: 10px; padding: 6px 12px; cursor: pointer; font: inherit; min-height: 2.25rem;
+    box-shadow: var(--shadow);
+  }
+  .tool:hover { filter: brightness(1.04); }
+  .tool:focus-visible { outline: 2px solid var(--post); outline-offset: 2px; }
+  .overview {
+    display: none; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    background: var(--card); border: 1.5px solid var(--panel-border); border-radius: 14px;
+    padding: 12px 16px; margin-bottom: 14px; box-shadow: var(--shadow);
+  }
+  .overview.on { display: flex; }
+  .overview a { color: var(--post); text-decoration: none; font-weight: 650; }
+  .overview a:hover { text-decoration: underline; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 0 0 16px; }
+  .search {
+    flex: 1 1 240px; min-width: 200px; border: 1px solid var(--panel-border);
+    background: var(--toolbar-bg); color: var(--ink); border-radius: 10px;
+    padding: 8px 12px; outline: none; font: inherit; box-shadow: var(--shadow);
+  }
+  .search:focus { border-color: var(--get); }
+  .chip {
+    border: 1px solid var(--panel-border); background: var(--toolbar-bg); color: var(--muted);
+    border-radius: 999px; padding: 6px 12px; cursor: pointer; font: inherit;
+  }
+  .chip.on { border-color: var(--ink); color: var(--ink); background: var(--card); }
+  .chip:focus-visible { outline: 2px solid var(--post); outline-offset: 2px; }
+  .count { color: var(--muted); font-size: 12px; margin-left: auto; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .card {
+    background: var(--card); border: 1.5px solid var(--panel-border); border-radius: 12px;
+    padding: 14px 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px;
+  }
+  .card-head { display: flex; gap: 8px; align-items: flex-start; }
+  .method {
+    flex: none; font-size: 10px; font-weight: 700; letter-spacing: .04em;
+    border-radius: 999px; padding: 2px 8px; border: 1px solid;
+  }
+  .method.GET { color: var(--get); background: var(--get-fill); border-color: var(--get-line); }
+  .method.POST { color: var(--post); background: var(--post-fill); border-color: var(--post-line); }
+  .method.PUT { color: var(--put); background: var(--put-fill); border-color: var(--put-line); }
+  .method.PATCH { color: var(--patch); background: var(--patch-fill); border-color: var(--patch-line); }
+  .method.DELETE { color: var(--del); background: var(--del-fill); border-color: var(--del-line); }
+  .path {
+    color: var(--ink); text-decoration: none; font-weight: 650; font-size: 13px;
+    word-break: break-all;
+  }
+  .path:hover { text-decoration: underline; }
+  .meta { display: flex; gap: 8px; flex-wrap: wrap; color: var(--muted); font-size: 11px; }
+  .pill { border: 1px solid var(--line); border-radius: 999px; padding: 1px 7px; }
+  .pill.rw-read { color: var(--read); }
+  .pill.rw-write { color: var(--write); }
+  .pill.rw-read-write { color: var(--both); }
+  .tables { color: var(--ink); font-size: 12px; }
+  .tables span { color: var(--muted); }
+  .conf { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: var(--muted); }
+  .conf b.high { color: var(--high); } .conf b.med { color: var(--med); }
+  .conf b.low { color: var(--low); } .conf b.uncertain { color: var(--uncert); }
+  .foot { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .time { color: var(--muted); font-size: 11px; }
+  .versions {
+    border: 1px solid var(--panel-border); background: var(--toolbar-bg); color: var(--ink);
+    border-radius: 8px; padding: 4px 6px; font: inherit; font-size: 11px; max-width: 100%;
+  }
+  .empty {
+    grid-column: 1 / -1; text-align: center; color: var(--muted);
+    background: var(--card); border: 1.5px dashed var(--panel-border); border-radius: 12px;
+    padding: 40px 16px;
+  }
+  @media (max-width: 640px) {
+    .page { padding: 18px 14px 48px; }
+    header.app { flex-direction: column; }
+    .stats { justify-content: flex-start; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="app">
+    <div class="brand">
+      <div class="pulse" aria-hidden="true"></div>
+      <div>
+        <h1>API → DB Map</h1>
+        <div class="sub" id="subtitle">按接口路径或表名查找分析结果</div>
+      </div>
+    </div>
+    <div class="stats">
+      <span class="stat"><b id="stat-n">0</b> 个接口</span>
+      <span class="stat">更新 <b id="stat-at">—</b></span>
+      <button type="button" class="tool" id="btn-theme" aria-label="切换浅色或深色">浅色</button>
+    </div>
+  </header>
+  <div class="overview" id="overview">
+    <div>
+      <strong>全项目总览</strong>
+      <div class="sub" style="margin:4px 0 0;color:var(--muted);font-size:12px;">合并全部接口的三视图</div>
+    </div>
+    <a id="overview-link" href="#">打开总览</a>
+  </div>
+  <div class="toolbar">
+    <input class="search" id="q" type="search" placeholder="搜索路径或表名，例如 order / users" autocomplete="off" />
+    <button type="button" class="chip" data-method="GET">GET</button>
+    <button type="button" class="chip" data-method="POST">POST</button>
+    <button type="button" class="chip" data-method="PUT">PUT</button>
+    <button type="button" class="chip" data-method="PATCH">PATCH</button>
+    <button type="button" class="chip" data-method="DELETE">DELETE</button>
+    <button type="button" class="chip" id="flt-uncert">只看 uncertain</button>
+    <button type="button" class="chip" id="flt-week">最近一周</button>
+    <span class="count" id="shown">显示 0 / 0</span>
+  </div>
+  <div class="grid" id="cards"></div>
+</div>
+<script>
+const REGISTRY = /*__REGISTRY__*/{};
+const RW = { "read": "只读", "write": "只写", "read-write": "读写" };
+const methodsOn = new Set();
+let onlyUncertain = false;
+let onlyWeek = false;
+
+function latest(entry) {
+  const vs = (entry.versions || []).slice().sort(function (a, b) {
+    return String(a.timestamp).localeCompare(String(b.timestamp));
+  });
+  return vs[vs.length - 1] || { tables: [], table_count: 0, rw: "read", confidence: {}, timestamp: "", html: "" };
+}
+function fmtTime(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  const p = function (n) { return String(n).padStart(2, "0"); };
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes());
+}
+function stampLabel(ver) {
+  const base = ((ver && ver.html) || "").split("/").pop() || "";
+  const stem = base.replace(/\.html$/, "");
+  return stem || fmtTime(ver && ver.timestamp);
+}
+function confOf(v) {
+  const c = v.confidence || {};
+  return { high: c.high || 0, med: c.med || 0, low: c.low || 0, uncertain: c.uncertain || 0 };
+}
+function match(entry, q) {
+  const v = latest(entry);
+  const blob = (entry.method + " " + entry.path + " " + (v.tables || []).join(" ")).toLowerCase();
+  return blob.indexOf(q) !== -1;
+}
+function inWeek(iso) {
+  if (!iso) return false;
+  const t = new Date(iso).getTime();
+  if (isNaN(t)) return false;
+  return Date.now() - t <= 7 * 24 * 3600 * 1000;
+}
+function applyThemeLabel() {
+  const dark = document.documentElement.getAttribute("data-theme") === "dark";
+  document.getElementById("btn-theme").textContent = dark ? "深色" : "浅色";
+}
+function render() {
+  const q = (document.getElementById("q").value || "").trim().toLowerCase();
+  const entries = REGISTRY.entries || [];
+  const cards = document.getElementById("cards");
+  cards.innerHTML = "";
+  let shown = 0;
+  entries.forEach(function (entry, idx) {
+    const v = latest(entry);
+    const conf = confOf(v);
+    if (methodsOn.size && !methodsOn.has((entry.method || "").toUpperCase())) return;
+    if (onlyUncertain && conf.uncertain < 1) return;
+    if (onlyWeek && !inWeek(v.timestamp)) return;
+    if (q && !match(entry, q)) return;
+    shown += 1;
+    const n = (entry.versions || []).length;
+    const article = document.createElement("article");
+    article.className = "card";
+    const tables = v.tables || [];
+    const rw = v.rw || "read";
+    const versions = (entry.versions || []).slice().sort(function (a, b) {
+      return String(b.timestamp).localeCompare(String(a.timestamp));
+    });
+    let verHtml = "";
+    if (versions.length > 1) {
+      verHtml = '<select class="versions" data-idx="' + idx + '" aria-label="历史版本">';
+      versions.forEach(function (ver) {
+        verHtml += '<option value="' + ver.html + '"' + (ver.html === v.html ? " selected" : "") + ">"
+          + stampLabel(ver) + "</option>";
+      });
+      verHtml += "</select>";
+    }
+    article.innerHTML =
+      '<div class="card-head">'
+      + '<span class="method ' + (entry.method || "") + '">' + (entry.method || "") + "</span>"
+      + '<a class="path" href="' + (v.html || "#") + '">' + (entry.path || "") + "</a>"
+      + "</div>"
+      + '<div class="meta">'
+      + '<span class="pill">' + (v.table_count || tables.length) + " 张表</span>"
+      + '<span class="pill rw-' + rw + '">' + (RW[rw] || rw) + "</span>"
+      + '<span class="pill">已分析 ' + n + " 次</span>"
+      + "</div>"
+      + '<div class="tables"><span>表 </span>' + (tables.length ? tables.join(", ") : "—") + "</div>"
+      + '<div class="conf">'
+      + "<span>high <b class='high'>" + conf.high + "</b></span>"
+      + "<span>med <b class='med'>" + conf.med + "</b></span>"
+      + "<span>low <b class='low'>" + conf.low + "</b></span>"
+      + "<span>uncertain <b class='uncertain'>" + conf.uncertain + "</b></span>"
+      + "</div>"
+      + '<div class="foot"><span class="time">' + fmtTime(v.timestamp) + "</span>" + verHtml + "</div>";
+    cards.appendChild(article);
+  });
+  if (shown === 0) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = entries.length ? "没有匹配的接口" : "还没有分析结果";
+    cards.appendChild(empty);
+  }
+  document.getElementById("shown").textContent = "显示 " + shown + " / " + entries.length;
+}
+function init() {
+  const entries = REGISTRY.entries || [];
+  document.getElementById("stat-n").textContent = String(entries.length);
+  document.getElementById("stat-at").textContent = fmtTime(REGISTRY.updated_at);
+  if (REGISTRY.overview) {
+    document.getElementById("overview").classList.add("on");
+    document.getElementById("overview-link").setAttribute("href", REGISTRY.overview);
+  }
+  applyThemeLabel();
+  document.getElementById("btn-theme").addEventListener("click", function () {
+    const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem("api-db-map-index-theme", next); } catch (e) {}
+    applyThemeLabel();
+  });
+  document.getElementById("q").addEventListener("input", render);
+  document.querySelectorAll("[data-method]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const m = btn.getAttribute("data-method");
+      if (methodsOn.has(m)) { methodsOn.delete(m); btn.classList.remove("on"); }
+      else { methodsOn.add(m); btn.classList.add("on"); }
+      render();
+    });
+  });
+  document.getElementById("flt-uncert").addEventListener("click", function () {
+    onlyUncertain = !onlyUncertain;
+    this.classList.toggle("on", onlyUncertain);
+    render();
+  });
+  document.getElementById("flt-week").addEventListener("click", function () {
+    onlyWeek = !onlyWeek;
+    this.classList.toggle("on", onlyWeek);
+    render();
+  });
+  document.getElementById("cards").addEventListener("change", function (ev) {
+    const sel = ev.target;
+    if (!sel || !sel.classList.contains("versions")) return;
+    const href = sel.value;
+    const card = sel.closest(".card");
+    const a = card && card.querySelector(".path");
+    if (a) a.setAttribute("href", href);
+    if (href) window.location.assign(href);
+  });
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key === "/" && document.activeElement !== document.getElementById("q")) {
+      ev.preventDefault();
+      document.getElementById("q").focus();
+    }
+  });
+  render();
+}
+init();
+</script>
+</body>
+</html>

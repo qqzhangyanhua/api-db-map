@@ -24,6 +24,8 @@ def main() -> None:
     p.add_argument("--ir", dest="ir_opt", type=Path, default=None)
     p.add_argument("--template", type=Path, default=here / "assets" / "diagram.template.html")
     p.add_argument("-o", "--out", type=Path, default=Path("api-db-map.html"))
+    p.add_argument("--no-index", action="store_true",
+                   help="Skip registry.json / index.html update")
     args = p.parse_args()
     ir_path = args.ir_opt or args.ir
     ir = json.loads(ir_path.read_text(encoding="utf-8"))
@@ -31,6 +33,14 @@ def main() -> None:
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(html, encoding="utf-8")
     print(f"wrote {args.out} ({args.out.stat().st_size} bytes)")
+    if not args.no_index:
+        try:
+            from render_index import after_html_render
+        except ImportError:
+            import sys
+            sys.path.insert(0, str(Path(__file__).resolve().parent))
+            from render_index import after_html_render
+        after_html_render(ir, ir_path, args.out)
 
 
 if __name__ == "__main__":

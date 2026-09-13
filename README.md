@@ -41,15 +41,27 @@ npx skills update api-db-map
 
 ## 产出
 
-默认写到目标仓库的 `./api-db-map-out/`（也可指定路径）：
+默认写到目标仓库的 `./api-db-map-out/`（也可指定路径）。多次分析会增量追加，不覆盖历史结果。
 
-| 文件 | 作用 |
-|------|------|
-| `api-db-map.html` | 主交付物：可交互的三视图 |
-| `api-db-map.json` | 中间表示（IR），给渲染器和后续分析用 |
-| `api-db-map.md` | 兜底报告：汇总表 + Mermaid |
+```
+api-db-map-out/
+├── index.html                          ← 入口：按路径 / 表名搜索
+├── registry.json                       ← 全局索引
+├── GET__api__orders__-id-/
+│   ├── 2026-09-13.html                 ← 该接口的三视图
+│   ├── 2026-09-13.json
+│   └── 2026-09-13.md
+├── POST__api__orders/
+│   └── 2026-09-13.html
+└── _project_overview/                  ← 全项目分析时额外生成
+    └── 2026-09-13.html
+```
 
-HTML 必须用 `scripts/render_html.py` 生成，不要手写。
+目录名：`METHOD` + 路径，`/` → `__`，`{id}` → `-id-`。同一接口同一天再分析，文件名追加时分（`2026-09-13T14-30.html`）。
+
+入口页 `index.html` 支持按路径关键词、表名搜索，按 HTTP 方法 / uncertain / 最近一周筛选。卡片跳到该接口最新 HTML，可切换历史版本。
+
+HTML 必须用 `scripts/render_html.py` 生成，不要手写。渲染时会自动更新 `registry.json` 和 `index.html`。
 
 三张图：
 
@@ -102,7 +114,10 @@ python scripts/extract_sql.py --file mapper/OrderMapper.xml
 python scripts/extract_sql.py --sql "SELECT id, status FROM orders WHERE id = 1"
 
 # 把 IR 渲染成 HTML（默认用仓库里的样例数据）
-python scripts/render_html.py assets/sample-ir.json -o /tmp/api-db-map.html
+python scripts/render_html.py assets/sample-ir.json -o /tmp/api-db-map.html --no-index
+
+# 从 registry.json 重建入口页
+python scripts/render_index.py api-db-map-out/
 ```
 
 也可以直接打开 `assets/sample-preview.html` 看样例图。
@@ -115,14 +130,16 @@ api-db-map/
 ├── scripts/
 │   ├── detect_stack.py
 │   ├── extract_sql.py
-│   └── render_html.py
+│   ├── render_html.py
+│   └── render_index.py           # registry → index.html
 ├── references/
 │   ├── ir-schema.md              # api-db-map.json 结构
 │   ├── stack-patterns.md         # 各栈抽取配方
 │   ├── raw-sql.md                # 裸 SQL / 动态 SQL
 │   └── visualization.md          # 三视图视觉规范
 └── assets/
-    ├── diagram.template.html     # HTML 模板
+    ├── diagram.template.html     # 三视图模板
+    ├── index.template.html       # 入口页模板
     ├── sample-ir.json
     └── sample-preview.html
 ```

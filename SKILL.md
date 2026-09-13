@@ -14,15 +14,24 @@ Do not invent tables, columns, or relations. If the code does not prove an acces
 
 ## Output contract
 
-Always produce these artifacts under the project root or a path the user named (default `./api-db-map-out/`):
+Always produce artifacts under the project root or a path the user named (default `./api-db-map-out/`). Incremental: a new run adds timestamped files and does not replace earlier ones.
 
-| File | Role |
-|------|------|
-| `api-db-map.json` | Combined IR. Schema in [references/ir-schema.md](references/ir-schema.md) |
-| `api-db-map.html` | Primary deliverable. Self-contained, interactive |
-| `api-db-map.md` | Fallback report with summary tables + Mermaid |
+```
+api-db-map-out/
+├── registry.json
+├── index.html                          ← entry page (search by path or table)
+├── GET__api__orders__-id-/
+│   ├── 2026-09-13.json
+│   ├── 2026-09-13.html
+│   └── 2026-09-13.md
+└── _project_overview/                  ← whole-backend runs only
+    └── 2026-09-13.html
+```
 
-Render the HTML with `scripts/render_html.py`. Never hand-write the HTML.
+Directory name: `METHOD` + path with `/` → `__` and `{id}` → `-id-` (`GET /api/orders/{id}` → `GET__api__orders__-id-`).
+Stamp: `YYYY-MM-DD`; if that `.html` already exists, `YYYY-MM-DDTHH-MM`.
+
+`index.html` is what you open first. Render HTML with `scripts/render_html.py`. Never hand-write the HTML.
 
 Reply in the user's language. If they wrote Chinese, diagram chrome is Chinese (影响架构图 / 表与字段关系 / 接口时序图).
 
@@ -96,11 +105,23 @@ Cardinality defaults: FK child to parent is `N:1`. Only mark `N:M` when a join t
 
 ### 7. Build IR and render
 
-Combine into `api-db-map.json` exactly as [references/ir-schema.md](references/ir-schema.md). Then:
+Combine into `api-db-map.json` exactly as [references/ir-schema.md](references/ir-schema.md). Root is `./api-db-map-out/` unless the user named another path.
+
+For **each endpoint** just analyzed:
 
 ```bash
-python scripts/render_html.py api-db-map-out/api-db-map.json -o api-db-map-out/api-db-map.html
+dir="$root/$(python scripts/render_index.py --dir-name "$METHOD" "$PATH")"
+stamp=$(python scripts/render_index.py --next-stamp "$dir")
+# write sliced IR to $dir/$stamp.json  (that endpoint + its tables + relations among them)
+python scripts/render_html.py "$dir/$stamp.json" -o "$dir/$stamp.html"
+# write $dir/$stamp.md
 ```
+
+`render_html.py` appends a version onto `registry.json` and regenerates `index.html`.
+
+Single-endpoint run: one directory. Whole-backend run: one directory per endpoint **and** the combined IR rendered to `_project_overview/$stamp.{json,html,md}`.
+
+Done when `index.html` lists every endpoint just rendered, each card opens the new HTML, and previous timestamped files are still on disk.
 
 Visual rules live in [references/visualization.md](references/visualization.md). The HTML must include all three views:
 
@@ -108,7 +129,7 @@ Visual rules live in [references/visualization.md](references/visualization.md).
 - **T·02 表与字段关系** — each table is a card with fields. Draw edges from FK field to referenced PK field, not just table-to-table. Dim fields the selected API does not touch.
 - **T·03 接口时序图** — Client to Controller to Service to each touched table, messages labeled with method + columns.
 
-Also write `api-db-map.md` with:
+Also write `$stamp.md` next to the HTML with:
 
 1. Counts (APIs, tables, relations, uncertain items)
 2. A summary table of endpoint, method, tables, ops, confidence
@@ -117,7 +138,7 @@ Also write `api-db-map.md` with:
 
 ### 8. Present to the user
 
-Lead with the HTML file (render it). Then a short reading guide:
+Lead with `index.html`. For a single-endpoint run, also open that endpoint's HTML. Then a short reading guide:
 
 - How many APIs write vs only read
 - Hottest tables (touched by the most endpoints)
@@ -141,7 +162,8 @@ If the user asked about one endpoint, zoom T·01 / T·03 to that endpoint and st
 |--------|------|
 | `scripts/detect_stack.py <root>` | Step 2 |
 | `scripts/extract_sql.py --file <path>` or `--sql "<stmt>"` | Step 5, raw SQL / mapper XML |
-| `scripts/render_html.py <ir.json> -o <out.html>` | Step 7 |
+| `scripts/render_index.py --dir-name METHOD '/path'` / `--next-stamp DIR` | Step 7, directory + stamp |
+| `scripts/render_html.py <ir.json> -o <out.html>` | Step 7 (also updates registry + index.html) |
 
 ## Quality bar
 
