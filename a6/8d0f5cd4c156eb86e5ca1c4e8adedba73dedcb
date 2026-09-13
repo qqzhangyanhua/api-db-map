@@ -1,0 +1,30 @@
+references/visualization.md
+  s_6b85767f508ed6::t_28b12ac5cd59db 87-88
+assets/diagram.template.html
+  s_6b85767f508ed6::t_935f3a854941e2 610
+  s_6b85767f508ed6::t_c89463de06a669 330-331
+  s_6b85767f508ed6::t_224e29935099f3 313-315
+  s_6b85767f508ed6::t_c41d8210857ed8 1004-1016,1018-1020,1024-1026,1030-1037,1050-1051,1054-1058,1063,1068-1077
+scripts/smoke_test.py
+  s_6b85767f508ed6::t_b91088ebc960b9 46
+assets/index.template.html
+  s_6b85767f508ed6::t_4f7ad9c088449e 2
+  s_6b85767f508ed6::t_c15198b1e2c95a 158
+  s_6b85767f508ed6::t_d958ab5e239f96 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.6.23",
+  "base_commit_sha": "a68d0f5cd4c156eb86e5ca1c4e8adedba73dedcb",
+  "prompts": {},
+  "sessions": {
+    "s_6b85767f508ed6": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "6d33b023-48bf-4442-b419-e34aeea0344f",
+        "model": "grok-4.6"
+      },
+      "human_author": "张艳华 <939593210@qq.com>"
+    }
+  }
+}
