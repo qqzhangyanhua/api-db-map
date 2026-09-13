@@ -34,7 +34,7 @@ npx skills update api-db-map
 
 带着证据回答，不编造表名、字段或外键：
 
-- 每个 HTTP 接口读了哪些表、写了哪些表
+- 深追的每个 HTTP 接口读了哪些表、写了哪些表
 - 读/写落到了哪些字段
 - 表之间的关联来自 FK、JOIN，还是代码里推断出来的
 - 哪些访问证据不足，需要人看一眼
@@ -53,7 +53,7 @@ api-db-map-out/
 │   └── 2026-09-13.md
 ├── POST__api__orders/
 │   └── 2026-09-13.html
-└── _project_overview/                  ← 全项目分析时额外生成
+└── _project_overview/                  ← 深追多个接口时额外生成
     └── 2026-09-13.html
 ```
 
@@ -84,7 +84,7 @@ HTML 必须用 `scripts/render_html.py` 生成，不要手写。渲染时会自�
 - 一份 OpenAPI / Swagger
 - 只读的线上库 URL（仅做 schema 对照，禁止写库）
 
-没给过滤条件时，会扫整个后端，并优先标出影响面最大的接口。
+没给过滤条件时，先清单全部接口，再深追最多 12 个（写操作优先），其余列入未追踪，汇报时问要不要扩。
 
 ## 支持的栈
 
@@ -99,7 +99,7 @@ HTML 必须用 `scripts/render_html.py` 生成，不要手写。渲染时会自�
 
 任意栈都会额外扫裸 SQL / mapper XML。识别不准时会先问一句框架 + ORM，再按文件名和 SQL 字符串继续，而不是卡住。
 
-Schema 来源按可信度取第一份完整结果：线上库（只读）→ migrations / DDL → ORM 模型 → SQL 字符串推断。
+Schema 来源按可信度取第一份能给出表、列、主键的结果：线上库（只读）→ migrations / DDL → ORM 模型 → SQL 字符串推断。缺外键或字段注释时继续往后补。
 
 ## 本地脚本
 
@@ -150,7 +150,7 @@ api-db-map/
 - 每条表访问都带 `file:line` 证据
 - 线上库只允许 `SELECT` 级 schema 探查，禁止 INSERT / UPDATE / DELETE / DDL
 - 拼接 SQL、MyBatis `${table}`、反射、动态数据源一律 `uncertain`
-- 大仓库先分析点名的模块，再问要不要扩范围
+- 默认可深追 12 个接口；点名模块或路由则只做范围内；未追踪的 id 写进 coverage，再问要不要扩
 
 ## 许可
 
