@@ -16,7 +16,7 @@ Match https://github.com/tt-a1i/archify chrome, not a pixel clone of CloudFront 
 - Font: JetBrains Mono + PingFang SC / Noto Sans SC
 - Nodes: translucent semantic fill + 1.5px stroke, 12px radius, no drop shadow
 - API = backend emerald, Table = database violet, Write = cloud amber, FK = security rose
-- Canvas card + T·01 pill + caption + three conclusion cards + folded summary, like Archify's architecture / workflow / sequence pages
+- Canvas card + T·01 pill + caption + three conclusion cards + expanded summary, like Archify's architecture / workflow / sequence pages
 - Signal Flow preset also thickens write edges (2.2px) and fades read edges (1.2px, 0.55 opacity); other presets stay at 1.6px
 
 ## When to load this file
@@ -114,7 +114,7 @@ Caption:
 - Hover field: highlight that field's FK path.
 - **Zoom**: bottom-right `−`/`100%`/`+` control (fixed to viewport), `+`/`-`/`0` keys. T·01 / T·02 scale `#canvas-inner` with CSS `zoom`. T·03 keeps a fixed `viewBox` and only changes the SVG pixel width/height, so zoom does not fight `width: 100%` or smear text; the canvas scrolls when zoomed in.
 - **Conclusion cards** under the caption (always from IR, never invented): write vs read-only endpoint counts; hottest tables by `table_api_index` length (top 3); uncertain count plus the first two evidence paths.
-- **Summary table** is folded behind「接口明细表」and is not on the first screen.
+- **Summary table** sits behind「接口明细表」and is open on first load; the user can still fold it.
 - **Evidence banner** above the caption shows the selected endpoint/table's primary `file:line`. The right-side drawer still holds the full evidence list. Has a "复制链接" button (see deep-linking below).
 - **Detail / evidence panel** (right-side drawer): clicking an endpoint card shows its handler `file:line` plus every table touch with op, confidence, `fields_read`/`fields_written`, and the raw `evidence` string (e.g. `OrderMapper.xml:88`). Clicking a table card shows every endpoint that touches it with the same evidence.
 - Theme is applied in `<head>` from `localStorage` / `prefers-color-scheme` before first paint. JetBrains Mono loads asynchronously (`media="print"` + `onload`).
