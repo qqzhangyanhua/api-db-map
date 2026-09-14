@@ -61,6 +61,8 @@ api-db-map-out/
 
 入口页 `index.html` 支持按路径关键词、表名搜索，按 HTTP 方法 / uncertain / 最近一周筛选。卡片跳到该接口最新 HTML，可切换历史版本。
 
+![入口页：按路径 / 表名搜索接口卡片](assets/preview-index.jpg)
+
 HTML 必须用 `scripts/render_html.py` 生成，不要手写。渲染时会自动更新 `registry.json` 和 `index.html`。
 
 三张图：
@@ -68,6 +70,10 @@ HTML 必须用 `scripts/render_html.py` 生成，不要手写。渲染时会自�
 - **T·01 影响架构图** — 左边接口，右边表，箭头标 SQL 动词（虚线读、实线写）
 - **T·02 表与字段关系** — 表卡片带字段，边从 FK 字段连到被引用 PK
 - **T·03 接口时序图** — Client → Controller → Service → 表，消息带方法和列
+
+![T·02 表与字段关系：表卡片、主键与外键连线](assets/preview-t02-fields.jpg)
+
+![T·03 接口时序图：一次请求谁调用谁、读哪些列、写哪些列](assets/preview-t03-sequence.jpg)
 
 ## 怎么用
 
@@ -168,7 +174,10 @@ api-db-map/
 └── assets/
     ├── diagram.template.html     # 三视图模板
     ├── index.template.html       # 入口页模板
-    └── sample-ir.json            # 样例 IR，配合 render_html.py 预览
+    ├── sample-ir.json            # 样例 IR，配合 render_html.py 预览
+    ├── preview-index.jpg         # README：入口页截图
+    ├── preview-t02-fields.jpg    # README：表与字段关系
+    └── preview-t03-sequence.jpg  # README：接口时序图
 ```
 
 ## 原则
