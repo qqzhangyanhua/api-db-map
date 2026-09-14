@@ -1,0 +1,21 @@
+README.md
+  s_6b85767f508ed6::t_3a890d92958280 177-180
+  s_6b85767f508ed6::t_2fc50212a8c63c 64-65,74-76
+  s_6b85767f508ed6::t_89ec4eb81a6c4e 77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.6.23",
+  "base_commit_sha": "c3bb0fad1c37572691b04054baa28d0dd83051ce",
+  "prompts": {},
+  "sessions": {
+    "s_6b85767f508ed6": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "6d33b023-48bf-4442-b419-e34aeea0344f",
+        "model": "grok-4.6"
+      },
+      "human_author": "张艳华 <939593210@qq.com>"
+    }
+  }
+}
