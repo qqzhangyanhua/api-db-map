@@ -1,0 +1,23 @@
+assets/diagram.template.html
+  s_6b85767f508ed6::t_8967e724d49cc1 558
+  s_6b85767f508ed6::t_ef194f406937ff 345
+references/visualization.md
+  s_6b85767f508ed6::t_0b1141c03d9334 117
+  s_6b85767f508ed6::t_5402c3b3192de8 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.6.23",
+  "base_commit_sha": "6ce4519513ba083ba1afdd602e00886f7c8f2a9a",
+  "prompts": {},
+  "sessions": {
+    "s_6b85767f508ed6": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "6d33b023-48bf-4442-b419-e34aeea0344f",
+        "model": "grok-4.6"
+      },
+      "human_author": "张艳华 <939593210@qq.com>"
+    }
+  }
+}
