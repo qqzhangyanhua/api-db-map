@@ -4,7 +4,7 @@
 
 > Trace backend APIs to the tables and fields they read or write, then render architecture, field-relation, and sequence diagrams.
 
-这是一个 **Agent Skill**（显式调用）：只有你直接说出 `api-db-map` / 「用 api-db-map」时，Agent 才会跑这套流程。提到表、接口或 schema 不会自动触发。
+这是一个 **Agent Skill**（显式调用）：只有你直接说出 `api-db-map` / 「用 api-db-map」，或输入 `/api-db-map` 时，Agent 才会跑这套流程。提到表、接口或 schema 不会自动触发。
 
 ## 安装
 
@@ -71,20 +71,40 @@ HTML 必须用 `scripts/render_html.py` 生成，不要手写。渲染时会自�
 
 ## 怎么用
 
-装好之后，在目标后端仓库里对 Agent 说：
+装好之后，**打开目标后端仓库**（不是本 skill 仓库），对 Agent 说，或用 slash 命令：
 
 ```text
+# 全项目（默认最多深追 12 个接口，写操作优先，跳过 health/metrics）
 用 api-db-map 分析这个项目
+/api-db-map
+
+# 单个接口（推荐带 METHOD）
+用 api-db-map 分析 GET /api/orders/{id}
+/api-db-map GET /api/orders/{id}
+
+# 只给路径时，Agent 从路由注册表推断 METHOD
+用 api-db-map 分析 /api/orders/{id}
+/api-db-map /api/orders/{id}
+
+# 模块 / 包
+用 api-db-map 分析 orders 模块
+用 api-db-map 分析 com.example.order
+
+# OpenAPI 切片
+用 api-db-map 对照 openapi.yaml 里的 /api/orders 相关接口
+
+# 用只读库补 schema（禁止写库）
+用 api-db-map 分析这个项目，schema 对照 postgresql://readonly@host/db
+
+# 指定输出目录
+用 api-db-map 分析 GET /api/orders/{id}，输出到 ./docs/api-db-map/
 ```
 
-可选范围：
+没给过滤条件时，先清单全部接口，再深追最多 12 个（写操作优先）。点名模块或 OpenAPI 切片且接口超过 12 个时，同样只取 12 个并说明。其余列入未追踪（coverage），汇报时问要不要扩。
 
-- 单个路由：`GET /api/orders/{id}`
-- 某个模块 / 包
-- 一份 OpenAPI / Swagger
-- 只读的线上库 URL（仅做 schema 对照，禁止写库）
+只问「这个接口查了哪些表」、不提 `api-db-map`，不会自动跑。
 
-没给过滤条件时，先清单全部接口，再深追最多 12 个（写操作优先），其余列入未追踪，汇报时问要不要扩。
+跑完先打开 `./api-db-map-out/index.html`。单接口还有对应目录下的 HTML / MD；多接口深追会多一份 `_project_overview/`。
 
 ## 支持的栈
 
