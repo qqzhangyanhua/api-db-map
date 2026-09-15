@@ -1,0 +1,169 @@
+<template>
+  <style>
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; }
+    @font-face { font-family: "Noto Sans SC"; src: url("assets/fonts/NotoSansSC-400.ttf") format("truetype"); font-weight: 400; font-style: normal; }
+    #root { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; container-type: size; }
+    #root, #root * { box-sizing: border-box; }
+    [id="03-guessing-bg"] {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(90deg, rgba(55, 213, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(55, 213, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 18% 18%, rgba(55, 213, 255, 0.14), transparent 26%),
+        radial-gradient(circle at 78% 74%, rgba(92, 227, 138, 0.1), transparent 24%),
+        #07111f;
+      background-size: 80px 80px, 80px 80px, auto, auto, auto;
+    }
+    [id="03-guessing-stage"] {
+      position: absolute; top: 0; left: 0; right: 0; height: 900px;
+      padding: 86px 110px 40px; display: flex; flex-direction: column; gap: 28px; justify-content: center;
+      font-family: Inter, "Noto Sans SC", sans-serif; color: #e8f1ff;
+    }
+    [id="03-guessing-kicker"] {
+      color: #37d5ff; font-size: 30px; font-weight: 800; line-height: 1;
+      transform-origin: 0% 50%;
+    }
+    [id="03-guessing-title"] {
+      margin: 0; font-size: 72px; line-height: 1.12; font-weight: 800; letter-spacing: 0;
+      transform-origin: 0% 50%;
+    }
+    [id="03-guessing-layout"] {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 42px; min-height: 420px; align-items: stretch;
+    }
+    [id="03-guessing-left"],
+    [id="03-guessing-right"] {
+      border: 1px solid rgba(55, 213, 255, 0.2); background: rgba(15, 34, 54, 0.82);
+      border-radius: 8px; padding: 36px; box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+      transform-origin: 50% 50%; min-width: 0;
+    }
+    [id="03-guessing-left"] h3,
+    [id="03-guessing-right"] h3 {
+      margin: 0 0 24px; font-size: 34px; font-weight: 800; line-height: 1.2; letter-spacing: 0;
+    }
+    [id="03-guessing-layout"] p {
+      display: flex; align-items: center; gap: 18px; min-height: 74px; margin: 14px 0 0;
+      padding: 18px 20px; border-radius: 8px; background: rgba(232, 241, 255, 0.06);
+      border: 1px solid rgba(232, 241, 255, 0.08); font-size: 28px; font-weight: 750; line-height: 1.45;
+      transform-origin: 50% 50%;
+    }
+    [id="03-guessing-layout"] i {
+      width: 18px; height: 18px; border-radius: 50%; flex: 0 0 auto; display: block; font-style: normal;
+    }
+    [id="03-guessing-r1"], [id="03-guessing-r2"] { background: #ff5a67; box-shadow: 0 0 22px rgba(255, 90, 103, 0.65); }
+    [id="03-guessing-a1"], [id="03-guessing-a2"] { background: #ffbe55; box-shadow: 0 0 22px rgba(255, 190, 85, 0.65); }
+    [id="03-guessing-c"] { background: #37d5ff; box-shadow: 0 0 22px rgba(55, 213, 255, 0.7); }
+    [id="03-guessing-g"] { background: #5ce38a; box-shadow: 0 0 22px rgba(92, 227, 138, 0.65); }
+  </style>
+  <div data-hf-id="hf-2o2s" id="root" data-composition-id="03-guessing" data-start="0" data-duration="6.5" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-z9ap" id="03-guessing-bg" class="clip" data-start="0" data-duration="6.5" data-track-index="0"></div>
+    <div data-hf-id="hf-z0k5" id="03-guessing-stage" class="clip" data-start="0" data-duration="6.5" data-track-index="1">
+      <div data-hf-id="hf-fope" id="03-guessing-kicker">先分清翻车类型</div>
+      <h2 data-hf-id="hf-k5cb" id="03-guessing-title">猜表名，翻来覆去就三种</h2>
+      <div data-hf-id="hf-tu6h" id="03-guessing-layout">
+        <section data-hf-id="hf-9q2o" id="03-guessing-left">
+          <h3 data-hf-id="hf-xynq">翻车现象</h3>
+          <p data-hf-id="hf-va8l" id="03-guessing-row-l1"><i data-hf-id="hf-mizo" id="03-guessing-r1"></i>编了不存在的表</p>
+          <p data-hf-id="hf-4u9i" id="03-guessing-row-l2"><i data-hf-id="hf-ocmt" id="03-guessing-a1"></i>漏了真正被写的表</p>
+          <p data-hf-id="hf-jpbc" id="03-guessing-row-l3"><i data-hf-id="hf-v6vj" id="03-guessing-r2"></i>没有 file:line</p>
+        </section>
+        <section data-hf-id="hf-6cof" id="03-guessing-right">
+          <h3 data-hf-id="hf-6hk6">本质问题</h3>
+          <p data-hf-id="hf-wsjl" id="03-guessing-row-r1"><i data-hf-id="hf-lxty" id="03-guessing-c"></i>没人管「查了哪些」</p>
+          <p data-hf-id="hf-w3dk" id="03-guessing-row-r2"><i data-hf-id="hf-saqu" id="03-guessing-a2"></i>没人管「改了哪些」</p>
+          <p data-hf-id="hf-kf0g" id="03-guessing-row-r3"><i data-hf-id="hf-0rfm" id="03-guessing-g"></i>没人管「能不能确定」</p>
+        </section>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var POP_DUR = 0.55;
+      var Y_RISE = 10;
+      var PANEL_DUR = 0.72;
+      var PANEL_SLIDE = 280;
+      var ROW_DUR = 0.5;
+      var ROW_Y = 16;
+      var BASE_DURATION = 0.2;
+      var SEC_PER_CHAR = 0.016;
+      var LEFT_AT = 1.2;
+      var RIGHT_AT = 3.4;
+      var ROW_ORIGIN_PAD = 0.36;
+
+      function cascadeStarts(bodies, origin) {
+        var cumulative = origin;
+        return bodies.map(function (body) {
+          var start = cumulative;
+          cumulative += BASE_DURATION + body.length * SEC_PER_CHAR;
+          return start;
+        });
+      }
+
+      tl.fromTo(
+        '[id="03-guessing-kicker"]',
+        { scale: 0, opacity: 0, y: Y_RISE },
+        { scale: 1, opacity: 1, y: 0, duration: POP_DUR, ease: "power3.out" },
+        0
+      );
+      tl.fromTo(
+        '[id="03-guessing-title"]',
+        { scale: 0, opacity: 0, y: Y_RISE },
+        { scale: 1, opacity: 1, y: 0, duration: POP_DUR, ease: "power3.out" },
+        0.08
+      );
+
+      tl.fromTo(
+        '[id="03-guessing-left"]',
+        { x: -PANEL_SLIDE, opacity: 0 },
+        { x: 0, opacity: 1, duration: PANEL_DUR, ease: "power3.out" },
+        LEFT_AT
+      );
+      var leftRows = [
+        { sel: '[id="03-guessing-row-l1"]', body: "编了不存在的表" },
+        { sel: '[id="03-guessing-row-l2"]', body: "漏了真正被写的表" },
+        { sel: '[id="03-guessing-row-l3"]', body: "没有 file:line" }
+      ];
+      var leftStarts = cascadeStarts(
+        leftRows.map(function (row) { return row.body; }),
+        LEFT_AT + ROW_ORIGIN_PAD
+      );
+      leftRows.forEach(function (row, i) {
+        tl.fromTo(
+          row.sel,
+          { scale: 0, opacity: 0, y: ROW_Y },
+          { scale: 1, opacity: 1, y: 0, duration: ROW_DUR, ease: "power3.out" },
+          leftStarts[i]
+        );
+      });
+
+      tl.fromTo(
+        '[id="03-guessing-right"]',
+        { x: PANEL_SLIDE, opacity: 0 },
+        { x: 0, opacity: 1, duration: PANEL_DUR, ease: "power3.out" },
+        RIGHT_AT
+      );
+      var rightRows = [
+        { sel: '[id="03-guessing-row-r1"]', body: "没人管「查了哪些」" },
+        { sel: '[id="03-guessing-row-r2"]', body: "没人管「改了哪些」" },
+        { sel: '[id="03-guessing-row-r3"]', body: "没人管「能不能确定」" }
+      ];
+      var rightStarts = cascadeStarts(
+        rightRows.map(function (row) { return row.body; }),
+        RIGHT_AT + ROW_ORIGIN_PAD
+      );
+      rightRows.forEach(function (row, i) {
+        tl.fromTo(
+          row.sel,
+          { scale: 0, opacity: 0, y: ROW_Y },
+          { scale: 1, opacity: 1, y: 0, duration: ROW_DUR, ease: "power3.out" },
+          rightStarts[i]
+        );
+      });
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["03-guessing"] = tl;
+    })();
+  </script>
+</template>

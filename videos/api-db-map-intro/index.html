@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js" integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2" crossorigin="anonymous"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #07111f;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-7tcw" id="root" data-composition-id="main" data-start="0" data-duration="55" data-width="1920" data-height="1080">
+      <div data-hf-id="hf-l9mo" id="el-01-which-tables" class="scene" data-composition-id="01-which-tables" data-composition-src="compositions/frames/01-which-tables.html" data-start="0" data-duration="5.4" data-track-index="0"></div>
+
+      <div data-hf-id="hf-pmtt" id="el-02-the-rule" class="scene" data-composition-id="02-the-rule" data-composition-src="compositions/frames/02-the-rule.html" data-start="5" data-duration="5.5" data-track-index="1"></div>
+
+      <div data-hf-id="hf-nzlk" id="el-03-guessing" class="scene" data-composition-id="03-guessing" data-composition-src="compositions/frames/03-guessing.html" data-start="10" data-duration="6.5" data-track-index="0"></div>
+
+      <div data-hf-id="hf-6ksj" id="el-04-trace" class="scene" data-composition-id="04-trace" data-composition-src="compositions/frames/04-trace.html" data-start="16" data-duration="6.5" data-track-index="1"></div>
+
+      <div data-hf-id="hf-1vjy" id="el-05-evidence" class="scene" data-composition-id="05-evidence" data-composition-src="compositions/frames/05-evidence.html" data-start="22" data-duration="7.4" data-track-index="0"></div>
+
+      <div data-hf-id="hf-cets" id="el-06-three-views" class="scene" data-composition-id="06-three-views" data-composition-src="compositions/frames/06-three-views.html" data-start="29" data-duration="7.5" data-track-index="1"></div>
+
+      <div data-hf-id="hf-qrzf" id="el-07-uncertain" class="scene" data-composition-id="07-uncertain" data-composition-src="compositions/frames/07-uncertain.html" data-start="36" data-duration="5.6" data-track-index="0"></div>
+
+      <div data-hf-id="hf-llpx" id="el-08-invoke" class="scene" data-composition-id="08-invoke" data-composition-src="compositions/frames/08-invoke.html" data-start="41" data-duration="7.5" data-track-index="1"></div>
+
+      <div data-hf-id="hf-tf99" id="el-09-close" class="scene" data-composition-id="09-close" data-composition-src="compositions/frames/09-close.html" data-start="48" data-duration="7" data-track-index="0"></div>
+
+      <!-- SFX -->
+      <audio data-hf-id="hf-7gqk" id="el-sfx-0" src="assets/sfx/whoosh.mp3" data-start="16" data-duration="0.57" data-track-index="20" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-x36z" id="el-sfx-1" src="assets/sfx/ping.mp3" data-start="22" data-duration="1.32" data-track-index="21" data-volume="0.35"></audio>
+      <audio data-hf-id="hf-64ph" id="el-sfx-2" src="assets/sfx/key-press.mp3" data-start="41" data-duration="0.4" data-track-index="22" data-volume="0.35"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+      // ── frame transitions (injected by transitions.mjs) ──
+      (function () { var tl = window.__timelines["main"];
+        tl.to("#el-01-which-tables", { scale: 2.5, opacity: 0, filter: "blur(8px)", duration: 0.4, ease: "power3.in" }, 5);
+        tl.fromTo("#el-02-the-rule", { scale: 0.5, opacity: 0, filter: "blur(8px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.4, ease: "power3.out" }, 5);
+        tl.to("#el-02-the-rule", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 10);
+        tl.fromTo("#el-03-guessing", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 10);
+        tl.to("#el-03-guessing", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 16);
+        tl.fromTo("#el-04-trace", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 16);
+        tl.to("#el-04-trace", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 22);
+        tl.fromTo("#el-05-evidence", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 22);
+        tl.to("#el-05-evidence", { scale: 2.5, opacity: 0, filter: "blur(8px)", duration: 0.4, ease: "power3.in" }, 29);
+        tl.fromTo("#el-06-three-views", { scale: 0.5, opacity: 0, filter: "blur(8px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.4, ease: "power3.out" }, 29);
+        tl.to("#el-06-three-views", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 36);
+        tl.fromTo("#el-07-uncertain", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 36);
+        tl.to("#el-07-uncertain", { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.6, ease: "power2.inOut" }, 41);
+        tl.fromTo("#el-08-invoke", { filter: "blur(10px)", scale: 0.97, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.6, ease: "power2.inOut" }, 41);
+        tl.to("#el-08-invoke", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 48);
+        tl.fromTo("#el-09-close", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 48);
+        tl.to({}, { duration: 55 }, 0); // full-span anchor — main.duration() == composition total (Studio master duration)
+      })();
+    </script>
+  </body>
+</html>

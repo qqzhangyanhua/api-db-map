@@ -1,0 +1,75 @@
+{
+  "bgm": null,
+  "bgm_pending": false,
+  "voices": [
+    {
+      "frame": 1,
+      "path": "assets/voice/01.wav",
+      "duration_s": 2.304,
+      "words": [
+        { "id": "w0", "text": "这个接口，", "start": 0.08, "end": 1.05 },
+        { "id": "w1", "text": "改了哪些表？", "start": 1.1, "end": 2.28 }
+      ]
+    },
+    {
+      "frame": 2,
+      "path": "assets/voice/02.wav",
+      "duration_s": 2.645,
+      "words": [
+        { "id": "w0", "text": "不猜。", "start": 0.06, "end": 0.72 },
+        { "id": "w1", "text": "每一张表，", "start": 0.78, "end": 1.58 },
+        { "id": "w2", "text": "一条证据。", "start": 1.64, "end": 2.58 }
+      ]
+    },
+    {
+      "frame": 3,
+      "path": "assets/voice/03.wav",
+      "duration_s": 4.971,
+      "words": [
+        { "id": "w0", "text": "读哪些列。", "start": 0.06, "end": 1.18 },
+        { "id": "w1", "text": "写哪些列。", "start": 1.28, "end": 2.42 },
+        { "id": "w2", "text": "一次请求，", "start": 2.52, "end": 3.55 },
+        { "id": "w3", "text": "全在这张图。", "start": 3.65, "end": 4.9 }
+      ]
+    },
+    {
+      "frame": 4,
+      "path": "assets/voice/04.wav",
+      "duration_s": 2.496,
+      "words": [
+        { "id": "w0", "text": "对 Agent", "start": 0.06, "end": 1.05 },
+        { "id": "w1", "text": "说这一句。", "start": 1.12, "end": 2.42 }
+      ]
+    }
+  ],
+  "sfx": [
+    {
+      "frame": 1,
+      "file": "assets/sfx/typing.mp3",
+      "offset_s": 0,
+      "duration_s": 1.5,
+      "volume": 0.35
+    },
+    {
+      "frame": 2,
+      "file": "assets/sfx/ping.mp3",
+      "offset_s": 0,
+      "duration_s": 1.32,
+      "volume": 0.35
+    },
+    {
+      "frame": 3,
+      "file": "assets/sfx/whoosh.mp3",
+      "offset_s": 0,
+      "duration_s": 0.57,
+      "volume": 0.35
+    },
+    {
+      "frame": 4,
+      "file": "assets/sfx/key-press.mp3",
+      "offset_s": 0,
+      "duration_s": 0.4,
+      "volume": 0.35
+    }
+  ]
+}

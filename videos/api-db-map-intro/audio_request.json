@@ -1,0 +1,25 @@
+{
+  "lines": [
+    {
+      "id": "04",
+      "sfx": [
+        "whoosh"
+      ]
+    },
+    {
+      "id": "05",
+      "sfx": [
+        "ping"
+      ]
+    },
+    {
+      "id": "08",
+      "sfx": [
+        "key-press"
+      ]
+    }
+  ],
+  "bgm": {
+    "mode": "none"
+  }
+}

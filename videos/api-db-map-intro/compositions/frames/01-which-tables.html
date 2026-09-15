@@ -1,0 +1,248 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Inter";
+      src: url("assets/fonts/Inter-400.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Inter";
+      src: url("assets/fonts/Inter-700.woff2") format("woff2");
+      font-weight: 700;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Inter";
+      src: url("assets/fonts/Inter-700.woff2") format("woff2");
+      font-weight: 800;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Noto Sans SC";
+      src: url("assets/fonts/NotoSansSC-400.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+    }
+    #root,
+    #root * {
+      box-sizing: border-box;
+    }
+    [id="01-which-tables-bg"] {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(55, 213, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(55, 213, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 18% 18%, rgba(55, 213, 255, 0.14), transparent 26%),
+        radial-gradient(circle at 78% 74%, rgba(92, 227, 138, 0.1), transparent 24%),
+        #07111f;
+      background-size: 80px 80px, 80px 80px, auto, auto, auto;
+    }
+    [id="01-which-tables-stage"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 900px;
+      padding: 86px 110px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      justify-content: center;
+      font-family: Inter, "Noto Sans SC", sans-serif;
+      color: #e8f1ff;
+    }
+    [id="01-which-tables-kicker"] {
+      width: fit-content;
+      color: #37d5ff;
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: 0;
+      line-height: 1;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+    [id="01-which-tables-title"] {
+      margin: 0;
+      max-width: 1320px;
+      font-size: 96px;
+      line-height: 1.08;
+      font-weight: 800;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+    [id="01-which-tables-title"] [class="01-which-tables-word"] {
+      display: inline-block;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+    [id="01-which-tables-lead"] {
+      margin: 0;
+      width: fit-content;
+      color: rgba(232, 241, 255, 0.78);
+      font-size: 34px;
+      font-weight: 600;
+      line-height: 1.55;
+      letter-spacing: 0;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+    [id="01-which-tables-row"] {
+      display: flex;
+      align-items: center;
+      gap: 42px;
+      min-height: 360px;
+    }
+    [id="01-which-tables-request"] {
+      width: 420px;
+      min-height: 170px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 24px;
+      background: rgba(55, 213, 255, 0.12);
+      border: 1px solid rgba(55, 213, 255, 0.42);
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.35;
+      letter-spacing: 0;
+      transform-origin: 0% 50%;
+      will-change: transform;
+    }
+    [id="01-which-tables-grid"] {
+      position: relative;
+      flex: 1;
+      height: 360px;
+      min-height: 360px;
+    }
+    [id="01-which-tables-grid"] [class="01-which-tables-node"] {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: calc((100% - 36px) / 3);
+      height: calc((100% - 18px) / 2);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 90, 103, 0.7);
+      background: rgba(255, 90, 103, 0.13);
+      font-size: 42px;
+      font-weight: 800;
+      color: #ff5a67;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+  </style>
+  <div data-hf-id="hf-vtyn" id="root" data-composition-id="01-which-tables" data-start="0" data-duration="5.4" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-hw96" id="01-which-tables-bg" class="clip" data-start="0" data-duration="5.4" data-track-index="0"></div>
+    <div data-hf-id="hf-qbdo" id="01-which-tables-stage" class="clip" data-start="0" data-duration="5.4" data-track-index="1">
+      <div data-hf-id="hf-ll83" id="01-which-tables-kicker">Agent Skill / 接口到表</div>
+      <h1 data-hf-id="hf-h4xp" id="01-which-tables-title">
+        <span data-hf-id="hf-piw0" class="01-which-tables-word">这个</span><span data-hf-id="hf-0ufj" class="01-which-tables-word">接口</span><span data-hf-id="hf-o07k" class="01-which-tables-word">到底</span><span data-hf-id="hf-jkqs" class="01-which-tables-word">改了</span><span data-hf-id="hf-9a1g" class="01-which-tables-word">哪些</span><span data-hf-id="hf-z0dy" class="01-which-tables-word">表？</span>
+      </h1>
+      <p data-hf-id="hf-xkii" id="01-which-tables-lead">Agent 不该猜表名。</p>
+      <div data-hf-id="hf-d0ep" id="01-which-tables-row">
+        <div data-hf-id="hf-jd9k" id="01-which-tables-request">POST /v1/tasks/{task_id}/finalize</div>
+        <div data-hf-id="hf-fa8r" id="01-which-tables-grid">
+          <span data-hf-id="hf-x68b" class="01-which-tables-node" data-target-x="-418" data-target-y="-90">？</span>
+          <span data-hf-id="hf-qo15" class="01-which-tables-node" data-target-x="0" data-target-y="-90">？</span>
+          <span data-hf-id="hf-ug4c" class="01-which-tables-node" data-target-x="418" data-target-y="-90">？</span>
+          <span data-hf-id="hf-yn5k" class="01-which-tables-node" data-target-x="-418" data-target-y="90">？</span>
+          <span data-hf-id="hf-2r96" class="01-which-tables-node" data-target-x="0" data-target-y="90">？</span>
+          <span data-hf-id="hf-uf89" class="01-which-tables-node" data-target-x="418" data-target-y="90">？</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+
+    tl.fromTo(
+      document.getElementById("01-which-tables-kicker"),
+      { scale: 0, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.48, ease: "power3.out" },
+      0.0,
+    );
+
+    const wordEls = gsap.utils.toArray("[id='01-which-tables-title'] [class='01-which-tables-word']");
+    const BASE_DURATION = 0.06;
+    const SEC_PER_CHAR = 0.04;
+    let titleAt = 0;
+    wordEls.forEach((el) => {
+      const start = titleAt;
+      titleAt += BASE_DURATION + String(el.textContent).length * SEC_PER_CHAR;
+      tl.fromTo(
+        el,
+        { scale: 0, opacity: 0, y: 8 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.45, ease: "power3.out" },
+        1.0 + start,
+      );
+    });
+
+    tl.fromTo(
+      document.getElementById("01-which-tables-lead"),
+      { scale: 0, opacity: 0, y: 10 },
+      { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+      2.2,
+    );
+
+    tl.fromTo(
+      document.getElementById("01-which-tables-request"),
+      { scale: 0, opacity: 0, x: -28 },
+      { scale: 1, opacity: 1, x: 0, duration: 0.55, ease: "power3.out" },
+      2.35,
+    );
+
+    const grid = document.getElementById("01-which-tables-grid");
+    const nodes = gsap.utils.toArray("[id='01-which-tables-grid'] [class='01-which-tables-node']");
+    const gap = 18;
+    const w = Math.max(grid.clientWidth, 900);
+    const h = Math.max(grid.clientHeight, 360);
+    const stepX = (w - gap * 2) / 3 + gap;
+    const stepY = (h - gap) / 2 + gap;
+    const START_PROGRESS = 0.3;
+    nodes.forEach((el, i) => {
+      const col = i % 3;
+      const row = (i / 3) | 0;
+      const tx = (col - 1) * stepX;
+      const ty = (row === 0 ? -0.5 : 0.5) * stepY;
+      el.setAttribute("data-target-x", String(tx));
+      el.setAttribute("data-target-y", String(ty));
+      tl.fromTo(
+        el,
+        {
+          xPercent: -50,
+          yPercent: -50,
+          x: tx * START_PROGRESS,
+          y: ty * START_PROGRESS,
+          scale: 0.6,
+          opacity: 0,
+        },
+        {
+          xPercent: -50,
+          yPercent: -50,
+          x: tx,
+          y: ty,
+          scale: 1,
+          opacity: 1,
+          duration: 1.2,
+          ease: "power3.out",
+        },
+        3.2 + i * 0.06,
+      );
+    });
+
+    window.__timelines["01-which-tables"] = tl;
+  </script>
+</template>

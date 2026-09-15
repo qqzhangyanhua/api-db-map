@@ -1,0 +1,189 @@
+<template>
+  <style>
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; }
+    @font-face { font-family: "Noto Sans SC"; src: url("assets/fonts/NotoSansSC-400.ttf") format("truetype"); font-weight: 400; font-style: normal; }
+    #root { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; container-type: size; }
+    #root, #root * { box-sizing: border-box; }
+    [id="08-invoke-bg"] {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(55, 213, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(55, 213, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 18% 18%, rgba(55, 213, 255, 0.14), transparent 26%),
+        radial-gradient(circle at 78% 74%, rgba(92, 227, 138, 0.1), transparent 24%),
+        #07111f;
+      background-size: 80px 80px, 80px 80px, auto, auto, auto;
+    }
+    [id="08-invoke-stage"] {
+      position: absolute; top: 0; left: 0; right: 0; height: 900px;
+      padding: 86px 110px 40px; display: flex; flex-direction: column; gap: 28px; justify-content: center;
+      font-family: Inter, "Noto Sans SC", sans-serif; color: #e8f1ff;
+    }
+    [id="08-invoke-kicker"] {
+      color: #37d5ff; font-size: 30px; font-weight: 800; line-height: 1;
+      transform-origin: 0% 50%; will-change: transform;
+    }
+    [id="08-invoke-title"] {
+      margin: 0; font-size: 72px; line-height: 1.12; font-weight: 800; letter-spacing: 0;
+      transform-origin: 0% 50%; will-change: transform;
+    }
+    [id="08-invoke-lead"] {
+      margin: 0; color: rgba(232, 241, 255, 0.62); font-size: 28px; font-weight: 650; line-height: 1.45;
+      transform-origin: 0% 50%; will-change: transform;
+    }
+    [id="08-invoke-row"] { display: flex; align-items: stretch; gap: 42px; }
+    [id="08-invoke-request"] {
+      width: 420px; min-height: 170px; border-radius: 8px; display: grid; place-items: center; text-align: center;
+      padding: 24px; background: rgba(55, 213, 255, 0.12); border: 1px solid rgba(55, 213, 255, 0.42);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+      font-size: 42px; font-weight: 800; line-height: 1.2; letter-spacing: 0;
+      transform-origin: 50% 50%; will-change: transform;
+    }
+    [id="08-invoke-brand"] { color: #37d5ff; font-weight: 800; }
+    [id="08-invoke-cmd"] {
+      flex: 1; min-width: 0; min-height: 170px; border-radius: 8px; padding: 36px;
+      display: flex; align-items: center; gap: 18px;
+      background: rgba(15, 34, 54, 0.86); border: 1px solid rgba(55, 213, 255, 0.24);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+      font-size: 28px; font-weight: 750; line-height: 1.45;
+      transform-origin: 50% 50%; will-change: transform;
+    }
+    [id="08-invoke-prompt"] {
+      flex: 0 0 auto; color: #37d5ff; font-size: 32px; font-weight: 800; line-height: 1;
+    }
+    [id="08-invoke-text-wrap"] {
+      display: inline-flex; align-items: baseline; min-width: 48px; white-space: nowrap;
+    }
+    [id="08-invoke-text"] {
+      white-space: pre; font-variant-ligatures: none;
+    }
+    [id="08-invoke-cursor"] {
+      display: inline-block; width: 12px; height: 24px; margin-left: 4px;
+      background: #e8f1ff; vertical-align: -3px;
+    }
+  </style>
+  <div data-hf-id="hf-43we" id="root" data-composition-id="08-invoke" data-start="0" data-duration="7.5" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-3yaf" id="08-invoke-bg" class="clip" data-start="0" data-duration="7.5" data-track-index="0"></div>
+    <div data-hf-id="hf-c9ov" id="08-invoke-stage" class="clip" data-start="0" data-duration="7.5" data-track-index="1">
+      <div data-hf-id="hf-brpo" id="08-invoke-kicker">显式调用</div>
+      <h2 data-hf-id="hf-wr0m" id="08-invoke-title">说这一句，才跑</h2>
+      <p data-hf-id="hf-v4dm" id="08-invoke-lead">提到表或接口，不会自动触发</p>
+      <div data-hf-id="hf-a98l" id="08-invoke-row">
+        <div data-hf-id="hf-nu9y" id="08-invoke-request">用 <span data-hf-id="hf-ut75" id="08-invoke-brand">api-db-map</span></div>
+        <div data-hf-id="hf-c5it" id="08-invoke-cmd">
+          <span data-hf-id="hf-fehe" id="08-invoke-prompt">$</span>
+          <span data-hf-id="hf-gf5a" id="08-invoke-text-wrap">
+            <span data-hf-id="hf-79d1" id="08-invoke-text"></span><span data-hf-id="hf-9nk6" id="08-invoke-cursor"></span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const DURATION = 7;
+      const POP_DUR = 0.55;
+      const Y_RISE = 10;
+      const TEXT = "#e8f1ff";
+      const CYAN = "#37d5ff";
+      const CURSOR_H = 24;
+      const CURSOR_H_BRAND = 28;
+      const BLINK_CYCLES = 7;
+      const TYPING_GRACE = 0.22;
+      const FULL = "用 api-db-map 分析 POST /v1/tasks/{task_id}/finalize";
+
+      const kicker = document.getElementById("08-invoke-kicker");
+      const title = document.getElementById("08-invoke-title");
+      const lead = document.getElementById("08-invoke-lead");
+      const request = document.getElementById("08-invoke-request");
+      const cmd = document.getElementById("08-invoke-cmd");
+      const textEl = document.getElementById("08-invoke-text");
+      const cursorEl = document.getElementById("08-invoke-cursor");
+
+      tl.fromTo(kicker, { scale: 0, opacity: 0, y: Y_RISE }, { scale: 1, opacity: 1, y: 0, duration: POP_DUR, ease: "power3.out" }, 0);
+      tl.fromTo(title, { scale: 0, opacity: 0, y: Y_RISE }, { scale: 1, opacity: 1, y: 0, duration: POP_DUR, ease: "power3.out" }, 0.1);
+      tl.fromTo(lead, { scale: 0, opacity: 0, y: Y_RISE }, { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.55);
+      tl.fromTo(request, { scale: 0, opacity: 0, y: 12 }, { scale: 1, opacity: 1, y: 0, duration: POP_DUR, ease: "power3.out" }, 1.6);
+      tl.fromTo(cmd, { scale: 0, opacity: 0, y: 12 }, { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 3.2);
+
+      const SEQUENCE = [
+        { t: 0, text: "", segment: "main", color: TEXT },
+        { t: 3.42, text: "用", segment: "main", color: TEXT },
+        { t: 3.5, text: "用 ", segment: "main", color: TEXT },
+        { t: 3.64, text: "用 a", segment: "brand", color: CYAN },
+        { t: 3.72, text: "用 ap", segment: "brand", color: CYAN },
+        { t: 3.8, text: "用 api", segment: "brand", color: CYAN },
+        { t: 3.88, text: "用 api-", segment: "brand", color: CYAN },
+        { t: 3.96, text: "用 api-d", segment: "brand", color: CYAN },
+        { t: 4.04, text: "用 api-db", segment: "brand", color: CYAN },
+        { t: 4.12, text: "用 api-db-", segment: "brand", color: CYAN },
+        { t: 4.2, text: "用 api-db-m", segment: "brand", color: CYAN },
+        { t: 4.28, text: "用 api-db-ma", segment: "brand", color: CYAN },
+        { t: 4.38, text: "用 api-db-map", segment: "brand", color: CYAN },
+        { t: 4.58, text: "用 api-db-map ", segment: "main", color: TEXT },
+        { t: 4.66, text: "用 api-db-map 分", segment: "main", color: TEXT },
+        { t: 4.74, text: "用 api-db-map 分析", segment: "main", color: TEXT },
+        { t: 4.8, text: "用 api-db-map 分析 ", segment: "main", color: TEXT },
+        { t: 4.86, text: "用 api-db-map 分析 P", segment: "main", color: TEXT },
+        { t: 4.91, text: "用 api-db-map 分析 PO", segment: "main", color: TEXT },
+        { t: 4.96, text: "用 api-db-map 分析 POS", segment: "main", color: TEXT },
+        { t: 5.0, text: "用 api-db-map 分析 POST", segment: "main", color: TEXT },
+        { t: 5.06, text: "用 api-db-map 分析 POST ", segment: "main", color: TEXT },
+        { t: 5.42, text: FULL, segment: "cmd", color: CYAN },
+      ];
+
+      const CHANGE_TIMES = SEQUENCE.filter(function (e, i) {
+        return i > 0 && e.text !== SEQUENCE[i - 1].text;
+      }).map(function (e) {
+        return e.t;
+      });
+
+      function entryAt(time) {
+        for (let i = SEQUENCE.length - 1; i >= 0; i--) {
+          if (time >= SEQUENCE[i].t) return SEQUENCE[i];
+        }
+        return SEQUENCE[0];
+      }
+
+      const driver = { t: 0 };
+      tl.to(
+        driver,
+        {
+          t: DURATION,
+          duration: DURATION,
+          ease: "none",
+          onUpdate: function () {
+            const entry = entryAt(driver.t);
+            textEl.textContent = entry.text;
+            cursorEl.style.background = entry.color;
+            cursorEl.style.height = entry.segment === "brand" ? CURSOR_H_BRAND + "px" : CURSOR_H + "px";
+          },
+        },
+        0
+      );
+
+      const blink = { p: 0 };
+      tl.to(
+        blink,
+        {
+          p: Math.PI * 2 * BLINK_CYCLES,
+          duration: DURATION,
+          ease: "none",
+          onUpdate: function () {
+            const isTyping = CHANGE_TIMES.some(function (t) {
+              return t <= driver.t && driver.t - t < TYPING_GRACE;
+            });
+            cursorEl.style.opacity = isTyping ? "1" : Math.sin(blink.p) > 0 ? "1" : "0";
+          },
+        },
+        0
+      );
+
+      window.__timelines["08-invoke"] = tl;
+    })();
+  </script>
+</template>

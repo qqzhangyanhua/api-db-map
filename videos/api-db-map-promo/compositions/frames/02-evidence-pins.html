@@ -1,0 +1,491 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "EB Garamond";
+      src: url("assets/fonts/EBGaramond-400.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Inter";
+      src: url("assets/fonts/Inter-400.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Noto Sans SC";
+      src: url("assets/fonts/NotoSansSC-400.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+    }
+    #root,
+    #root * {
+      box-sizing: border-box;
+    }
+    [id="02-evidence-pins-bg"] {
+      position: absolute;
+      inset: 0;
+      background: #faf9f5;
+    }
+    [id="02-evidence-pins-stage"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 900px;
+      padding: 4.2cqw;
+      display: grid;
+      grid-template-columns: 42cqw 1fr;
+      gap: 3cqw;
+      align-items: stretch;
+    }
+    [id="02-evidence-pins-col"] {
+      display: flex;
+      flex-direction: column;
+      gap: 1.7cqw;
+      min-width: 0;
+      justify-content: flex-start;
+    }
+    [id="02-evidence-pins-kicker-row"] {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2cqw;
+      min-height: 1.8cqw;
+    }
+    [id="02-evidence-pins-kicker"] {
+      font-family: "JetBrains Mono", "Noto Sans SC", monospace;
+      font-size: 1.46cqw;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+      transform-origin: 0% 50%;
+    }
+    [id="02-evidence-pins-kicker"] span {
+      color: #cc785c;
+    }
+    [id="02-evidence-pins-status"] {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.55cqw;
+      font-family: "JetBrains Mono", "Noto Sans SC", monospace;
+      font-size: 1.35cqw;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: rgba(20, 20, 19, 0.56);
+      white-space: nowrap;
+    }
+    [id="02-evidence-pins-spinner"] {
+      display: block;
+      width: 1.5cqw;
+      height: 1.5cqw;
+      flex-shrink: 0;
+    }
+    [id="02-evidence-pins-headline"] {
+      margin: 0;
+      font-family: "EB Garamond", "Noto Sans SC", serif;
+      font-weight: 400;
+      color: #141413;
+      transform-origin: 0% 50%;
+    }
+    [id="02-evidence-pins-line1"] {
+      display: block;
+      font-size: 6.7cqw;
+      line-height: 1.05;
+      letter-spacing: -0.012em;
+      font-style: italic;
+    }
+    [id="02-evidence-pins-line2"] {
+      display: block;
+      margin-top: 0.4cqw;
+      font-size: 2.3cqw;
+      line-height: 1.2;
+      letter-spacing: -0.012em;
+      font-style: normal;
+    }
+    [id="02-evidence-pins-chips"] {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2cqw;
+      min-width: 0;
+    }
+    [id="02-evidence-pins-stage"] .chip {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 1.1cqw;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      background: #efe9de;
+      border-radius: 12px;
+      padding: 1.2cqw 1.4cqw;
+      box-shadow: 0 1px 3px rgba(20, 20, 19, 0.08), 0 4px 16px rgba(20, 20, 19, 0.04);
+      transform-origin: 50% 50%;
+      min-width: 0;
+    }
+    [id="02-evidence-pins-stage"] .badge {
+      position: relative;
+      width: 2.2cqw;
+      height: 2.2cqw;
+      flex-shrink: 0;
+    }
+    [id="02-evidence-pins-stage"] .badge-pending,
+    [id="02-evidence-pins-stage"] .badge-done {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      transform-origin: 50% 50%;
+    }
+    [id="02-evidence-pins-stage"] .badge-pending {
+      border: 1px solid rgba(20, 20, 19, 0.2);
+      background: #faf9f5;
+      color: #141413;
+      font-family: "JetBrains Mono", "Noto Sans SC", monospace;
+      font-size: 1.2cqw;
+      font-weight: 500;
+    }
+    [id="02-evidence-pins-stage"] .badge-done {
+      background: #5db872;
+      opacity: 0;
+    }
+    [id="02-evidence-pins-stage"] .badge-jitter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.25cqw;
+      height: 1.25cqw;
+    }
+    [id="02-evidence-pins-stage"] .badge-done svg {
+      display: block;
+      width: 1.25cqw;
+      height: 1.25cqw;
+    }
+    [id="02-evidence-pins-stage"] .chip-body {
+      min-width: 0;
+    }
+    [id="02-evidence-pins-stage"] .chip-name {
+      font-family: "JetBrains Mono", "Noto Sans SC", monospace;
+      font-size: 1.67cqw;
+      font-weight: 400;
+      line-height: 1.2;
+      color: #141413;
+    }
+    [id="02-evidence-pins-stage"] .chip-meta {
+      margin-top: 0.35cqw;
+      font-family: "Inter", "Noto Sans SC", sans-serif;
+      font-size: 1.5cqw;
+      font-weight: 400;
+      line-height: 1.4;
+      color: #141413;
+    }
+    [id="02-evidence-pins-plate"] {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      background: #efe9de;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    [id="02-evidence-pins-plate-img"] {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      opacity: 0.4;
+    }
+  </style>
+  <div data-hf-id="hf-3tyn" id="root" data-composition-id="02-evidence-pins" data-start="0" data-duration="14.6" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-uyvm" id="02-evidence-pins-bg" class="clip" data-start="0" data-duration="14.6" data-track-index="0"></div>
+    <div data-hf-id="hf-rzzu" id="02-evidence-pins-stage" class="clip" data-start="0" data-duration="14.6" data-track-index="1">
+      <div data-hf-id="hf-6vhd" id="02-evidence-pins-col">
+        <div data-hf-id="hf-evfl" id="02-evidence-pins-kicker-row">
+          <div data-hf-id="hf-1mtz" id="02-evidence-pins-kicker"><span data-hf-id="hf-zak0">✱</span> EVIDENCE</div>
+          <div data-hf-id="hf-b4pr" id="02-evidence-pins-status">
+            <svg data-hf-id="hf-4i0b" id="02-evidence-pins-spinner" viewBox="0 0 24 24" aria-hidden="true">
+              <circle data-hf-id="hf-btc4" cx="12" cy="12" r="9" fill="none" stroke="rgba(20,20,19,0.12)" stroke-width="2" />
+              <circle data-hf-id="hf-9pji" id="02-evidence-pins-spinner-arc" cx="12" cy="12" r="9" fill="none" stroke="#141413" stroke-width="2" stroke-linecap="round" stroke-dasharray="16 41" />
+            </svg>
+            <span data-hf-id="hf-jlpu" id="02-evidence-pins-tracing">tracing…</span>
+          </div>
+        </div>
+        <h1 data-hf-id="hf-3xpb" id="02-evidence-pins-headline">
+          <span data-hf-id="hf-c21g" id="02-evidence-pins-line1">不猜。</span>
+          <span data-hf-id="hf-06c5" id="02-evidence-pins-line2">每一张表，一条证据。</span>
+        </h1>
+        <div data-hf-id="hf-zx7e" id="02-evidence-pins-chips">
+          <div data-hf-id="hf-2b53" id="02-evidence-pins-chip-0" class="chip">
+            <div data-hf-id="hf-9s2p" class="badge">
+              <div data-hf-id="hf-v1uw" id="02-evidence-pins-pending-0" class="badge-pending">1</div>
+              <div data-hf-id="hf-08kd" id="02-evidence-pins-done-0" class="badge-done">
+                <svg data-hf-id="hf-35ls" viewBox="0 0 24 24" aria-hidden="true">
+                  <path data-hf-id="hf-z12n" id="02-evidence-pins-check-0" d="M5 12.5 L10 17.5 L19 7" fill="none" stroke="#faf9f5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+            </div>
+            <div data-hf-id="hf-l287" class="chip-body">
+              <div data-hf-id="hf-mp8n" class="chip-name">recording_task</div>
+              <div data-hf-id="hf-rll5" class="chip-meta">UPDATE · backend/app.py:297</div>
+            </div>
+          </div>
+          <div data-hf-id="hf-yd12" id="02-evidence-pins-chip-1" class="chip">
+            <div data-hf-id="hf-46et" class="badge">
+              <div data-hf-id="hf-p9yu" id="02-evidence-pins-pending-1" class="badge-pending">2</div>
+              <div data-hf-id="hf-zgwk" id="02-evidence-pins-done-1" class="badge-done">
+                <svg data-hf-id="hf-46qg" viewBox="0 0 24 24" aria-hidden="true">
+                  <path data-hf-id="hf-2rt4" id="02-evidence-pins-check-1" d="M5 12.5 L10 17.5 L19 7" fill="none" stroke="#faf9f5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+            </div>
+            <div data-hf-id="hf-b99j" class="chip-body">
+              <div data-hf-id="hf-rxlw" class="chip-name">upload_session</div>
+              <div data-hf-id="hf-ujzn" class="chip-meta">UPDATE finalized · backend/app.py:297</div>
+            </div>
+          </div>
+          <div data-hf-id="hf-s7b9" id="02-evidence-pins-chip-2" class="chip">
+            <div data-hf-id="hf-5dbw" class="badge">
+              <div data-hf-id="hf-3klk" id="02-evidence-pins-pending-2" class="badge-pending">3</div>
+              <div data-hf-id="hf-84sf" id="02-evidence-pins-done-2" class="badge-done">
+                <span data-hf-id="hf-jtr2" id="02-evidence-pins-jitter" class="badge-jitter">
+                  <svg data-hf-id="hf-2ztd" viewBox="0 0 24 24" aria-hidden="true">
+                    <path data-hf-id="hf-85td" id="02-evidence-pins-check-2" d="M5 12.5 L10 17.5 L19 7" fill="none" stroke="#faf9f5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+              </div>
+            </div>
+            <div data-hf-id="hf-auyi" class="chip-body">
+              <div data-hf-id="hf-616z" class="chip-name">work_job</div>
+              <div data-hf-id="hf-d63h" class="chip-meta">INSERT · backend/app.py:297</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-hf-id="hf-ukfz" id="02-evidence-pins-plate">
+        <img data-hf-id="hf-goo5" id="02-evidence-pins-plate-img" src="assets/t02-fields.jpg" alt="">
+      </div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    const el = (id) => document.getElementById(id);
+
+    const plate = el("02-evidence-pins-plate");
+    const kicker = el("02-evidence-pins-kicker");
+    const line1 = el("02-evidence-pins-line1");
+    const line2 = el("02-evidence-pins-line2");
+    const status = el("02-evidence-pins-status");
+    const spinnerArc = el("02-evidence-pins-spinner-arc");
+    const lastJitter = el("02-evidence-pins-jitter");
+
+    const chips = [0, 1, 2].map((i) => ({
+      card: el("02-evidence-pins-chip-" + i),
+      pending: el("02-evidence-pins-pending-" + i),
+      done: el("02-evidence-pins-done-" + i),
+      check: el("02-evidence-pins-check-" + i),
+    }));
+
+    const checkLens = chips.map((c) => {
+      const len = c.check.getTotalLength();
+      c.check.style.strokeDasharray = String(len);
+      c.check.style.strokeDashoffset = String(len);
+      return len;
+    });
+
+    tl.fromTo(
+      plate,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.55, ease: "power2.out" },
+      0
+    );
+
+    tl.fromTo(
+      kicker,
+      { opacity: 0, scale: 0, y: 10 },
+      {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        duration: 0.48,
+        ease: "power3.out",
+        transformOrigin: "0% 50%",
+      },
+      0.04
+    );
+
+    tl.fromTo(
+      line1,
+      { opacity: 0, scale: 0, y: 14 },
+      {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        duration: 0.58,
+        ease: "power3.out",
+        transformOrigin: "0% 50%",
+      },
+      0.1
+    );
+
+    tl.fromTo(
+      line2,
+      { opacity: 0, y: 12 },
+      { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" },
+      2.5
+    );
+
+    tl.fromTo(
+      status,
+      { opacity: 0, y: 8 },
+      { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" },
+      2.5
+    );
+
+    const spin = { deg: 0 };
+    const spinStart = 2.5;
+    const spinEnd = 9.45;
+    tl.fromTo(
+      spin,
+      { deg: 0 },
+      {
+        deg: 360 * 7.35,
+        duration: spinEnd - spinStart,
+        ease: "none",
+        onUpdate: function () {
+          spinnerArc.setAttribute("transform", "rotate(" + spin.deg + " 12 12)");
+        },
+      },
+      spinStart
+    );
+
+    function enterChip(card, at) {
+      tl.fromTo(
+        card,
+        { opacity: 0, y: 28, scale: 0.96 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.5,
+          ease: "power3.out",
+          transformOrigin: "50% 50%",
+        },
+        at
+      );
+    }
+
+    function checkOff(item, len, at) {
+      tl.fromTo(
+        item.pending,
+        { scale: 1, opacity: 1 },
+        {
+          scale: 0.72,
+          opacity: 0,
+          duration: 0.28,
+          ease: "power2.in",
+          transformOrigin: "50% 50%",
+          immediateRender: false,
+        },
+        at
+      );
+      tl.fromTo(
+        item.done,
+        { scale: 0.72, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.42,
+          ease: "power3.out",
+          transformOrigin: "50% 50%",
+          immediateRender: false,
+        },
+        at + 0.12
+      );
+      tl.fromTo(
+        item.check,
+        { strokeDashoffset: len },
+        {
+          strokeDashoffset: 0,
+          duration: 0.32,
+          ease: "power2.out",
+          immediateRender: false,
+        },
+        at + 0.18
+      );
+    }
+
+    enterChip(chips[0].card, 2.65);
+    checkOff(chips[0], checkLens[0], 4.15);
+
+    enterChip(chips[1].card, 6.05);
+    checkOff(chips[1], checkLens[1], 7.15);
+
+    enterChip(chips[2].card, 8.05);
+    checkOff(chips[2], checkLens[2], 9.15);
+
+    tl.fromTo(
+      status,
+      { opacity: 1, y: 0 },
+      {
+        opacity: 0,
+        y: 0,
+        duration: 0.28,
+        ease: "power2.in",
+        immediateRender: false,
+      },
+      9.45
+    );
+
+    tl.fromTo(
+      lastJitter,
+      { y: 0 },
+      { y: 2, duration: 0.5, ease: "sine.inOut", immediateRender: false },
+      10
+    );
+    tl.fromTo(
+      lastJitter,
+      { y: 2 },
+      { y: -2, duration: 1, ease: "sine.inOut", immediateRender: false },
+      10.5
+    );
+    tl.fromTo(
+      lastJitter,
+      { y: -2 },
+      { y: 2, duration: 1, ease: "sine.inOut", immediateRender: false },
+      11.5
+    );
+    tl.fromTo(
+      lastJitter,
+      { y: 2 },
+      { y: -2, duration: 1, ease: "sine.inOut", immediateRender: false },
+      12.5
+    );
+    tl.fromTo(
+      lastJitter,
+      { y: -2 },
+      { y: 0, duration: 0.5, ease: "sine.inOut", immediateRender: false },
+      13.5
+    );
+
+    window.__timelines["02-evidence-pins"] = tl;
+  </script>
+</template>

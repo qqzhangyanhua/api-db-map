@@ -1,0 +1,226 @@
+<template>
+  <style>
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; }
+    @font-face { font-family: "Noto Sans SC"; src: url("assets/fonts/NotoSansSC-400.ttf") format("truetype"); font-weight: 400; font-style: normal; }
+    #root { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; container-type: size; }
+    #root, #root * { box-sizing: border-box; }
+    [id="05-evidence-bg"] {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(90deg, rgba(55, 213, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(55, 213, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 18% 18%, rgba(55, 213, 255, 0.14), transparent 26%),
+        radial-gradient(circle at 78% 74%, rgba(92, 227, 138, 0.1), transparent 24%),
+        #07111f;
+      background-size: 80px 80px, 80px 80px, auto, auto, auto;
+    }
+    [id="05-evidence-stage"] {
+      position: absolute; top: 0; left: 0; right: 0; height: 900px;
+      padding: 86px 110px 40px; display: flex; flex-direction: column; gap: 24px; justify-content: center;
+      font-family: Inter, "Noto Sans SC", sans-serif; color: #e8f1ff;
+    }
+    [id="05-evidence-kicker"] {
+      color: #37d5ff; font-size: 30px; font-weight: 800; letter-spacing: 0; line-height: 1;
+      transform-origin: 0% 50%; will-change: transform;
+    }
+    [id="05-evidence-title"] {
+      margin: 0; font-size: 74px; line-height: 1.12; font-weight: 800; letter-spacing: 0;
+      transform-origin: 0% 50%; will-change: transform;
+    }
+    [id="05-evidence-path"] {
+      margin: 0; color: rgba(232, 241, 255, 0.62); font-size: 28px; font-weight: 650; line-height: 1.45; letter-spacing: 0;
+      transform-origin: 0% 50%; will-change: transform;
+    }
+    [id="05-evidence-list"] {
+      border: 1px solid rgba(55, 213, 255, 0.2); background: rgba(15, 34, 54, 0.82);
+      border-radius: 8px; padding: 36px; box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+      min-height: 322px; transform-origin: 50% 50%; will-change: transform;
+    }
+    [id="05-evidence-list"] p {
+      display: grid; grid-template-columns: 1.4fr 0.8fr 196px; align-items: center; gap: 18px;
+      min-height: 74px; margin: 14px 0 0; padding: 16px 20px; border-radius: 8px;
+      background: rgba(232, 241, 255, 0.06); border: 1px solid rgba(232, 241, 255, 0.08);
+      font-size: 28px; font-weight: 750; line-height: 1.45; letter-spacing: 0;
+      transform-origin: 50% 50%; will-change: transform;
+    }
+    [id="05-evidence-list"] p:first-child { margin-top: 0; }
+    [id="05-evidence-list"] b { font-weight: 850; }
+    [id="05-evidence-list"] em { font-style: normal; color: #ffbe55; }
+    [id^="05-evidence-pin-"] {
+      position: relative; justify-self: end; width: 196px; height: 48px;
+    }
+    [id^="05-evidence-pending-"],
+    [id^="05-evidence-done-"] {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; transform-origin: 50% 50%; will-change: transform; font-size: 28px;
+    }
+    [id^="05-evidence-pending-"] {
+      z-index: 1; color: rgba(232, 241, 255, 0.78); font-weight: 800;
+      background: rgba(7, 17, 31, 0.55); border: 1px solid rgba(232, 241, 255, 0.28);
+    }
+    [id^="05-evidence-done-"] {
+      z-index: 2; gap: 10px; color: #5ce38a; font-weight: 950;
+      background: rgba(7, 17, 31, 0.92); border: 1px solid rgba(92, 227, 138, 0.72);
+    }
+    [id^="05-evidence-mark-"] {
+      width: 28px; height: 28px; border-radius: 50%; flex: 0 0 auto;
+      display: flex; align-items: center; justify-content: center; background: #5ce38a;
+    }
+    [id^="05-evidence-mark-"] svg { display: block; width: 16px; height: 16px; }
+  </style>
+  <div data-hf-id="hf-mpg1" id="root" data-composition-id="05-evidence" data-start="0" data-duration="7.4" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-no5s" id="05-evidence-bg" class="clip" data-start="0" data-duration="7.4" data-track-index="0"></div>
+    <div data-hf-id="hf-5vc2" id="05-evidence-stage" class="clip" data-start="0" data-duration="7.4" data-track-index="1">
+      <div data-hf-id="hf-70kd" id="05-evidence-kicker">证据钉上去</div>
+      <h2 data-hf-id="hf-uq1t" id="05-evidence-title">每一张表，一条证据</h2>
+      <p data-hf-id="hf-asnb" id="05-evidence-path">POST /v1/tasks/{task_id}/finalize</p>
+      <div data-hf-id="hf-fylv" id="05-evidence-list">
+        <p data-hf-id="hf-f871" id="05-evidence-row-0">
+          <b data-hf-id="hf-oxd4">recording_task</b><em data-hf-id="hf-uerq">UPDATE</em>
+          <span data-hf-id="hf-t2lu" id="05-evidence-pin-0">
+            <span data-hf-id="hf-9jph" id="05-evidence-pending-0">1</span>
+            <span data-hf-id="hf-12bb" id="05-evidence-done-0">
+              <i data-hf-id="hf-nkps" id="05-evidence-mark-0" aria-hidden="true">
+                <svg data-hf-id="hf-ulu9" viewBox="0 0 24 24">
+                  <path data-hf-id="hf-x33s" id="05-evidence-check-0" d="M5 12.5 L10 17.5 L19 7" fill="none" stroke="#07111f" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </i>
+              file:line
+            </span>
+          </span>
+        </p>
+        <p data-hf-id="hf-egj8" id="05-evidence-row-1">
+          <b data-hf-id="hf-vae3">upload_session</b><em data-hf-id="hf-ea8a">UPDATE</em>
+          <span data-hf-id="hf-z8bn" id="05-evidence-pin-1">
+            <span data-hf-id="hf-7633" id="05-evidence-pending-1">2</span>
+            <span data-hf-id="hf-226w" id="05-evidence-done-1">
+              <i data-hf-id="hf-ocdl" id="05-evidence-mark-1" aria-hidden="true">
+                <svg data-hf-id="hf-1tol" viewBox="0 0 24 24">
+                  <path data-hf-id="hf-2hmn" id="05-evidence-check-1" d="M5 12.5 L10 17.5 L19 7" fill="none" stroke="#07111f" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </i>
+              file:line
+            </span>
+          </span>
+        </p>
+        <p data-hf-id="hf-n4f3" id="05-evidence-row-2">
+          <b data-hf-id="hf-5d78">work_job</b><em data-hf-id="hf-fglq">INSERT</em>
+          <span data-hf-id="hf-ocu0" id="05-evidence-pin-2">
+            <span data-hf-id="hf-m5nh" id="05-evidence-pending-2">3</span>
+            <span data-hf-id="hf-do3p" id="05-evidence-done-2">
+              <i data-hf-id="hf-sahm" id="05-evidence-mark-2" aria-hidden="true">
+                <svg data-hf-id="hf-30lo" viewBox="0 0 24 24">
+                  <path data-hf-id="hf-k0uu" id="05-evidence-check-2" d="M5 12.5 L10 17.5 L19 7" fill="none" stroke="#07111f" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </i>
+              file:line
+            </span>
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const el = (id) => document.getElementById(id);
+
+      const POP_DUR = 0.52;
+      const Y_RISE = 10;
+      const ROW_DUR = 0.5;
+      const ROW_Y = 16;
+      const CHECK_LAG = 0.72;
+      const BASE_DURATION = 0.6;
+      const SEC_PER_CHAR = 0.04;
+      const HOLD_MID = 0.5;
+      const HOLD_FINAL = 1.0;
+      const SCENE2_AT = 1.4;
+      const SCENE_WINDOW = 5.6;
+
+      tl.fromTo(
+        el("05-evidence-kicker"),
+        { scale: 0, opacity: 0, y: Y_RISE },
+        { scale: 1, opacity: 1, y: 0, duration: POP_DUR, ease: "power3.out" },
+        0
+      );
+      tl.fromTo(
+        el("05-evidence-title"),
+        { scale: 0, opacity: 0, y: Y_RISE },
+        { scale: 1, opacity: 1, y: 0, duration: 0.55, ease: "power3.out" },
+        0.06
+      );
+      tl.fromTo(
+        el("05-evidence-path"),
+        { scale: 0, opacity: 0, y: Y_RISE },
+        { scale: 1, opacity: 1, y: 0, duration: POP_DUR, ease: "power3.out" },
+        0.16
+      );
+      tl.fromTo(
+        el("05-evidence-list"),
+        { scale: 0, opacity: 0, y: 12 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.55, ease: "power3.out" },
+        0.42
+      );
+
+      const CONTENT = [
+        { id: "05-evidence-row-0", pending: "05-evidence-pending-0", done: "05-evidence-done-0", check: "05-evidence-check-0", body: "recording_task UPDATE", hold: HOLD_MID },
+        { id: "05-evidence-row-1", pending: "05-evidence-pending-1", done: "05-evidence-done-1", check: "05-evidence-check-1", body: "upload_session UPDATE", hold: HOLD_MID },
+        { id: "05-evidence-row-2", pending: "05-evidence-pending-2", done: "05-evidence-done-2", check: "05-evidence-check-2", body: "work_job INSERT", hold: HOLD_FINAL },
+      ];
+
+      let cumulative = 0;
+      const RAW = CONTENT.map((entry) => {
+        const dur = BASE_DURATION + entry.body.length * SEC_PER_CHAR + entry.hold;
+        const start = cumulative;
+        cumulative += dur;
+        return { ...entry, start, end: cumulative };
+      });
+      const scale = SCENE_WINDOW / cumulative;
+      const TIMELINE = RAW.map((entry) => ({
+        ...entry,
+        start: SCENE2_AT + entry.start * scale,
+        end: SCENE2_AT + entry.end * scale,
+      }));
+
+      TIMELINE.forEach((entry) => {
+        const row = el(entry.id);
+        const pending = el(entry.pending);
+        const done = el(entry.done);
+        const check = el(entry.check);
+        const len = check.getTotalLength();
+        check.style.strokeDasharray = String(len);
+        check.style.strokeDashoffset = String(len);
+
+        tl.fromTo(
+          row,
+          { scale: 0, opacity: 0, y: ROW_Y },
+          { scale: 1, opacity: 1, y: 0, duration: ROW_DUR, ease: "power3.out" },
+          entry.start
+        );
+        tl.fromTo(
+          pending,
+          { scale: 1, opacity: 1 },
+          { scale: 0.72, opacity: 0, duration: 0.28, ease: "power2.in" },
+          entry.start + CHECK_LAG
+        );
+        tl.fromTo(
+          done,
+          { scale: 0.72, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.42, ease: "power3.out" },
+          entry.start + CHECK_LAG + 0.12
+        );
+        tl.fromTo(
+          check,
+          { strokeDashoffset: len },
+          { strokeDashoffset: 0, duration: 0.32, ease: "power2.out" },
+          entry.start + CHECK_LAG + 0.18
+        );
+      });
+
+      window.__timelines["05-evidence"] = tl;
+    })();
+  </script>
+</template>

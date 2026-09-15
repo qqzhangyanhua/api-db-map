@@ -1,0 +1,105 @@
+<template>
+  <style>
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 800; font-style: normal; }
+    @font-face { font-family: "Noto Sans SC"; src: url("assets/fonts/NotoSansSC-400.ttf") format("truetype"); font-weight: 400; font-style: normal; }
+    #root { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; container-type: size; }
+    #root, #root * { box-sizing: border-box; }
+    [id="02-the-rule-bg"] {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(55, 213, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(55, 213, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 18% 18%, rgba(55, 213, 255, 0.14), transparent 26%),
+        radial-gradient(circle at 78% 74%, rgba(92, 227, 138, 0.1), transparent 24%),
+        #07111f;
+      background-size: 80px 80px, 80px 80px, auto, auto, auto;
+    }
+    [id="02-the-rule-stage"] {
+      position: absolute; top: 0; left: 0; right: 0; height: 900px;
+      padding: 86px 110px 40px; display: flex; flex-direction: column; gap: 32px; justify-content: center;
+      font-family: Inter, "Noto Sans SC", sans-serif; color: #e8f1ff;
+    }
+    [id="02-the-rule-kicker"] {
+      color: #37d5ff; font-size: 30px; font-weight: 800; letter-spacing: 0;
+      transform-origin: 50% 50%; width: max-content;
+    }
+    [id="02-the-rule-title"] {
+      margin: 0; font-size: 74px; line-height: 1.12; font-weight: 800; letter-spacing: 0;
+      transform-origin: 50% 50%; width: max-content; max-width: 100%;
+    }
+    [id="02-the-rule-lead"] {
+      margin: 0; color: rgba(232, 241, 255, 0.78); font-size: 34px; font-weight: 600; line-height: 1.55;
+      transform-origin: 50% 50%; max-width: 1040px;
+    }
+    [id="02-the-rule-grid"] { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    [id="02-the-rule-grid"] span {
+      min-height: 124px; border-radius: 8px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+      text-align: center; padding: 18px;
+      border: 1px solid rgba(92, 227, 138, 0.72);
+      background: rgba(15, 34, 54, 0.86);
+      font-size: 32px; font-weight: 800; letter-spacing: 0;
+      transform-origin: 50% 50%;
+    }
+    [id="02-the-rule-grid"] span::before {
+      content: ""; width: 18px; height: 18px; border-radius: 50%; background: #5ce38a; flex: 0 0 auto;
+    }
+  </style>
+  <div data-hf-id="hf-mmhl" id="root" data-composition-id="02-the-rule" data-start="0" data-duration="5.5" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-pxr8" id="02-the-rule-bg" class="clip" data-start="0" data-duration="5.5" data-track-index="0"></div>
+    <div data-hf-id="hf-5w12" id="02-the-rule-stage" class="clip" data-start="0" data-duration="5.5" data-track-index="1">
+      <div data-hf-id="hf-0weg" id="02-the-rule-kicker">一条硬规则</div>
+      <h2 data-hf-id="hf-n52b" id="02-the-rule-title">带着证据回答，不编表名</h2>
+      <p data-hf-id="hf-awe2" id="02-the-rule-lead">每一张被动过的表，都要钉上 file:line。</p>
+      <div data-hf-id="hf-x4ct" id="02-the-rule-grid">
+        <span data-hf-id="hf-xh3p" id="02-the-rule-n1">file:line</span>
+        <span data-hf-id="hf-dej6" id="02-the-rule-n2">不编表名</span>
+        <span data-hf-id="hf-9hvi" id="02-the-rule-n3">uncertain</span>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    window.__timelines = window.__timelines || {};
+    var tl = gsap.timeline({ paused: true });
+    tl.fromTo(
+      '[id="02-the-rule-kicker"]',
+      { scale: 0, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.55, ease: "power3.out" },
+      0.06
+    );
+    tl.fromTo(
+      '[id="02-the-rule-title"]',
+      { scale: 0.96, opacity: 0, y: 28 },
+      { scale: 1, opacity: 1, y: 0, duration: 0.62, ease: "power3.out" },
+      1.2
+    );
+    var BASE_DURATION = 0.14;
+    var SEC_PER_CHAR = 0.012;
+    var CONTENT = [
+      { id: "02-the-rule-lead", body: "每一张被动过的表，都要钉上 file:line。", hold: 0.04, pop: 0.5, y: 16, scaleFrom: 0.98 },
+      { id: "02-the-rule-n1", body: "file:line", hold: 0.03, pop: 0.45, y: 18, scaleFrom: 0 },
+      { id: "02-the-rule-n2", body: "不编表名", hold: 0.03, pop: 0.45, y: 18, scaleFrom: 0 },
+      { id: "02-the-rule-n3", body: "uncertain", hold: 0.24, pop: 0.45, y: 18, scaleFrom: 0 }
+    ];
+    var cumulative = 2.8;
+    var TIMELINE = CONTENT.map(function (entry) {
+      var dur = BASE_DURATION + entry.body.length * SEC_PER_CHAR + entry.hold;
+      var start = cumulative;
+      cumulative += dur;
+      return Object.assign({}, entry, { start: start, end: cumulative });
+    });
+    TIMELINE.forEach(function (entry) {
+      tl.fromTo(
+        '[id="' + entry.id + '"]',
+        { scale: entry.scaleFrom, opacity: 0, y: entry.y },
+        { scale: 1, opacity: 1, y: 0, duration: entry.pop, ease: "power3.out" },
+        entry.start
+      );
+    });
+    window.__timelines["02-the-rule"] = tl;
+  </script>
+</template>

@@ -1,0 +1,216 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "EB Garamond";
+      src: url("assets/fonts/EBGaramond-400.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Inter";
+      src: url("assets/fonts/Inter-400.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Noto Sans SC";
+      src: url("assets/fonts/NotoSansSC-400.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+    }
+    #root * {
+      box-sizing: border-box;
+    }
+    [id="03-sequence-exhibit-bg"] {
+      position: absolute;
+      inset: 0;
+      background: #faf9f5;
+    }
+    [id="03-sequence-exhibit-stage"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 900px;
+      padding: 4.2cqw;
+      display: flex;
+      flex-direction: column;
+      gap: 1.7cqw;
+    }
+    [id="03-sequence-exhibit-kicker"] {
+      flex: 0 0 auto;
+      height: 1.46cqw;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 1.46cqw;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      line-height: 1;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    [id="03-sequence-exhibit-spike"] {
+      color: #cc785c;
+    }
+    [id="03-sequence-exhibit-plate"] {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 40cqh;
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      background: #181715;
+      border-radius: 12px;
+    }
+    [id="03-sequence-exhibit-world"] {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+    [id="03-sequence-exhibit-shot"] {
+      position: relative;
+      height: 100%;
+      width: auto;
+      aspect-ratio: 2048 / 1380;
+      flex-shrink: 0;
+    }
+    [id="03-sequence-exhibit-img"] {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: fill;
+    }
+    [id="03-sequence-exhibit-update"] {
+      position: absolute;
+      left: 31.69%;
+      top: 61.16%;
+      width: 31.1%;
+      height: 2.03%;
+      pointer-events: none;
+      opacity: 0;
+    }
+    [id="03-sequence-exhibit-caption"] {
+      flex: 0 0 auto;
+      height: 2.88cqw;
+      margin: 0;
+      font-family: "EB Garamond", "Noto Sans SC", serif;
+      font-size: 2.3cqw;
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: -0.005em;
+      color: #141413;
+      white-space: nowrap;
+    }
+    [id="03-sequence-exhibit-caption"] span {
+      display: inline-block;
+      opacity: 0;
+    }
+  </style>
+  <div data-hf-id="hf-28n7" id="root" data-composition-id="03-sequence-exhibit" data-start="0" data-duration="14.6" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-31m6" id="03-sequence-exhibit-bg" class="clip" data-start="0" data-duration="14.6" data-track-index="0"></div>
+    <div data-hf-id="hf-c4io" id="03-sequence-exhibit-stage" class="clip" data-start="0" data-duration="14.6" data-track-index="1">
+      <div data-hf-id="hf-l1hr" id="03-sequence-exhibit-kicker"><span data-hf-id="hf-esbr" id="03-sequence-exhibit-spike">✱</span> EXHIBIT</div>
+      <div data-hf-id="hf-hb9w" id="03-sequence-exhibit-plate" data-layout-allow-overflow="true">
+        <div data-hf-id="hf-xy78" id="03-sequence-exhibit-world" data-layout-allow-overflow="true">
+          <div data-hf-id="hf-3rsl" id="03-sequence-exhibit-shot">
+            <img data-hf-id="hf-cuy8" id="03-sequence-exhibit-img" src="assets/t03-sequence.jpg" width="2048" height="1380" alt="" data-layout-allow-overflow="true">
+            <div data-hf-id="hf-ahz7" id="03-sequence-exhibit-update" data-layout-ignore="true"></div>
+          </div>
+        </div>
+      </div>
+      <p data-hf-id="hf-9zw2" id="03-sequence-exhibit-caption">
+        <span data-hf-id="hf-vnrw" id="03-sequence-exhibit-w0">一次</span><span data-hf-id="hf-s4bx" id="03-sequence-exhibit-w1">请求，</span><span data-hf-id="hf-olkt" id="03-sequence-exhibit-w2">全在</span><span data-hf-id="hf-0i3l" id="03-sequence-exhibit-w3">这张图。</span>
+      </p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const plate = document.getElementById("03-sequence-exhibit-plate");
+      const world = document.getElementById("03-sequence-exhibit-world");
+      const shot = document.getElementById("03-sequence-exhibit-shot");
+      const target = document.getElementById("03-sequence-exhibit-update");
+      const words = [
+        document.getElementById("03-sequence-exhibit-w0"),
+        document.getElementById("03-sequence-exhibit-w1"),
+        document.getElementById("03-sequence-exhibit-w2"),
+        document.getElementById("03-sequence-exhibit-w3"),
+      ];
+
+      const pr = plate.getBoundingClientRect();
+      const tr = target.getBoundingClientRect();
+      const sr = shot.getBoundingClientRect();
+      const plateW = pr.width || 1758.72;
+      const plateH = pr.height || 590.24;
+      const plateCx = (pr.width ? pr.left : 80.64) + plateW / 2;
+      const plateCy = (pr.height ? pr.top : 141.3) + plateH / 2;
+      const shotW = sr.width || plateH * (2048 / 1380);
+      const shotH = sr.height || plateH;
+
+      let ox;
+      let oy;
+      let barW;
+      if (tr.width >= 1) {
+        ox = tr.left + tr.width / 2 - plateCx;
+        oy = tr.top + tr.height / 2 - plateCy;
+        barW = tr.width;
+      } else {
+        ox = (0.4724 - 0.5) * shotW;
+        oy = (0.6203 - 0.5) * shotH;
+        barW = 0.311 * shotW;
+      }
+
+      const maxS = (0.88 * plateW) / Math.max(barW, 1);
+      const S0 = Math.min(5.4, Math.max(3.2, maxS));
+      const startX = -ox * S0;
+      const startY = -oy * S0;
+
+      // Scene 1 (0–3s): tight on UPDATE finalized; blur-to-sharp. Camera holds.
+      tl.fromTo(
+        plate,
+        { filter: "blur(5px)" },
+        { filter: "blur(0px)", duration: 1.2, ease: "power2.out" },
+        0,
+      );
+
+      // Scene 2 (3.0–8.5s): ONE decelerating zoom-out to the full T·03 plate.
+      tl.fromTo(
+        world,
+        { x: startX, y: startY, scale: S0 },
+        { x: 0, y: 0, scale: 1, duration: 5.5, ease: "expo.out" },
+        3.0,
+      );
+
+      // Scene 3 (8.5–14s): lock. Caption per-word. No second camera move.
+      for (let i = 0; i < words.length; i += 1) {
+        tl.fromTo(
+          words[i],
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.48, ease: "power3.out" },
+          8.5 + i * 0.22,
+        );
+      }
+
+      window.__timelines["03-sequence-exhibit"] = tl;
+    })();
+  </script>
+</template>

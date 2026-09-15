@@ -1,0 +1,150 @@
+<template>
+  <style>
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; }
+    @font-face { font-family: "Noto Sans SC"; src: url("assets/fonts/NotoSansSC-400.ttf") format("truetype"); font-weight: 400; font-style: normal; }
+    #root { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; container-type: size; }
+    #root, #root * { box-sizing: border-box; }
+    [id="04-trace-bg"] {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(55, 213, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(55, 213, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 18% 18%, rgba(55, 213, 255, 0.14), transparent 26%),
+        radial-gradient(circle at 78% 74%, rgba(92, 227, 138, 0.1), transparent 24%),
+        #07111f;
+      background-size: 80px 80px, 80px 80px, auto, auto, auto;
+    }
+    [id="04-trace-stage"] {
+      position: absolute; top: 0; left: 0; right: 0; height: 900px;
+      padding: 86px 110px 40px; display: flex; flex-direction: column; gap: 36px; justify-content: center;
+      font-family: Inter, "Noto Sans SC", sans-serif; color: #e8f1ff;
+    }
+    [id="04-trace-kicker"] {
+      color: #37d5ff; font-size: 30px; font-weight: 800;
+      transform-origin: 50% 50%; will-change: transform;
+    }
+    [id="04-trace-title"] {
+      margin: 0; font-size: 74px; line-height: 1.12; font-weight: 800;
+      transform-origin: 50% 50%; will-change: transform;
+    }
+    [id="04-trace-pipe"] { display: flex; align-items: center; gap: 18px; }
+    [id="04-trace-card-handler"],
+    [id="04-trace-card-service"],
+    [id="04-trace-card-mapper"],
+    [id="04-trace-card-table"] {
+      flex: 1; min-height: 184px; border-radius: 8px; display: grid; place-items: center; text-align: center;
+      padding: 28px; font-size: 34px; font-weight: 900;
+      background: rgba(232, 241, 255, 0.07); border: 1px solid rgba(55, 213, 255, 0.24);
+      transform-origin: 50% 50%; will-change: transform;
+    }
+    [id="04-trace-arrow-1"],
+    [id="04-trace-arrow-2"],
+    [id="04-trace-arrow-3"] {
+      color: #37d5ff; font-size: 52px; font-weight: 900; flex: 0 0 auto;
+      transform-origin: 50% 50%; will-change: transform;
+    }
+  </style>
+  <div data-hf-id="hf-o5bj" id="root" data-composition-id="04-trace" data-start="0" data-duration="6.5" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-6o5m" id="04-trace-bg" class="clip" data-start="0" data-duration="6.5" data-track-index="0"></div>
+    <div data-hf-id="hf-3826" id="04-trace-stage" class="clip" data-start="0" data-duration="6.5" data-track-index="1">
+      <div data-hf-id="hf-6tit" id="04-trace-kicker">追踪路径</div>
+      <h2 data-hf-id="hf-eor9" id="04-trace-title">从 handler 走到表</h2>
+      <div data-hf-id="hf-tqiu" id="04-trace-pipe">
+        <div data-hf-id="hf-m0i9" id="04-trace-card-handler">Handler</div>
+        <div data-hf-id="hf-1m2r" id="04-trace-arrow-1">→</div>
+        <div data-hf-id="hf-re9l" id="04-trace-card-service">Service</div>
+        <div data-hf-id="hf-ckqm" id="04-trace-arrow-2">→</div>
+        <div data-hf-id="hf-8i26" id="04-trace-card-mapper">Mapper / SQL</div>
+        <div data-hf-id="hf-db49" id="04-trace-arrow-3">→</div>
+        <div data-hf-id="hf-cmip" id="04-trace-card-table">Table</div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const BORDER_IDLE = "rgba(55, 213, 255, 0.24)";
+      const BORDER_LIT = "rgba(55, 213, 255, 0.72)";
+      const BORDER_HOLD = "rgba(92, 227, 138, 0.72)";
+      const FILL_IDLE = "rgba(232, 241, 255, 0.07)";
+      const FILL_LIT = "rgba(55, 213, 255, 0.12)";
+      const FILL_HOLD = "rgba(92, 227, 138, 0.15)";
+
+      const kicker = document.getElementById("04-trace-kicker");
+      const title = document.getElementById("04-trace-title");
+      const tableCard = document.getElementById("04-trace-card-table");
+
+      // Scene 1 (0.0–1.2s): kicker + title spring-pop. Strip stays empty.
+      tl.fromTo(kicker, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "power3.out" }, 0);
+      tl.fromTo(title, { scale: 0, opacity: 0, y: 12 }, { scale: 1, opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 0.06);
+
+      const BASE_DURATION = 0.6;
+      const SEC_PER_CHAR = 0.04;
+      const HOLD_MID = 0.5;
+      const HOLD_FINAL = 1.0;
+      const SCENE2_AT = 1.2;
+      const SCENE2_WINDOW = 3.2;
+
+      const CONTENT = [
+        { id: "04-trace-card-handler", arrowId: "04-trace-arrow-1", body: "Handler", hold: HOLD_MID },
+        { id: "04-trace-card-service", arrowId: "04-trace-arrow-2", body: "Service", hold: HOLD_MID },
+        { id: "04-trace-card-mapper", arrowId: "04-trace-arrow-3", body: "Mapper / SQL", hold: HOLD_MID },
+        { id: "04-trace-card-table", arrowId: null, body: "Table", hold: HOLD_FINAL },
+      ];
+
+      let cumulative = 0;
+      const RAW = CONTENT.map((entry) => {
+        const dur = BASE_DURATION + entry.body.length * SEC_PER_CHAR + entry.hold;
+        const start = cumulative;
+        cumulative += dur;
+        return { ...entry, start, end: cumulative };
+      });
+      const scale = SCENE2_WINDOW / cumulative;
+      const TIMELINE = RAW.map((entry) => ({
+        ...entry,
+        start: SCENE2_AT + entry.start * scale,
+        end: SCENE2_AT + entry.end * scale,
+      }));
+
+      // Scene 2 (1.2–4.4s): stations + arrows left-to-right.
+      TIMELINE.forEach((entry) => {
+        const card = document.getElementById(entry.id);
+        tl.fromTo(
+          card,
+          { scale: 0, opacity: 0, y: 16 },
+          { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+          entry.start,
+        );
+        tl.fromTo(
+          card,
+          { borderColor: BORDER_IDLE, backgroundColor: FILL_IDLE },
+          { borderColor: BORDER_LIT, backgroundColor: FILL_LIT, duration: 0.28, ease: "power3.out", immediateRender: false },
+          entry.start + 0.22,
+        );
+        if (entry.arrowId) {
+          tl.fromTo(
+            document.getElementById(entry.arrowId),
+            { scale: 0, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.35, ease: "power3.out" },
+            entry.start + 0.28,
+          );
+        }
+      });
+
+      // Scene 3 (4.4–6.0s): Table locks green, then holds.
+      tl.fromTo(
+        tableCard,
+        { borderColor: BORDER_LIT, backgroundColor: FILL_LIT },
+        { borderColor: BORDER_HOLD, backgroundColor: FILL_HOLD, duration: 0.4, ease: "power3.out", immediateRender: false },
+        4.4,
+      );
+
+      window.__timelines["04-trace"] = tl;
+    })();
+  </script>
+</template>

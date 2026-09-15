@@ -1,0 +1,159 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "EB Garamond";
+      src: url("assets/fonts/EBGaramond-400.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Inter";
+      src: url("assets/fonts/Inter-400.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Noto Sans SC";
+      src: url("assets/fonts/NotoSansSC-400.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+    }
+    #root,
+    #root * {
+      box-sizing: border-box;
+    }
+    [id="04-invoke-bg"] {
+      position: absolute;
+      inset: 0;
+      background: #faf9f5;
+    }
+    [id="04-invoke-stage"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 900px;
+      padding: 4.2cqw;
+      display: grid;
+      grid-template-columns: 1fr 28cqw;
+      gap: 3cqw;
+      align-items: end;
+    }
+    [id="04-invoke-main"] {
+      display: flex;
+      flex-direction: column;
+      gap: 2cqw;
+      min-width: 0;
+    }
+    [id="04-invoke-kicker"] {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.46cqw;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #141413;
+    }
+    [id="04-invoke-spike"] {
+      color: #cc785c;
+    }
+    [id="04-invoke-headline"] {
+      margin: 0;
+      font-family: "EB Garamond", "Noto Sans SC", serif;
+      font-size: 4.6cqw;
+      font-weight: 400;
+      line-height: 1.06;
+      letter-spacing: -0.018em;
+      color: #141413;
+      transform-origin: 0% 100%;
+    }
+    [id="04-invoke-code"] {
+      background: #181715;
+      color: #faf9f5;
+      border: 1px solid rgba(250, 249, 245, 0.14);
+      border-radius: 8px;
+      padding: 1.8cqw 2cqw;
+      font-family: "JetBrains Mono", "Noto Sans SC", monospace;
+      font-size: 1.67cqw;
+      line-height: 1.6;
+      min-height: 5.4cqw;
+    }
+    [id="04-invoke-code"] span {
+      display: inline;
+    }
+    [id="04-invoke-caret"] {
+      display: inline-block;
+      width: 0.12em;
+      height: 1em;
+      margin-left: 0.08em;
+      background: #cc785c;
+      vertical-align: -0.1em;
+    }
+    [id="04-invoke-plate"] {
+      height: 28cqw;
+      max-height: 420px;
+      border: 1px solid rgba(20, 20, 19, 0.12);
+      background: #efe9de;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    [id="04-invoke-plate"] img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top left;
+    }
+  </style>
+  <div data-hf-id="hf-nrxf" id="root" data-composition-id="04-invoke" data-start="0" data-duration="9" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-mmou" id="04-invoke-bg" class="clip" data-start="0" data-duration="9" data-track-index="0"></div>
+    <div data-hf-id="hf-zikw" id="04-invoke-stage" class="clip" data-start="0" data-duration="9" data-track-index="1">
+      <div data-hf-id="hf-dj9s" id="04-invoke-main">
+        <div data-hf-id="hf-yj90" id="04-invoke-kicker"><span data-hf-id="hf-gv3x" id="04-invoke-spike">✱</span> INVOKE</div>
+        <h1 data-hf-id="hf-uu73" id="04-invoke-headline">对 Agent 说这一句。</h1>
+        <div data-hf-id="hf-xrl0" id="04-invoke-code">
+          <span data-hf-id="hf-zigb">用</span><span data-hf-id="hf-uckh"> </span><span data-hf-id="hf-zhz4">a</span><span data-hf-id="hf-sqrn">p</span><span data-hf-id="hf-wbiw">i</span><span data-hf-id="hf-k5wk">-</span><span data-hf-id="hf-xifz">d</span><span data-hf-id="hf-yb21">b</span><span data-hf-id="hf-k1i4">-</span><span data-hf-id="hf-uqas">m</span><span data-hf-id="hf-wqew">a</span><span data-hf-id="hf-16gz">p</span><span data-hf-id="hf-l73p"> </span><span data-hf-id="hf-fpt1">分</span><span data-hf-id="hf-5qjn">析</span><span data-hf-id="hf-me0s"> </span><span data-hf-id="hf-g0yr">P</span><span data-hf-id="hf-h7vu">O</span><span data-hf-id="hf-fmnq">S</span><span data-hf-id="hf-efqn">T</span><span data-hf-id="hf-lzpr"> </span><span data-hf-id="hf-jdai">/</span><span data-hf-id="hf-qcxh">v</span><span data-hf-id="hf-ikog">1</span><span data-hf-id="hf-4csu">/</span><span data-hf-id="hf-r5jj">t</span><span data-hf-id="hf-vjht">a</span><span data-hf-id="hf-scgm">s</span><span data-hf-id="hf-viwu">k</span><span data-hf-id="hf-kwl6">s</span><span data-hf-id="hf-4r3v">/</span><span data-hf-id="hf-p60e">{</span><span data-hf-id="hf-b5yn">t</span><span data-hf-id="hf-vxsu">a</span><span data-hf-id="hf-law7">s</span><span data-hf-id="hf-n59e">k</span><span data-hf-id="hf-auze">_</span><span data-hf-id="hf-gecw">i</span><span data-hf-id="hf-3h27">d</span><span data-hf-id="hf-odec">}</span><span data-hf-id="hf-55ew">/</span><span data-hf-id="hf-wptx">f</span><span data-hf-id="hf-f7ft">i</span><span data-hf-id="hf-tjdp">n</span><span data-hf-id="hf-uqvr">a</span><span data-hf-id="hf-ubzr">l</span><span data-hf-id="hf-flqu">i</span><span data-hf-id="hf-orpd">z</span><span data-hf-id="hf-xwr0">e</span><span data-hf-id="hf-k6o9" id="04-invoke-caret"></span>
+        </div>
+      </div>
+      <div data-hf-id="hf-btxt" id="04-invoke-plate">
+        <img data-hf-id="hf-pe27" src="assets/index.jpg" alt="">
+      </div>
+    </div>
+  </div>
+  <script>
+    const codeEl = document.getElementById("04-invoke-code");
+    const caret = document.getElementById("04-invoke-caret");
+    const chars = [...codeEl.querySelectorAll("span")].filter((s) => s !== caret);
+    const tl = gsap.timeline({ paused: true });
+    const kicker = document.getElementById("04-invoke-kicker");
+    const headline = document.getElementById("04-invoke-headline");
+    const plate = document.getElementById("04-invoke-plate");
+    gsap.set(chars, { opacity: 0 });
+    gsap.set(codeEl, { scaleX: 0.2, opacity: 0, transformOrigin: "0% 50%" });
+    gsap.set(plate, { opacity: 0, y: 16 });
+    gsap.set(caret, { opacity: 0 });
+    tl.fromTo(kicker, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 0);
+    tl.fromTo(headline, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0.15);
+    tl.to(headline, { scale: 0.72, opacity: 0.72, duration: 0.45, ease: "power3.inOut" }, 2.0);
+    tl.fromTo(codeEl, { scaleX: 0.2, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.5, ease: "power3.out" }, 2.1);
+    tl.set(caret, { opacity: 0 }, 0);
+    tl.fromTo(caret, { opacity: 0 }, { opacity: 1, duration: 0.08, ease: "none", immediateRender: false }, 2.4);
+    tl.fromTo(caret, { opacity: 1 }, { opacity: 0.15, duration: 0.28, ease: "none", repeat: 22, yoyo: true, immediateRender: false }, 2.48);
+    tl.fromTo(chars, { opacity: 0 }, { opacity: 1, duration: 0.03, stagger: 0.09, ease: "none" }, 2.5);
+    tl.fromTo(plate, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 6.5);
+    window.__timelines["04-invoke"] = tl;
+  </script>
+</template>

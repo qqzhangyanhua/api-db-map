@@ -1,3 +1,11 @@
 .atlas/
 .scratch/
 __pycache__/
+.DS_Store
+videos/**/.thumbnails/
+videos/**/.waveform-cache/
+videos/**/snapshots/
+videos/**/.media/
+videos/**/.hyperframes/frame-packets/
+videos/**/assets/bgm/*.log
+videos/**/bgm_status.json

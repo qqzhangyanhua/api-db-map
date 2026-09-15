@@ -1,0 +1,130 @@
+<template>
+  <style>
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-400.woff2") format("woff2"); font-weight: 400; font-style: normal; }
+    @font-face { font-family: "Inter"; src: url("assets/fonts/Inter-700.woff2") format("woff2"); font-weight: 700; font-style: normal; }
+    @font-face { font-family: "Noto Sans SC"; src: url("assets/fonts/NotoSansSC-400.ttf") format("truetype"); font-weight: 400; font-style: normal; }
+    #root { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; container-type: size; }
+    #root, #root * { box-sizing: border-box; }
+    [id="07-uncertain-bg"] {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(90deg, rgba(55, 213, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(55, 213, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 18% 18%, rgba(55, 213, 255, 0.14), transparent 26%),
+        radial-gradient(circle at 78% 74%, rgba(92, 227, 138, 0.1), transparent 24%),
+        #07111f;
+      background-size: 80px 80px, 80px 80px, auto, auto, auto;
+    }
+    [id="07-uncertain-stage"] {
+      position: absolute; top: 0; left: 0; right: 0; height: 900px;
+      padding: 86px 110px 40px; display: flex; flex-direction: column; gap: 28px; justify-content: center;
+      font-family: Inter, "Noto Sans SC", sans-serif; color: #e8f1ff;
+    }
+    [id="07-uncertain-kicker"] {
+      color: #37d5ff; font-size: 30px; font-weight: 800; letter-spacing: 0;
+      transform-origin: 0% 50%; will-change: transform;
+    }
+    [id="07-uncertain-title"] {
+      margin: 0; font-size: 74px; line-height: 1.12; font-weight: 800; letter-spacing: 0;
+      transform-origin: 0% 50%; will-change: transform;
+    }
+    [id="07-uncertain-panel"] {
+      border: 1px solid rgba(55, 213, 255, 0.2); background: rgba(15, 34, 54, 0.82);
+      border-radius: 8px; padding: 36px; box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+    }
+    [id="07-uncertain-panel"] p {
+      display: flex; align-items: center; gap: 16px; min-height: 74px; margin: 14px 0 0;
+      padding: 18px 20px; border-radius: 8px; background: rgba(232, 241, 255, 0.06);
+      border: 1px solid rgba(232, 241, 255, 0.08); font-size: 28px; font-weight: 750;
+      transform-origin: 0% 50%; will-change: transform;
+    }
+    [id="07-uncertain-panel"] p:first-child { margin-top: 0; }
+    [id="07-uncertain-panel"] i {
+      width: 18px; height: 18px; border-radius: 50%; flex: 0 0 auto;
+    }
+    [id="07-uncertain-c"] { background: #37d5ff; box-shadow: 0 0 22px rgba(55, 213, 255, 0.7); }
+    [id="07-uncertain-a"] { background: #ffbe55; box-shadow: 0 0 22px rgba(255, 190, 85, 0.65); }
+    [id="07-uncertain-r"] { background: #ff5a67; box-shadow: 0 0 22px rgba(255, 90, 103, 0.65); }
+    [id="07-uncertain-panel"] em { font-style: normal; color: #37d5ff; font-weight: 800; }
+    [id="07-uncertain-panel"] b { font-weight: 850; color: #ffbe55; }
+    [id="07-uncertain-row-risk"] b { color: #ff5a67; }
+    [id="07-uncertain-badge"] {
+      display: inline-flex; align-items: center; width: fit-content; padding: 12px 18px; border-radius: 8px;
+      color: #5ce38a; background: rgba(7, 17, 31, 0.92); border: 1px solid rgba(92, 227, 138, 0.72);
+      font-size: 28px; font-weight: 950; letter-spacing: 0;
+      transform-origin: 0% 50%; will-change: transform;
+    }
+  </style>
+  <div data-hf-id="hf-mybx" id="root" data-composition-id="07-uncertain" data-start="0" data-duration="5.6" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-fedk" id="07-uncertain-bg" class="clip" data-start="0" data-duration="5.6" data-track-index="0"></div>
+    <div data-hf-id="hf-fijk" id="07-uncertain-stage" class="clip" data-start="0" data-duration="5.6" data-track-index="1">
+      <div data-hf-id="hf-jyof" id="07-uncertain-kicker">泼盆冷水</div>
+      <h2 data-hf-id="hf-eh05" id="07-uncertain-title">证明不了，就不要假装知道</h2>
+      <div data-hf-id="hf-mqfx" id="07-uncertain-panel">
+        <p data-hf-id="hf-3vaa" id="07-uncertain-row-sql"><i data-hf-id="hf-4py0" id="07-uncertain-c"></i>拼接 SQL <em data-hf-id="hf-ewbj">→</em> <b data-hf-id="hf-fwlg">uncertain</b></p>
+        <p data-hf-id="hf-doik" id="07-uncertain-row-dyn"><i data-hf-id="hf-9fpu" id="07-uncertain-a"></i>动态表名 <em data-hf-id="hf-7mov">→</em> <b data-hf-id="hf-a4u4">uncertain</b></p>
+        <p data-hf-id="hf-csja" id="07-uncertain-row-risk"><i data-hf-id="hf-mmep" id="07-uncertain-r"></i>高风险猜测 <em data-hf-id="hf-78du">→</em> <b data-hf-id="hf-ohao">停下</b></p>
+      </div>
+      <div data-hf-id="hf-jehs" id="07-uncertain-badge">代码证明不了的，标 uncertain</div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const el = (id) => document.getElementById(id);
+
+    tl.fromTo(
+      el("07-uncertain-kicker"),
+      { scale: 0, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.48, ease: "power3.out" },
+      0.08
+    );
+    tl.fromTo(
+      el("07-uncertain-title"),
+      { scale: 0, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.55, ease: "power3.out" },
+      0.16
+    );
+
+    tl.fromTo(
+      el("07-uncertain-panel"),
+      { opacity: 0 },
+      { opacity: 1, duration: 0.32, ease: "power3.out" },
+      1.08
+    );
+
+    const CONTENT = [
+      { id: "07-uncertain-row-sql", body: "拼接 SQL → uncertain", hold: 0.08 },
+      { id: "07-uncertain-row-dyn", body: "动态表名 → uncertain", hold: 0.08 },
+      { id: "07-uncertain-row-risk", body: "高风险猜测 → 停下", hold: 0.18 },
+    ];
+    const BASE_DURATION = 0.38;
+    const SEC_PER_CHAR = 0.02;
+    const SCENE2_AT = 1.2;
+    let cumulative = 0;
+    const TIMELINE = CONTENT.map((entry) => {
+      const dur = BASE_DURATION + entry.body.length * SEC_PER_CHAR + entry.hold;
+      const start = cumulative;
+      cumulative += dur;
+      return { ...entry, start, end: cumulative };
+    });
+    TIMELINE.forEach((entry) => {
+      tl.fromTo(
+        el(entry.id),
+        { scale: 0, opacity: 0, y: 12 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+        SCENE2_AT + entry.start
+      );
+    });
+
+    tl.fromTo(
+      el("07-uncertain-badge"),
+      { scale: 0, opacity: 0, y: 10 },
+      { scale: 1, opacity: 1, y: 0, duration: 0.55, ease: "power3.out" },
+      3.6
+    );
+
+    window.__timelines["07-uncertain"] = tl;
+  </script>
+</template>

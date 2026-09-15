@@ -1,0 +1,26 @@
+api-db-map
+从后端代码里追踪「接口查了哪些表、改了哪些表、字段怎么关联」，再画出架构图、字段关系图和时序图。
+这是一个 Agent Skill（显式调用）：只有直接说出 api-db-map / 「用 api-db-map」，或输入 /api-db-map 时才会跑。提到表、接口或 schema 不会自动触发。
+
+能回答什么（带着证据，不编造表名、字段或外键）：
+- 深追的每个 HTTP 接口读了哪些表、写了哪些表
+- 读/写落到了哪些字段
+- 表之间的关联来自 FK、JOIN，还是代码里推断出来的
+- 哪些访问证据不足，需要人看一眼
+
+原则：
+- 代码证明不了的访问标成 uncertain，继续往下做，不猜表名
+- 每条表访问都带 file:line 证据
+
+产出三张图：
+- T·01 影响架构图 — 左边接口，右边表，箭头标 SQL 动词（虚线读、实线写）
+- T·02 表与字段关系 — 表卡片带字段，边从 FK 字段连到被引用 PK
+- T·03 接口时序图 — Client → Controller → Service → 表，消息带方法和列
+
+调用示例（来自现有产品预览，不要改口成 /api/orders）：
+POST /v1/tasks/{task_id}/finalize
+涉及表：recording_task、task_grant、upload_session、upload_part、work_job
+已核实的写操作（来自现有预览/前一条 promo）：recording_task UPDATE、upload_session UPDATE、work_job INSERT
+
+安装：npx skills add qqzhangyanhua/api-db-map
+开口令：用 api-db-map 分析 POST /v1/tasks/{task_id}/finalize
